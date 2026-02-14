@@ -137,6 +137,19 @@
       box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
     }
 
+    .section-title {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+      margin-top: 20px;
+    }
+
+    .section-title:first-child {
+      margin-top: 0;
+    }
+
     input { 
       width: 100%; 
       padding: 18px 24px; 
@@ -176,12 +189,106 @@
       background-size: 20px;
     }
 
-    select:focus {
-      outline: none;
-      border-color: #7c3aed;
+    select:focus { outline: none; border-color: #7c3aed; }
+    select option { background: #1a1a2e; color: white; }
+
+    .avatar-selection {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
     }
 
-    select option { background: #1a1a2e; color: white; }
+    .avatar-option {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .avatar-option:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .avatar-option.selected {
+      border-color: #00d4ff;
+      background: rgba(0, 212, 255, 0.2);
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+      transform: scale(1.15);
+    }
+
+    .avatar-preview {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .avatar-preview .big-avatar {
+      font-size: 4rem;
+      display: inline-block;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(124, 58, 237, 0.2));
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .color-selection {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .color-option {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .color-option:hover { transform: scale(1.1); }
+    .color-option.selected { border-color: white; transform: scale(1.15); }
+
+    .game-mode-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .game-mode-card {
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .game-mode-card:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-3px);
+    }
+
+    .game-mode-card.selected {
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(124, 58, 237, 0.2));
+      border-color: #00d4ff;
+      box-shadow: 0 5px 30px rgba(0, 212, 255, 0.3);
+    }
+
+    .game-mode-card .icon { font-size: 2.5rem; margin-bottom: 10px; }
+    .game-mode-card h3 { font-size: 1.1rem; margin-bottom: 5px; }
+    .game-mode-card p { font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); }
 
     button { 
       width: 100%; 
@@ -270,7 +377,6 @@
       padding: 10px 20px;
       border-radius: 50px;
       margin-bottom: 20px;
-      font-size: 0.95rem;
     }
 
     .player-count-badge.ready {
@@ -290,12 +396,18 @@
       border-radius: 14px;
       border: 1px solid rgba(255, 255, 255, 0.05);
       animation: slideIn 0.3s ease;
-      transition: all 0.3s ease;
     }
 
-    .player-list li.answered {
+    .player-list li.answered,
+    .player-list li.eliminated {
       background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
       border-color: rgba(34, 197, 94, 0.3);
+    }
+
+    .player-list li.eliminated {
+      opacity: 0.5;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+      border-color: rgba(239, 68, 68, 0.3);
     }
 
     @keyframes slideIn {
@@ -317,6 +429,9 @@
 
     .player-list li .score { font-weight: 700; color: #00d4ff; }
     .answered-check { color: #22c55e; font-size: 1.2rem; margin-left: 10px; }
+    .lives { display: flex; gap: 3px; }
+    .life { color: #ef4444; }
+    .life.lost { opacity: 0.3; }
 
     .waiting { text-align: center; padding: 30px; }
 
@@ -413,6 +528,39 @@
       border-radius: 15px;
     }
 
+    .betting-section {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05));
+      border-radius: 16px;
+      border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+
+    .betting-section h3 { color: #fbbf24; margin-bottom: 10px; }
+    .betting-section .current-score { font-size: 1.5rem; font-weight: 700; margin-bottom: 15px; }
+
+    .bet-slider {
+      width: 100%;
+      margin: 15px 0;
+      -webkit-appearance: none;
+      height: 10px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+    }
+
+    .bet-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      cursor: pointer;
+    }
+
+    .bet-amount { font-size: 2rem; font-weight: 800; color: #fbbf24; }
+
     .superpowers-bar {
       display: flex;
       gap: 10px;
@@ -437,12 +585,10 @@
     .superpower-btn:hover {
       background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.2));
       transform: translateY(-2px);
-      box-shadow: 0 5px 20px rgba(251, 191, 36, 0.3);
     }
 
     .superpower-btn .icon { font-size: 1.5rem; margin-bottom: 5px; }
     .superpower-btn .name { font-size: 0.75rem; font-weight: 600; }
-    .superpower-btn .desc { font-size: 0.65rem; color: rgba(255,255,255,0.6); }
 
     .options {
       display: grid;
@@ -463,7 +609,6 @@
       transition: all 0.3s ease;
       font-family: 'Poppins', sans-serif;
       position: relative;
-      overflow: hidden;
     }
 
     .option-btn:hover:not(:disabled) {
@@ -481,7 +626,6 @@
     .option-btn.correct {
       background: linear-gradient(135deg, rgba(34, 197, 94, 0.4), rgba(16, 185, 129, 0.3));
       border-color: #22c55e;
-      box-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
     }
 
     .option-btn.wrong {
@@ -490,7 +634,8 @@
     }
 
     .option-btn:disabled { cursor: not-allowed; }
-    .option-btn.eliminated { opacity: 0.3; pointer-events: none; text-decoration: line-through; }
+    .option-btn.eliminated { opacity: 0.3; text-decoration: line-through; }
+    .option-btn.frozen { opacity: 0.5; pointer-events: none; }
 
     .option-label {
       position: absolute;
@@ -544,8 +689,8 @@
     .result-item .result-details { display: flex; align-items: center; gap: 15px; }
     .result-item .points { font-weight: 700; font-size: 1.1rem; }
     .result-item.correct .points { color: #22c55e; }
+    .result-item.wrong .points { color: #ef4444; }
     .result-item .time { font-size: 0.85rem; color: rgba(255, 255, 255, 0.5); }
-    .speed-bonus { font-size: 0.75rem; color: #fbbf24; }
 
     .scoreboard {
       background: rgba(255, 255, 255, 0.05);
@@ -655,7 +800,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.95);
       padding: 30px 50px;
       border-radius: 20px;
       text-align: center;
@@ -673,13 +818,34 @@
     .power-popup h3 { font-size: 1.5rem; margin-bottom: 10px; color: #fbbf24; }
     .power-popup p { color: rgba(255, 255, 255, 0.7); }
 
+    .frozen-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 150, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1500;
+      backdrop-filter: blur(5px);
+    }
+
+    .frozen-overlay h2 {
+      font-size: 3rem;
+      color: #00d4ff;
+      text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+    }
+
     @media (max-width: 600px) {
       .logo h1 { font-size: 2.5rem; }
       .room-code { font-size: 2.5rem; letter-spacing: 8px; }
       .options { grid-template-columns: 1fr; }
       .question { font-size: 1.3rem; }
       .card { padding: 25px; }
-      .superpower-btn { min-width: 60px; padding: 10px 12px; }
+      .avatar-selection { grid-template-columns: repeat(7, 1fr); }
+      .game-mode-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -695,7 +861,19 @@
     
     <div id="menu-screen" class="screen active">
       <div class="card">
+        <div class="avatar-preview">
+          <div class="big-avatar" id="selected-avatar-preview">🦊</div>
+        </div>
+        
+        <p class="section-title">Choose Your Avatar</p>
+        <div class="avatar-selection" id="avatar-selection"></div>
+        
+        <p class="section-title">Choose Your Color</p>
+        <div class="color-selection" id="color-selection"></div>
+        
         <input type="text" id="player-name" placeholder="Enter your name" maxlength="12" autocomplete="off">
+        
+        <p class="section-title">Select Theme</p>
         <select id="theme-select">
           <option value="Random">Random Theme</option>
           <option value="Science">Science</option>
@@ -707,6 +885,10 @@
           <option value="Food">Food</option>
           <option value="Technology">Technology</option>
         </select>
+        
+        <p class="section-title">Select Game Mode</p>
+        <div class="game-mode-grid" id="game-mode-grid"></div>
+        
         <button class="btn-primary" onclick="createRoom()">Create Room</button>
         <button class="btn-secondary" onclick="showJoinScreen()">Join Room</button>
       </div>
@@ -714,6 +896,16 @@
 
     <div id="join-screen" class="screen">
       <div class="card">
+        <div class="avatar-preview">
+          <div class="big-avatar" id="join-avatar-preview">🦊</div>
+        </div>
+        
+        <p class="section-title">Choose Your Avatar</p>
+        <div class="avatar-selection" id="join-avatar-selection"></div>
+        
+        <p class="section-title">Choose Your Color</p>
+        <div class="color-selection" id="join-color-selection"></div>
+        
         <input type="text" id="join-name" placeholder="Enter your name" maxlength="12" autocomplete="off">
         <input type="text" id="room-code-input" placeholder="Enter room code" maxlength="4" style="text-transform: uppercase; letter-spacing: 5px; text-align: center; font-size: 1.5rem;" autocomplete="off">
         <button class="btn-primary" onclick="joinRoom()">Join Game</button>
@@ -727,7 +919,10 @@
           <p class="room-code-label">Room Code</p>
           <div class="room-code" id="display-code"></div>
         </div>
-        <div class="theme-badge" id="theme-display"></div>
+        <div style="text-align: center;">
+          <span class="theme-badge" id="theme-display"></span>
+          <span class="theme-badge" id="mode-display" style="margin-left: 10px;"></span>
+        </div>
         
         <div class="player-section">
           <div class="player-count-badge" id="player-badge">
@@ -753,6 +948,22 @@
           </div>
         </div>
         <ul class="player-list" id="waiting-players"></ul>
+      </div>
+    </div>
+
+    <div id="betting-screen" class="screen">
+      <div class="card">
+        <div class="game-header">
+          <span class="progress" id="bet-progress-text">Question 1 of 10</span>
+        </div>
+        <div class="betting-section">
+          <h3>Place Your Bet!</h3>
+          <div class="current-score">Your Score: <span id="bet-current-score">0</span></div>
+          <input type="range" class="bet-slider" id="bet-slider" min="0" max="100" value="0">
+          <div class="bet-amount">Bet: <span id="bet-amount">0</span> pts</div>
+        </div>
+        <button class="btn-primary" id="confirm-bet-btn" onclick="confirmBet()">Confirm Bet</button>
+        <p style="text-align: center; color: rgba(255,255,255,0.5); margin-top: 10px;">Betting closes in <span id="bet-timer">8</span>s</p>
       </div>
     </div>
 
@@ -805,6 +1016,20 @@
   <script>
     createParticles();
     
+    const AVATARS = ['🦊', '🐸', '🦁', '🐼', '🦄', '🐱', '🐶', '🐰', '🐻', '🦋', '🦅', '🐺', '🦈', '🐬', '🦉', '🐨', '🦜', '🐯', '🦩', '🐧', '🦚', '🦢', '🦤', '🦥', '🦦', '🦨', '🦘', '🦬', '🦙', '🦒'];
+    const COLORS = [
+      'linear-gradient(135deg, #00d4ff, #0099cc)',
+      'linear-gradient(135deg, #7c3aed, #5b21b6)',
+      'linear-gradient(135deg, #f472b6, #db2777)',
+      'linear-gradient(135deg, #22c55e, #16a34a)',
+      'linear-gradient(135deg, #f59e0b, #d97706)',
+      'linear-gradient(135deg, #ef4444, #dc2626)',
+      'linear-gradient(135deg, #06b6d4, #0891b2)',
+      'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+      'linear-gradient(135deg, #ec4899, #db2777)',
+      'linear-gradient(135deg, #14b8a6, #0d9488)'
+    ];
+    
     const socket = io();
     let isHost = false;
     let currentRoom = '';
@@ -814,11 +1039,16 @@
     let minPlayers = 2;
     let maxPlayers = 10;
     let currentTheme = 'Random';
+    let currentGameMode = 'Classic';
     let mySuperpowers = [];
+    let selectedAvatar = '🦊';
+    let selectedColor = COLORS[0];
     let eliminatedOptions = [];
     let extraTime = 0;
     let totalQuestions = 15;
-
+    let currentScore = 0;
+    let isFrozen = false;
+    
     function createParticles() {
       const container = document.getElementById('particles');
       for (let i = 0; i < 30; i++) {
@@ -829,6 +1059,69 @@
         particle.style.animationDuration = (15 + Math.random() * 10) + 's';
         container.appendChild(particle);
       }
+    }
+    
+    function initAvatarSelection() {
+      const containers = ['avatar-selection', 'join-avatar-selection'];
+      containers.forEach(containerId => {
+        const container = document.getElementById(containerId);
+        container.innerHTML = AVATARS.map((avatar, i) => `
+          <div class="avatar-option ${i === 0 ? 'selected' : ''}" onclick="selectAvatar('${avatar}', '${containerId}')">${avatar}</div>
+        `).join('');
+      });
+      
+      const colorContainers = ['color-selection', 'join-color-selection'];
+      colorContainers.forEach(containerId => {
+        const container = document.getElementById(containerId);
+        container.innerHTML = COLORS.map((color, i) => `
+          <div class="color-option ${i === 0 ? 'selected' : ''}" style="background: ${color}" onclick="selectColor('${color.replace(/'/g, "\\'")}', '${containerId}')"></div>
+        `).join('');
+      });
+    }
+    
+    function selectAvatar(avatar, containerId) {
+      selectedAvatar = avatar;
+      const container = document.getElementById(containerId);
+      container.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
+      event.target.classList.add('selected');
+      
+      if (containerId === 'avatar-selection') {
+        document.getElementById('selected-avatar-preview').textContent = avatar;
+      } else {
+        document.getElementById('join-avatar-preview').textContent = avatar;
+      }
+    }
+    
+    function selectColor(color, containerId) {
+      selectedColor = color;
+      const container = document.getElementById(containerId);
+      container.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+      event.target.classList.add('selected');
+    }
+    
+    function initGameModes() {
+      const container = document.getElementById('game-mode-grid');
+      const modes = [
+        { id: 'Classic', icon: '🎯', name: 'Classic Trivia', desc: '15 questions, 10 sec each' },
+        { id: 'Speed', icon: '⚡', name: 'Speed Round', desc: '15 questions, 5 sec each' },
+        { id: 'Survival', icon: '❤️', name: 'Survival Mode', desc: '3 lives, last one wins!' },
+        { id: 'Betting', icon: '🎰', name: 'Betting Mode', desc: 'Bet points each round' },
+        { id: 'Lightning', icon: '🌩️', name: 'Lightning Round', desc: '20 questions, 3 sec each' }
+      ];
+      
+      container.innerHTML = modes.map((mode, i) => `
+        <div class="game-mode-card ${i === 0 ? 'selected' : ''}" onclick="selectGameMode('${mode.id}')">
+          <div class="icon">${mode.icon}</div>
+          <h3>${mode.name}</h3>
+          <p>${mode.desc}</p>
+        </div>
+      `).join('');
+    }
+    
+    function selectGameMode(modeId) {
+      currentGameMode = modeId;
+      document.querySelectorAll('.game-mode-card').forEach(card => card.classList.remove('selected'));
+      event.currentTarget.classList.add('selected');
     }
 
     function showScreen(screenId) {
@@ -859,35 +1152,23 @@
       const theme = document.getElementById('theme-select').value;
       if (!name) { showToast('Please enter your name'); return; }
       currentTheme = theme;
-      socket.emit('create-room', { name, theme });
+      socket.emit('create-room', { name, theme, gameMode: currentGameMode, avatar: selectedAvatar, color: selectedColor });
     }
 
     function joinRoom() {
       const name = document.getElementById('join-name').value.trim();
       const code = document.getElementById('room-code-input').value.trim().toUpperCase();
       if (!name || !code) { showToast('Please enter your name and room code'); return; }
-      socket.emit('join-room', { roomCode: code, name });
+      socket.emit('join-room', { roomCode: code, name, avatar: selectedAvatar, color: selectedColor });
     }
 
     function startGame() { socket.emit('start-game'); }
-
-    const avatarColors = [
-      'linear-gradient(135deg, #00d4ff, #0099cc)',
-      'linear-gradient(135deg, #7c3aed, #5b21b6)',
-      'linear-gradient(135deg, #f472b6, #db2777)',
-      'linear-gradient(135deg, #22c55e, #16a34a)',
-      'linear-gradient(135deg, #f59e0b, #d97706)',
-      'linear-gradient(135deg, #ef4444, #dc2626)',
-      'linear-gradient(135deg, #06b6d4, #0891b2)',
-      'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-      'linear-gradient(135deg, #ec4899, #db2777)',
-      'linear-gradient(135deg, #14b8a6, #0d9488)'
-    ];
+    function nextQuestion() { socket.emit('next-question'); }
 
     function renderSuperpowers() {
       const container = document.getElementById('superpowers-bar');
       if (mySuperpowers.length === 0) {
-        container.innerHTML = '<span style="color: rgba(255,255,255,0.4); font-size: 0.9rem;">No superpowers left</span>';
+        container.innerHTML = '<span style="color: rgba(255,255,255,0.4); font-size: 0.9rem;">Earn superpowers by answering correctly!</span>';
         return;
       }
       container.innerHTML = mySuperpowers.map(p => `
@@ -899,7 +1180,7 @@
     }
 
     function useSuperpower(powerId) {
-      if (answerConfirmed) return;
+      if (answerConfirmed || isFrozen) return;
       socket.emit('use-superpower', powerId);
     }
 
@@ -908,9 +1189,9 @@
       currentRoom = data.roomCode;
       minPlayers = data.minPlayers;
       maxPlayers = data.maxPlayers;
-      mySuperpowers = data.superpowers || [];
       document.getElementById('display-code').textContent = data.roomCode;
       document.getElementById('theme-display').textContent = 'Theme: ' + currentTheme;
+      document.getElementById('mode-display').textContent = 'Mode: ' + (data.gameMode || 'Classic');
       showScreen('lobby-screen');
     });
 
@@ -919,7 +1200,6 @@
       currentRoom = data.roomCode;
       minPlayers = data.minPlayers;
       maxPlayers = data.maxPlayers;
-      mySuperpowers = data.superpowers || [];
       if (isHost) {
         document.getElementById('display-code').textContent = data.roomCode;
         showScreen('lobby-screen');
@@ -933,17 +1213,32 @@
       const players = data.players;
       minPlayers = data.minPlayers;
       maxPlayers = data.maxPlayers;
+      currentGameMode = data.gameMode || 'Classic';
       
-      const listHtml = players.map((p, i) => `
-        <li class="${p.answered ? 'answered' : ''}">
-          <div class="player-info">
-            <div class="player-avatar" style="background: ${avatarColors[i % avatarColors.length]}">${p.mascot}</div>
-            <span>${p.name}</span>
-            ${p.answered ? '<span class="answered-check">✓</span>' : ''}
-          </div>
-          <span class="score">${p.score} pts</span>
-        </li>
-      `).join('');
+      const listHtml = players.map((p, i) => {
+        let statusClass = '';
+        if (p.lives !== undefined && p.lives <= 0) statusClass = 'eliminated';
+        else if (p.answered) statusClass = 'answered';
+        
+        let livesHtml = '';
+        if (currentGameMode === 'Survival') {
+          livesHtml = `<div class="lives">${[0,1,2].map(j => `<span class="life ${j >= p.lives ? 'lost' : ''}">❤️</span>`).join('')}</div>`;
+        }
+        
+        return `
+          <li class="${statusClass}">
+            <div class="player-info">
+              <div class="player-avatar" style="background: ${p.color || COLORS[i % COLORS.length]}">${p.mascot}</div>
+              <span>${p.name}</span>
+              ${p.answered ? '<span class="answered-check">✓</span>' : ''}
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+              ${livesHtml}
+              <span class="score">${p.score} pts</span>
+            </div>
+          </li>
+        `;
+      }).join('');
       
       document.getElementById('player-list').innerHTML = listHtml;
       document.getElementById('waiting-players').innerHTML = listHtml;
@@ -969,8 +1264,44 @@
     socket.on('game-started', (data) => {
       if (data && data.theme) currentTheme = data.theme;
       if (data && data.totalQuestions) totalQuestions = data.totalQuestions;
-      showScreen('game-screen');
+      if (data && data.gameMode) currentGameMode = data.gameMode;
+      
+      if (currentGameMode === 'Betting') {
+        showScreen('betting-screen');
+      } else {
+        showScreen('game-screen');
+      }
     });
+
+    socket.on('betting-phase', (data) => {
+      showScreen('betting-screen');
+      document.getElementById('bet-progress-text').textContent = `Question ${data.questionNumber} of ${data.totalQuestions}`;
+      document.getElementById('bet-current-score').textContent = currentScore;
+      
+      const slider = document.getElementById('bet-slider');
+      slider.max = currentScore;
+      slider.value = 0;
+      document.getElementById('bet-amount').textContent = '0';
+      
+      let betTimer = 8;
+      document.getElementById('bet-timer').textContent = betTimer;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        betTimer--;
+        document.getElementById('bet-timer').textContent = betTimer;
+        if (betTimer <= 0) clearInterval(timerInterval);
+      }, 1000);
+    });
+
+    document.getElementById('bet-slider')?.addEventListener('input', (e) => {
+      document.getElementById('bet-amount').textContent = e.target.value;
+    });
+
+    function confirmBet() {
+      const betAmount = parseInt(document.getElementById('bet-slider').value);
+      socket.emit('place-bet', betAmount);
+      showToast(`Bet placed: ${betAmount} points!`, 'info');
+    }
 
     socket.on('question', (data) => {
       showScreen('game-screen');
@@ -978,6 +1309,7 @@
       answerConfirmed = false;
       eliminatedOptions = [];
       extraTime = 0;
+      isFrozen = false;
       
       document.getElementById('progress-text').textContent = `Question ${data.questionNumber} of ${data.totalQuestions}`;
       document.getElementById('question-text').textContent = data.question;
@@ -1028,7 +1360,7 @@
     }
 
     function selectAnswer(index) {
-      if (answerConfirmed || eliminatedOptions.includes(index)) return;
+      if (answerConfirmed || eliminatedOptions.includes(index) || isFrozen) return;
       selectedAnswer = index;
       document.querySelectorAll('.option-btn').forEach((btn, i) => {
         btn.classList.remove('selected');
@@ -1041,7 +1373,7 @@
     }
 
     function confirmAnswer() {
-      if (selectedAnswer === null || answerConfirmed) return;
+      if (selectedAnswer === null || answerConfirmed || isFrozen) return;
       answerConfirmed = true;
       
       const submitBtn = document.getElementById('submit-btn');
@@ -1090,21 +1422,38 @@
       showPowerPopup('🔄', 'Second Chance!', 'Answer again if wrong!');
     });
 
-    socket.on('skip-activated', () => {
-      mySuperpowers = mySuperpowers.filter(p => p.id !== 'skip');
+    socket.on('steal-result', (data) => {
+      mySuperpowers = mySuperpowers.filter(p => p.id !== 'steal');
       renderSuperpowers();
-      showPowerPopup('⏭️', 'Skip Active!', 'Half points if correct!');
+      showPowerPopup('💰', 'Steal Successful!', `Stole ${data.amount} points from ${data.victim}!`);
     });
 
-    socket.on('peek-result', (data) => {
-      mySuperpowers = mySuperpowers.filter(p => p.id !== 'peek');
+    socket.on('stolen', (data) => {
+      showToast(`${data.thief} stole ${data.amount} points from you!`, 'error');
+    });
+
+    socket.on('freeze-result', (data) => {
+      mySuperpowers = mySuperpowers.filter(p => p.id !== 'freeze_player');
       renderSuperpowers();
-      if (data.popularAnswer >= 0) {
-        const labels = ['A', 'B', 'C', 'D'];
-        showToast(`Most popular: ${labels[data.popularAnswer]} (${data.count}/${data.total} votes)`, 'info');
-      } else {
-        showToast('No answers yet to peek at!', 'info');
-      }
+      showPowerPopup('❄️', 'Player Frozen!', `${data.target} is frozen for 5 seconds!`);
+    });
+
+    socket.on('frozen', (data) => {
+      isFrozen = true;
+      showToast(`You've been frozen by ${data.freezer}!`, 'info');
+      document.querySelectorAll('.option-btn').forEach(btn => btn.classList.add('frozen'));
+      
+      setTimeout(() => {
+        isFrozen = false;
+        document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('frozen'));
+        showToast('You are unfrozen!', 'success');
+      }, 5000);
+    });
+
+    socket.on('superpower-earned', (power) => {
+      mySuperpowers.push(power);
+      renderSuperpowers();
+      showPowerPopup(power.icon, 'Superpower Earned!', `${power.name}: ${power.description}`);
     });
 
     socket.on('answer-reveal', (data) => {
@@ -1124,23 +1473,32 @@
           </div>
           <div class="result-details">
             <span class="time">${r.time}s</span>
-            <span class="points">${r.correct ? '+' + r.points : '0'} pts</span>
-            ${r.speedBonus > 0 ? '<span class="speed-bonus">+' + r.speedBonus + ' speed</span>' : ''}
+            <span class="points">${r.points >= 0 ? '+' : ''}${r.points} pts</span>
           </div>
         </div>
       `).join('');
       document.getElementById('results-list').innerHTML = resultsHtml;
       
-      const scoresHtml = data.scores.sort((a,b) => b.score - a.score).map(s => 
-        `<div class="score-item">
-          <div class="score-info">
-            <span class="score-mascot">${s.mascot}</span>
-            <span>${s.name}</span>
+      const scoresHtml = data.scores.sort((a,b) => b.score - a.score).map((s, i) => {
+        let livesHtml = '';
+        if (currentGameMode === 'Survival') {
+          livesHtml = `<div class="lives">${[0,1,2].map(j => `<span class="life ${j >= s.lives ? 'lost' : ''}">❤️</span>`).join('')}</div>`;
+        }
+        return `
+          <div class="score-item">
+            <div class="score-info">
+              <span class="score-mascot">${s.mascot}</span>
+              <span>${s.name}</span>
+              ${livesHtml}
+            </div>
+            <span class="score-value">${s.score} pts</span>
           </div>
-          <span class="score-value">${s.score} pts</span>
-        </div>`
-      ).join('');
+        `;
+      }).join('');
       document.getElementById('score-board').innerHTML = '<h3>Scores</h3>' + scoresHtml;
+      
+      const me = data.scores.find(s => s.id === socket.id);
+      if (me) currentScore = me.score;
       
       const skipSection = document.getElementById('skip-section');
       if (isHost) {
@@ -1151,8 +1509,6 @@
       
       setTimeout(() => showScreen('results-screen'), 1500);
     });
-
-    function nextQuestion() { socket.emit('next-question'); }
 
     socket.on('game-over', (data) => {
       showScreen('gameover-screen');
@@ -1187,6 +1543,9 @@
     }
 
     socket.on('error', (msg) => showToast(msg));
+
+    initAvatarSelection();
+    initGameModes();
   </script>
 </body>
 </html>
