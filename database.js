@@ -7,8 +7,8 @@ const db = new Database(path.join(__dirname, 'trivia.db'));
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT,
+    username TEXT UNIQUE NOT NULL COLLATE NOCASE,
+    password TEXT NOT NULL,
     xp INTEGER DEFAULT 0,
     level INTEGER DEFAULT 1,
     coins INTEGER DEFAULT 0,
@@ -117,6 +117,8 @@ db.exec(`
     total_questions INTEGER,
     rank INTEGER,
     players_count INTEGER,
+    xp_earned INTEGER DEFAULT 0,
+    coins_earned INTEGER DEFAULT 0,
     played_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
   );
@@ -191,22 +193,32 @@ const insertAchievement = db.prepare('INSERT OR IGNORE INTO achievements (name, 
 defaultAchievements.forEach(a => insertAchievement.run(a.name, a.description, a.icon, a.xp_reward, a.condition_type, a.condition_value));
 
 function calculateLevel(xp) {
+  if (xp < 100) return 1;
   return Math.floor(Math.sqrt(xp / 100)) + 1;
 }
 
 function xpForLevel(level) {
+  if (level <= 1) return 0;
   return Math.pow(level - 1, 2) * 100;
 }
 
-function xpForNextLevel(level) {
-  return Math.pow(level, 2) * 100;
+function xpToNextLevel(currentXp) {
+  const currentLevel = calculateLevel(currentXp);
+  const nextLevelXp = xpForLevel(currentLevel + 1);
+  return {
+    currentLevel,
+    nextLevelXp,
+    xpProgress: currentXp - xpForLevel(currentLevel),
+    xpNeeded: nextLevelXp - xpForLevel(currentLevel),
+    progress: (currentXp - xpForLevel(currentLevel)) / (nextLevelXp - xpForLevel(currentLevel)) * 100
+  };
 }
 
 const User = {
-  create: (username) => {
+  create: (username, password) => {
     const id = uuidv4();
-    const stmt = db.prepare('INSERT INTO users (id, username) VALUES (?, ?)');
-    stmt.run(id, username);
+    const stmt = db.prepare('INSERT INTO users (id, username, password) VALUES (?, ?, ?)');
+    stmt.run(id, username.toLowerCase(), password);
     
     const commonAvatars = db.prepare('SELECT id FROM avatars WHERE rarity = ?').all('common');
     const commonColors = db.prepare('SELECT id FROM colors WHERE rarity = ?').all('common');
@@ -223,11 +235,23 @@ const User = {
   getById: (id) => {
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
     if (!user) return null;
+    return User.addCalculatedFields(user);
+  },
+  
+  getByUsername: (username) => {
+    const user = db.prepare('SELECT * FROM users WHERE username = ? COLLATE NOCASE').get(username);
+    if (!user) return null;
+    return User.addCalculatedFields(user);
+  },
+  
+  addCalculatedFields: (user) => {
+    if (!user) return null;
     
     user.level = calculateLevel(user.xp);
-    user.xpForNext = xpForNextLevel(user.level);
-    user.xpProgress = user.xp - xpForLevel(user.level);
-    user.xpNeeded = user.xpForNext - xpForLevel(user.level);
+    const xpInfo = xpToNextLevel(user.xp);
+    user.xpProgress = xpInfo.xpProgress;
+    user.xpNeeded = xpInfo.xpNeeded;
+    user.xpPercentage = xpInfo.progress;
     user.winRate = user.total_games > 0 ? Math.round((user.total_wins / user.total_games) * 100) : 0;
     user.accuracy = user.total_questions > 0 ? Math.round((user.total_correct / user.total_questions) * 100) : 0;
     
@@ -235,30 +259,33 @@ const User = {
       SELECT a.* FROM avatars a
       JOIN user_avatars ua ON a.id = ua.avatar_id
       WHERE ua.user_id = ? AND ua.equipped = 1
-    `).get(id);
+    `).get(user.id);
     user.equippedAvatar = equippedAvatar?.emoji || '🦊';
     
     const equippedColor = db.prepare(`
       SELECT c.* FROM colors c
       JOIN user_colors uc ON c.id = uc.color_id
       WHERE uc.user_id = ? AND uc.equipped = 1
-    `).get(id);
+    `).get(user.id);
     user.equippedColor = equippedColor?.gradient || 'linear-gradient(135deg, #00d4ff, #0099cc)';
     
     return user;
   },
   
-  getByUsername: (username) => {
-    const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
-    return user ? User.getById(user.id) : null;
+  validatePassword: (username, password) => {
+    const user = db.prepare('SELECT * FROM users WHERE username = ? COLLATE NOCASE').get(username);
+    if (!user) return null;
+    if (user.password !== password) return null;
+    return User.addCalculatedFields(user);
   },
   
   addXp: (id, amount) => {
     const user = db.prepare('SELECT xp, level FROM users WHERE id = ?').get(id);
     if (!user) return null;
     
+    const oldLevel = calculateLevel(user.xp);
     const newLevel = calculateLevel(user.xp + amount);
-    const leveledUp = newLevel > user.level;
+    const leveledUp = newLevel > oldLevel;
     
     db.prepare('UPDATE users SET xp = xp + ? WHERE id = ?').run(amount, id);
     
@@ -266,7 +293,13 @@ const User = {
       User.checkUnlocks(id, newLevel);
     }
     
-    return { leveledUp, newLevel, xpGained: amount };
+    const updatedUser = User.getById(id);
+    return { 
+      leveledUp, 
+      newLevel, 
+      xpGained: amount,
+      user: updatedUser
+    };
   },
   
   addCoins: (id, amount) => {
@@ -338,7 +371,6 @@ const User = {
     const orderBy = {
       xp: 'xp DESC',
       wins: 'total_wins DESC',
-      accuracy: 'accuracy DESC',
       streak: 'best_streak DESC'
     }[type] || 'xp DESC';
     
@@ -352,13 +384,21 @@ const User = {
   },
   
   equipAvatar: (userId, avatarId) => {
+    const owned = db.prepare('SELECT * FROM user_avatars WHERE user_id = ? AND avatar_id = ?').get(userId, avatarId);
+    if (!owned) return false;
+    
     db.prepare('UPDATE user_avatars SET equipped = 0 WHERE user_id = ?').run(userId);
     db.prepare('UPDATE user_avatars SET equipped = 1 WHERE user_id = ? AND avatar_id = ?').run(userId, avatarId);
+    return true;
   },
   
   equipColor: (userId, colorId) => {
+    const owned = db.prepare('SELECT * FROM user_colors WHERE user_id = ? AND color_id = ?').get(userId, colorId);
+    if (!owned) return false;
+    
     db.prepare('UPDATE user_colors SET equipped = 0 WHERE user_id = ?').run(userId);
     db.prepare('UPDATE user_colors SET equipped = 1 WHERE user_id = ? AND color_id = ?').run(userId, colorId);
+    return true;
   },
   
   buyAvatar: (userId, avatarId) => {
@@ -395,18 +435,24 @@ const User = {
   
   getInventory: (userId) => {
     const avatars = db.prepare(`
-      SELECT a.*, ua.equipped FROM avatars a
+      SELECT a.*, ua.equipped, 1 as owned FROM avatars a
       JOIN user_avatars ua ON a.id = ua.avatar_id
       WHERE ua.user_id = ?
+      UNION
+      SELECT a.*, 0 as equipped, 0 as owned FROM avatars a
+      WHERE a.id NOT IN (SELECT avatar_id FROM user_avatars WHERE user_id = ?)
       ORDER BY a.rarity, a.unlock_level
-    `).all(userId);
+    `).all(userId, userId);
     
     const colors = db.prepare(`
-      SELECT c.*, uc.equipped FROM colors c
+      SELECT c.*, uc.equipped, 1 as owned FROM colors c
       JOIN user_colors uc ON c.id = uc.color_id
       WHERE uc.user_id = ?
+      UNION
+      SELECT c.*, 0 as equipped, 0 as owned FROM colors c
+      WHERE c.id NOT IN (SELECT color_id FROM user_colors WHERE user_id = ?)
       ORDER BY c.rarity, c.unlock_level
-    `).all(userId);
+    `).all(userId, userId);
     
     return { avatars, colors };
   },
@@ -420,40 +466,57 @@ const User = {
     `).all(userId);
   },
   
+  unlockAchievement: (userId, achievementId) => {
+    const achievement = db.prepare('SELECT * FROM achievements WHERE id = ?').get(achievementId);
+    if (!achievement) return null;
+    
+    const existing = db.prepare('SELECT * FROM user_achievements WHERE user_id = ? AND achievement_id = ?').get(userId, achievementId);
+    if (existing) return null;
+    
+    db.prepare('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)').run(userId, achievementId);
+    User.addXp(userId, achievement.xp_reward);
+    
+    return achievement;
+  },
+  
   checkAchievements: (userId, stats) => {
     const unlocked = [];
     
     if (stats.gamesPlayed) {
-      const achievement = db.prepare(`
+      const achievements = db.prepare(`
         SELECT a.* FROM achievements a
         LEFT JOIN user_achievements ua ON a.id = ua.achievement_id AND ua.user_id = ?
         WHERE a.condition_type = 'games_played' AND a.condition_value <= ? AND ua.id IS NULL
-      `).get(userId, stats.gamesPlayed);
-      if (achievement) unlocked.push(achievement);
+      `).all(userId, stats.gamesPlayed);
+      achievements.forEach(a => {
+        User.unlockAchievement(userId, a.id);
+        unlocked.push(a);
+      });
     }
     
     if (stats.gamesWon) {
-      const achievement = db.prepare(`
+      const achievements = db.prepare(`
         SELECT a.* FROM achievements a
         LEFT JOIN user_achievements ua ON a.id = ua.achievement_id AND ua.user_id = ?
         WHERE a.condition_type = 'games_won' AND a.condition_value <= ? AND ua.id IS NULL
-      `).get(userId, stats.gamesWon);
-      if (achievement) unlocked.push(achievement);
+      `).all(userId, stats.gamesWon);
+      achievements.forEach(a => {
+        User.unlockAchievement(userId, a.id);
+        unlocked.push(a);
+      });
     }
     
     if (stats.streak) {
-      const achievement = db.prepare(`
+      const achievements = db.prepare(`
         SELECT a.* FROM achievements a
         LEFT JOIN user_achievements ua ON a.id = ua.achievement_id AND ua.user_id = ?
         WHERE a.condition_type = 'streak' AND a.condition_value <= ? AND ua.id IS NULL
-      `).get(userId, stats.streak);
-      if (achievement) unlocked.push(achievement);
+      `).all(userId, stats.streak);
+      achievements.forEach(a => {
+        User.unlockAchievement(userId, a.id);
+        unlocked.push(a);
+      });
     }
-    
-    unlocked.forEach(a => {
-      db.prepare('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)').run(userId, a.id);
-      User.addXp(userId, a.xp_reward);
-    });
     
     return unlocked;
   }
@@ -539,9 +602,9 @@ const Questions = {
 const GameHistory = {
   record: (userId, data) => {
     db.prepare(`
-      INSERT INTO game_history (user_id, room_code, game_mode, theme, score, correct_answers, total_questions, rank, players_count)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(userId, data.roomCode, data.gameMode, data.theme, data.score, data.correctAnswers, data.totalQuestions, data.rank, data.playersCount);
+      INSERT INTO game_history (user_id, room_code, game_mode, theme, score, correct_answers, total_questions, rank, players_count, xp_earned, coins_earned)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(userId, data.roomCode, data.gameMode, data.theme, data.score, data.correctAnswers, data.totalQuestions, data.rank, data.playersCount, data.xpEarned || 0, data.coinsEarned || 0);
   },
   
   getRecent: (userId, limit = 10) => {

@@ -3,2268 +3,624 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trivia Battle - Ultimate Multiplayer Quiz</title>
+  <title>Trivia Battle</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', sans-serif; min-height: 100vh; color: white; overflow-x: hidden; }
     
-    body { 
-      font-family: 'Poppins', sans-serif; 
-      min-height: 100vh; 
-      color: white;
-      overflow-x: hidden;
-    }
-
-    :root {
-      --primary: #00d4ff;
-      --secondary: #7c3aed;
-      --accent: #f472b6;
-      --success: #22c55e;
-      --danger: #ef4444;
-      --warning: #fbbf24;
-    }
-
-    [data-theme="neon"] {
-      --bg-gradient: linear-gradient(-45deg, #000000, #0a0a0a, #001a00, #00001a);
-    }
-    [data-theme="retro"] {
-      --bg-gradient: linear-gradient(-45deg, #2d1b4e, #1a1a2e, #4a1942, #1f1f3d);
-    }
-    [data-theme="minimal"] {
-      --bg-gradient: linear-gradient(-45deg, #1a1a1a, #2a2a2a, #1a1a1a, #2a2a2a);
-    }
-
-    .bg-animation {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      background: var(--bg-gradient, linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #0f0c29));
-      background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
-    }
-
-    .bg-animation::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: 
-        radial-gradient(circle at 20% 80%, rgba(120, 0, 255, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(0, 212, 255, 0.3) 0%, transparent 50%);
-    }
-
-    .particles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      overflow: hidden;
-    }
-
-    .particle {
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      animation: float 20s infinite;
-    }
-
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
-    }
-
-    .container { 
-      max-width: 1000px; 
-      margin: 0 auto; 
-      padding: 20px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .logo {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .logo h1 {
-      font-size: 3.5rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #00d4ff, #7c3aed, #f472b6, #fb923c);
-      background-size: 300% 300%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: logoGradient 5s ease infinite;
-      letter-spacing: -2px;
-    }
-
-    @keyframes logoGradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .logo p {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 1rem;
-      margin-top: 5px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-    }
-
-    .screen { 
-      display: none; 
-      animation: fadeIn 0.5s ease;
-    }
-
-    .screen.active { 
-      display: block; 
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .card { 
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(20px);
-      border-radius: 24px;
-      padding: 30px;
-      margin-bottom: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-    }
-
-    .tabs {
-      display: flex;
-      gap: 5px;
-      margin-bottom: 20px;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 5px;
-      border-radius: 15px;
-    }
-
-    .tab {
-      flex: 1;
-      padding: 12px 20px;
-      border: none;
-      background: transparent;
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      border-radius: 10px;
-      transition: all 0.3s ease;
-      font-family: 'Poppins', sans-serif;
-    }
-
+    .bg { position: fixed; inset: 0; z-index: -1; background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #0f0c29); background-size: 400% 400%; animation: bg 15s ease infinite; }
+    .bg::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 20% 80%, rgba(120,0,255,0.3), transparent 50%), radial-gradient(circle at 80% 20%, rgba(0,212,255,0.3), transparent 50%); }
+    @keyframes bg { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    
+    .container { max-width: 900px; margin: 0 auto; padding: 20px; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; }
+    .logo { text-align: center; margin-bottom: 30px; }
+    .logo h1 { font-size: 3rem; font-weight: 800; background: linear-gradient(135deg, #00d4ff, #7c3aed, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .logo p { color: rgba(255,255,255,0.6); font-size: 0.9rem; letter-spacing: 3px; text-transform: uppercase; }
+    
+    .screen { display: none; animation: fade 0.3s ease; }
+    .screen.active { display: block; }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .card { background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border-radius: 20px; padding: 30px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+    .tabs { display: flex; gap: 5px; margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 12px; }
+    .tab { flex: 1; padding: 12px; background: transparent; border: none; color: rgba(255,255,255,0.6); font-size: 0.9rem; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.2s; font-family: inherit; }
     .tab:hover { color: white; }
     .tab.active { background: linear-gradient(135deg, #00d4ff, #7c3aed); color: white; }
-
-    .section-title {
-      font-size: 0.9rem;
-      color: rgba(255, 255, 255, 0.5);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 15px;
-      margin-top: 20px;
-    }
-
-    .section-title:first-child { margin-top: 0; }
-
-    .user-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 15px 20px;
-      border-radius: 15px;
-      margin-bottom: 20px;
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .user-avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-    }
-
-    .user-details h3 { font-size: 1.1rem; }
-    .user-details p { font-size: 0.8rem; color: rgba(255, 255, 255, 0.5); }
-
-    .user-stats {
-      display: flex;
-      gap: 20px;
-    }
-
-    .stat {
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .stat-label {
-      font-size: 0.7rem;
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    .xp-bar {
-      width: 100%;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      margin-top: 10px;
-      overflow: hidden;
-    }
-
-    .xp-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      border-radius: 4px;
-      transition: width 0.5s ease;
-    }
-
-    input { 
-      width: 100%; 
-      padding: 18px 24px; 
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px; 
-      font-size: 1.1rem; 
-      margin-bottom: 15px; 
-      background: rgba(255, 255, 255, 0.05);
-      color: white;
-      font-family: 'Poppins', sans-serif;
-      transition: all 0.3s ease;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: var(--primary);
-      background: rgba(0, 212, 255, 0.1);
-    }
-
-    input::placeholder { color: rgba(255, 255, 255, 0.4); }
-
-    select {
-      width: 100%; 
-      padding: 18px 24px; 
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px; 
-      font-size: 1.1rem; 
-      margin-bottom: 15px; 
-      background: rgba(255, 255, 255, 0.05);
-      color: white;
-      font-family: 'Poppins', sans-serif;
-      cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'%3E%3C/polyline%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 15px center;
-      background-size: 20px;
-    }
-
-    select:focus { outline: none; border-color: var(--secondary); }
-    select option { background: #1a1a2e; color: white; }
-
-    .avatar-selection {
-      display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-
-    .avatar-option {
-      aspect-ratio: 1;
-      border-radius: 50%;
-      border: 3px solid rgba(255, 255, 255, 0.1);
-      background: rgba(255, 255, 255, 0.05);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-    }
-
-    .avatar-option:hover {
-      border-color: rgba(255, 255, 255, 0.3);
-      transform: scale(1.1);
-    }
-
-    .avatar-option.selected {
-      border-color: var(--primary);
-      background: rgba(0, 212, 255, 0.2);
-      box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
-    }
-
-    .avatar-option.locked {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    .avatar-option.locked::after {
-      content: '🔒';
-      position: absolute;
-      font-size: 0.7rem;
-    }
-
-    .color-selection {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
-    }
-
-    .color-option {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 3px solid transparent;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .color-option:hover { transform: scale(1.1); }
-    .color-option.selected { border-color: white; transform: scale(1.15); }
-    .color-option.locked { opacity: 0.4; cursor: not-allowed; }
-
-    .game-mode-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-bottom: 15px;
-    }
-
-    .game-mode-card {
-      padding: 18px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-align: center;
-    }
-
-    .game-mode-card:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: translateY(-3px);
-    }
-
-    .game-mode-card.selected {
-      background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(124, 58, 237, 0.2));
-      border-color: var(--primary);
-    }
-
-    .game-mode-card .icon { font-size: 2rem; margin-bottom: 8px; }
-    .game-mode-card h3 { font-size: 1rem; margin-bottom: 3px; }
-    .game-mode-card p { font-size: 0.75rem; color: rgba(255, 255, 255, 0.6); }
-
-    .settings-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
-      margin-bottom: 15px;
-    }
-
-    .setting-item {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 15px;
-      border-radius: 12px;
-    }
-
-    .setting-item label {
-      display: block;
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.6);
-      margin-bottom: 8px;
-    }
-
-    .setting-item input[type="range"] {
-      width: 100%;
-      margin-bottom: 5px;
-      -webkit-appearance: none;
-      height: 8px;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .setting-item input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      cursor: pointer;
-    }
-
-    .setting-value {
-      text-align: center;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .toggle {
-      position: relative;
-      width: 50px;
-      height: 28px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 14px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .toggle.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); }
-
-    .toggle::after {
-      content: '';
-      position: absolute;
-      top: 4px;
-      left: 4px;
-      width: 20px;
-      height: 20px;
-      background: white;
-      border-radius: 50%;
-      transition: all 0.3s ease;
-    }
-
-    .toggle.active::after { left: 26px; }
-
-    button { 
-      width: 100%; 
-      padding: 18px; 
-      border: none; 
-      border-radius: 16px; 
-      font-size: 1.1rem; 
-      font-weight: 600;
-      cursor: pointer; 
-      transition: all 0.3s ease; 
-      margin-bottom: 12px;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    .btn-primary { 
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
-    }
-
-    .btn-primary:hover:not(:disabled) { 
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 15px 40px rgba(0, 212, 255, 0.4);
-    }
-
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .btn-secondary { 
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      border: 2px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
-
-    .btn-success {
-      background: linear-gradient(135deg, var(--success), #16a34a);
-      color: white;
-    }
-
-    .btn-danger {
-      background: linear-gradient(135deg, var(--danger), #dc2626);
-      color: white;
-    }
-
-    .btn-warning {
-      background: linear-gradient(135deg, var(--warning), #d97706);
-      color: white;
-    }
-
-    .room-code-container { text-align: center; margin: 25px 0; }
-
-    .room-code-label {
-      font-size: 0.9rem;
-      color: rgba(255, 255, 255, 0.5);
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      margin-bottom: 10px;
-    }
-
-    .room-code { 
-      font-size: 4rem; 
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: 15px;
-      animation: codeGlow 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes codeGlow {
-      from { filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.5)); }
-      to { filter: drop-shadow(0 0 40px rgba(124, 58, 237, 0.8)); }
-    }
-
-    .theme-badge {
-      display: inline-block;
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(0, 212, 255, 0.2));
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      margin: 5px;
-    }
-
-    .player-section { margin: 25px 0; }
-
-    .player-count-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(124, 58, 237, 0.2));
-      padding: 10px 20px;
-      border-radius: 50px;
-      margin-bottom: 20px;
-    }
-
-    .player-count-badge.ready {
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(0, 212, 255, 0.2));
-    }
-
-    .player-count-badge .count { font-weight: 700; color: var(--primary); }
-
-    .player-list { list-style: none; display: grid; gap: 10px; }
-
-    .player-list li {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 15px 20px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
-      border-radius: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      animation: slideIn 0.3s ease;
-    }
-
-    .player-list li.answered {
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
-      border-color: rgba(34, 197, 94, 0.3);
-    }
-
-    .player-list li.eliminated {
-      opacity: 0.5;
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
-    }
-
-    .player-list li.team-red { border-left: 4px solid #ef4444; }
-    .player-list li.team-blue { border-left: 4px solid #3b82f6; }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-20px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-
-    .player-list li .player-info { display: flex; align-items: center; gap: 12px; }
-
-    .player-avatar {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-    }
-
-    .player-list li .score { font-weight: 700; color: var(--primary); }
-    .answered-check { color: var(--success); font-size: 1.2rem; margin-left: 10px; }
     
-    .lives { display: flex; gap: 3px; }
-    .life { color: var(--danger); }
-    .life.lost { opacity: 0.3; }
-
-    .streak-badge {
-      background: linear-gradient(135deg, #fbbf24, #f59e0b);
-      padding: 3px 10px;
-      border-radius: 10px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      margin-left: 10px;
-    }
-
-    .waiting { text-align: center; padding: 30px; }
-
-    .waiting h2 {
-      font-size: 1.5rem;
-      margin-bottom: 10px;
-      background: linear-gradient(90deg, #fff, var(--primary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .waiting p { color: rgba(255, 255, 255, 0.6); }
-
-    .spinner {
-      width: 50px;
-      height: 50px;
-      margin: 20px auto;
-      border: 3px solid rgba(255, 255, 255, 0.1);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .game-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .progress { 
-      font-size: 1rem;
-      color: rgba(255, 255, 255, 0.7);
-      background: rgba(255, 255, 255, 0.1);
-      padding: 8px 16px;
-      border-radius: 20px;
-    }
-
-    .difficulty-badge {
-      padding: 5px 12px;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-left: 10px;
-    }
-
-    .difficulty-badge.easy { background: rgba(34, 197, 94, 0.3); color: #22c55e; }
-    .difficulty-badge.medium { background: rgba(251, 191, 36, 0.3); color: #fbbf24; }
-    .difficulty-badge.hard { background: rgba(239, 68, 68, 0.3); color: #ef4444; }
-
-    .timer-container { display: flex; align-items: center; gap: 10px; }
-
-    .timer { 
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--primary);
-      min-width: 60px;
-      text-align: center;
-    }
-
-    .timer.warning { color: var(--accent); animation: timerPulse 0.5s ease infinite; }
-
-    @keyframes timerPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
-
-    .timer-bar {
-      width: 100%;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-      margin-bottom: 15px;
-      overflow: hidden;
-    }
-
-    .timer-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      border-radius: 3px;
-      transition: width 1s linear;
-    }
-
-    .timer-bar-fill.warning { background: linear-gradient(90deg, var(--accent), var(--danger)); }
-
-    .question { 
-      font-size: 1.5rem;
-      text-align: center;
-      margin-bottom: 15px;
-      line-height: 1.4;
-      font-weight: 600;
-    }
-
-    .theme-indicator {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 0.9rem;
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    .theme-indicator span {
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(0, 212, 255, 0.2));
-      padding: 5px 15px;
-      border-radius: 15px;
-    }
-
-    .superpowers-bar {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .superpower-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 10px 14px;
-      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.1));
-      border: 2px solid rgba(251, 191, 36, 0.3);
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      min-width: 70px;
-    }
-
-    .superpower-btn:hover {
-      background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.2));
-      transform: translateY(-2px);
-    }
-
-    .superpower-btn .icon { font-size: 1.3rem; margin-bottom: 3px; }
-    .superpower-btn .name { font-size: 0.7rem; font-weight: 600; }
-
-    .options {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-
-    .option-btn {
-      padding: 25px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      border-radius: 18px;
-      color: white;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-family: 'Poppins', sans-serif;
-      position: relative;
-    }
-
-    .option-btn:hover:not(:disabled) {
-      background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(124, 58, 237, 0.1));
-      border-color: var(--primary);
-      transform: translateY(-3px);
-    }
-
-    .option-btn.selected {
-      background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(124, 58, 237, 0.2));
-      border-color: var(--primary);
-      box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
-    }
-
-    .option-btn.correct {
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.4), rgba(16, 185, 129, 0.3));
-      border-color: var(--success);
-    }
-
-    .option-btn.wrong {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(220, 38, 38, 0.3));
-      border-color: var(--danger);
-    }
-
-    .option-btn:disabled { cursor: not-allowed; }
-    .option-btn.eliminated { opacity: 0.3; text-decoration: line-through; }
-    .option-btn.frozen { opacity: 0.5; pointer-events: none; }
-    .option-btn.oracle-hint { box-shadow: inset 0 0 20px rgba(251, 191, 36, 0.3); }
-    .option-btn.banned { opacity: 0.2; pointer-events: none; }
-
-    .option-label {
-      position: absolute;
-      top: 10px;
-      left: 15px;
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.4);
-      font-weight: 700;
-    }
-
-    .submit-section { text-align: center; margin-top: 10px; }
-    .submit-btn { max-width: 300px; margin: 0 auto; }
-
-    .results-header { text-align: center; margin-bottom: 30px; }
-    .results-header h2 {
-      font-size: 2rem;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .team-scores {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-
-    .team-score-card {
-      padding: 20px 40px;
-      border-radius: 16px;
-      text-align: center;
-    }
-
-    .team-score-card.red { background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(239, 68, 68, 0.1)); border: 2px solid rgba(239, 68, 68, 0.5); }
-    .team-score-card.blue { background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.1)); border: 2px solid rgba(59, 130, 246, 0.5); }
-    .team-score-card.winner { box-shadow: 0 0 30px rgba(251, 191, 36, 0.5); }
-
-    .team-score-card h3 { font-size: 1.5rem; margin-bottom: 10px; }
-    .team-score-card .score { font-size: 2rem; font-weight: 800; }
-
-    .results-list { display: grid; gap: 12px; margin-bottom: 25px; }
-
-    .result-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 20px;
-      border-radius: 12px;
-      animation: resultSlide 0.3s ease;
-    }
-
-    @keyframes resultSlide {
-      from { opacity: 0; transform: translateX(-20px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-
-    .result-item.correct {
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
-      border-left: 4px solid var(--success);
-    }
-
-    .result-item.wrong {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
-      border-left: 4px solid var(--danger);
-    }
-
-    .result-item .result-info { display: flex; align-items: center; gap: 12px; }
-    .result-item .mascot { font-size: 1.5rem; }
-    .result-item .name { font-weight: 600; }
-    .result-item .result-details { display: flex; align-items: center; gap: 15px; }
-    .result-item .points { font-weight: 700; font-size: 1.1rem; }
-    .result-item.correct .points { color: var(--success); }
-    .result-item.wrong .points { color: var(--danger); }
-    .result-item .time { font-size: 0.85rem; color: rgba(255, 255, 255, 0.5); }
-
-    .scoreboard {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      padding: 20px;
-    }
-
-    .scoreboard h3 {
-      text-align: center;
-      margin-bottom: 15px;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    .score-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 15px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
-      margin-bottom: 8px;
-    }
-
-    .score-item .score-info { display: flex; align-items: center; gap: 10px; }
-    .score-item .score-mascot { font-size: 1.2rem; }
-    .score-item .score-value { font-weight: 700; color: var(--primary); }
-
-    .skip-section { text-align: center; margin-top: 20px; }
-    .skip-btn { max-width: 250px; margin: 0 auto; }
-
-    .gameover-header { text-align: center; margin-bottom: 30px; }
-    .gameover-header h2 {
-      font-size: 3rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--accent), #fb923c, var(--warning));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .rewards-section {
-      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.1));
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .rewards-section h3 { color: var(--warning); margin-bottom: 15px; }
-    .rewards-grid { display: flex; gap: 30px; justify-content: center; }
-    .reward-item { text-align: center; }
-    .reward-value { font-size: 1.8rem; font-weight: 800; }
-    .reward-value.xp { color: var(--primary); }
-    .reward-value.coins { color: var(--warning); }
-    .reward-label { font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); }
-
-    .rankings { display: flex; flex-direction: column; gap: 12px; }
-
-    .rank-item {
-      display: flex;
-      align-items: center;
-      padding: 18px 20px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      animation: rankSlide 0.5s ease;
-    }
-
-    @keyframes rankSlide {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .rank-item.winner {
-      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.1));
-      border: 2px solid rgba(251, 191, 36, 0.5);
-    }
-
-    .rank-number { font-size: 1.8rem; font-weight: 800; width: 60px; color: rgba(255, 255, 255, 0.5); }
-    .rank-mascot { font-size: 2rem; margin-right: 15px; }
-    .rank-name { flex: 1; font-size: 1.2rem; font-weight: 600; }
-    .rank-score { font-size: 1.3rem; font-weight: 700; color: var(--primary); }
-    .crown { font-size: 2rem; margin-right: 10px; animation: crownBounce 1s ease-in-out infinite; }
-
-    @keyframes crownBounce {
-      0%, 100% { transform: rotate(-5deg); }
-      50% { transform: rotate(5deg); }
-    }
-
-    .achievement-popup {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: linear-gradient(135deg, rgba(251, 191, 36, 0.9), rgba(245, 158, 11, 0.9));
-      padding: 20px 30px;
-      border-radius: 16px;
-      text-align: center;
-      animation: slideInRight 0.5s ease;
-      z-index: 2000;
-    }
-
-    @keyframes slideInRight {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    .achievement-popup .icon { font-size: 2.5rem; }
-    .achievement-popup h3 { font-size: 1.2rem; margin: 10px 0 5px; }
-    .achievement-popup p { font-size: 0.9rem; opacity: 0.8; }
-
-    .confetti {
-      position: fixed;
-      width: 10px;
-      height: 10px;
-      top: -10px;
-      animation: confettiFall 3s linear forwards;
-    }
-
-    @keyframes confettiFall {
-      to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: rgba(239, 68, 68, 0.9);
-      padding: 15px 30px;
-      border-radius: 12px;
-      font-weight: 600;
-      z-index: 1000;
-      transition: transform 0.3s ease;
-    }
-
-    .toast.show { transform: translateX(-50%) translateY(0); }
-    .toast.success { background: rgba(34, 197, 94, 0.9); }
-    .toast.info { background: rgba(251, 191, 36, 0.9); }
-
-    .power-popup {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.95);
-      padding: 30px 50px;
-      border-radius: 20px;
-      text-align: center;
-      z-index: 2000;
-      animation: popIn 0.3s ease;
-      border: 2px solid rgba(251, 191, 36, 0.5);
-    }
-
-    @keyframes popIn {
-      from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
-      to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-    }
-
-    .power-popup .icon { font-size: 3rem; margin-bottom: 15px; }
-    .power-popup h3 { font-size: 1.5rem; margin-bottom: 10px; color: var(--warning); }
-    .power-popup p { color: rgba(255, 255, 255, 0.7); }
-
-    .level-up-popup {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.95), rgba(0, 212, 255, 0.95));
-      padding: 40px 60px;
-      border-radius: 24px;
-      text-align: center;
-      z-index: 3000;
-      animation: popIn 0.3s ease;
-    }
-
-    .level-up-popup h2 { font-size: 2.5rem; margin-bottom: 10px; }
-    .level-up-popup .level { font-size: 5rem; font-weight: 800; }
-    .level-up-popup .unlocks { margin-top: 20px; }
-
-    .leaderboard {
-      margin-top: 20px;
-    }
-
-    .leaderboard-tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-
-    .leaderboard-tab {
-      padding: 10px 20px;
-      background: rgba(255, 255, 255, 0.05);
-      border: none;
-      border-radius: 10px;
-      color: rgba(255, 255, 255, 0.6);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-    }
-
-    .leaderboard-tab:hover { color: white; }
-    .leaderboard-tab.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
-
-    .leaderboard-item {
-      display: flex;
-      align-items: center;
-      padding: 15px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
-      margin-bottom: 10px;
-    }
-
-    .leaderboard-rank {
-      width: 40px;
-      font-weight: 800;
-      font-size: 1.2rem;
-    }
-
-    .leaderboard-rank.gold { color: #fbbf24; }
-    .leaderboard-rank.silver { color: #94a3b8; }
-    .leaderboard-rank.bronze { color: #cd7f32; }
-
-    .leaderboard-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 15px;
-      font-size: 1.2rem;
-    }
-
-    .leaderboard-name { flex: 1; font-weight: 600; }
-    .leaderboard-value { font-weight: 700; color: var(--primary); }
-
-    .achievements-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 15px;
-    }
-
-    .achievement-card {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
-      padding: 15px;
-      text-align: center;
-      opacity: 0.4;
-      transition: all 0.3s ease;
-    }
-
-    .achievement-card.unlocked {
-      opacity: 1;
-      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.1));
-      border: 1px solid rgba(251, 191, 36, 0.3);
-    }
-
-    .achievement-card .icon { font-size: 2rem; margin-bottom: 10px; }
-    .achievement-card h4 { font-size: 0.9rem; margin-bottom: 5px; }
-    .achievement-card p { font-size: 0.7rem; color: rgba(255, 255, 255, 0.5); }
-
-    .daily-reward {
-      background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.2));
-      border-radius: 16px;
-      padding: 20px;
-      text-align: center;
-      margin-bottom: 20px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .daily-reward:hover { transform: translateY(-3px); }
+    .section-title { font-size: 0.85rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; margin-top: 20px; }
+    .section-title:first-child { margin-top: 0; }
+    
+    input { width: 100%; padding: 15px 20px; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; font-size: 1rem; margin-bottom: 12px; background: rgba(255,255,255,0.05); color: white; font-family: inherit; transition: all 0.2s; }
+    input:focus { outline: none; border-color: #00d4ff; background: rgba(0,212,255,0.1); }
+    input::placeholder { color: rgba(255,255,255,0.4); }
+    
+    select { width: 100%; padding: 15px 20px; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; font-size: 1rem; margin-bottom: 12px; background: rgba(255,255,255,0.05); color: white; font-family: inherit; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M6 9l4 4 4-4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 15px center; }
+    select:focus { outline: none; border-color: #7c3aed; }
+    select option { background: #1a1a2e; color: white; }
+    
+    button { width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-bottom: 10px; font-family: inherit; }
+    .btn-primary { background: linear-gradient(135deg, #00d4ff, #7c3aed); color: white; }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,212,255,0.3); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary { background: rgba(255,255,255,0.1); color: white; border: 2px solid rgba(255,255,255,0.2); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+    .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
+    .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+    
+    .user-bar { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 15px 20px; border-radius: 15px; margin-bottom: 20px; }
+    .user-info { display: flex; align-items: center; gap: 15px; }
+    .user-avatar { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .user-details h3 { font-size: 1.1rem; }
+    .user-details p { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+    .user-stats { display: flex; gap: 20px; }
+    .stat { text-align: center; }
+    .stat-value { font-size: 1.3rem; font-weight: 700; color: #00d4ff; }
+    .stat-label { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
+    .xp-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-top: 8px; overflow: hidden; }
+    .xp-fill { height: 100%; background: linear-gradient(90deg, #00d4ff, #7c3aed); border-radius: 3px; transition: width 0.3s; }
+    
+    .daily-reward { background: linear-gradient(135deg, rgba(251,191,36,0.2), rgba(245,158,11,0.1)); border: 1px solid rgba(251,191,36,0.3); border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 20px; cursor: pointer; transition: all 0.2s; }
+    .daily-reward:hover { transform: translateY(-2px); }
     .daily-reward.claimed { opacity: 0.5; cursor: not-allowed; }
-
-    .daily-reward h3 { color: var(--warning); margin-bottom: 5px; }
-    .daily-reward p { font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); }
-
-    .sound-toggle {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      color: white;
-      font-size: 1.5rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      z-index: 100;
-    }
-
-    .sound-toggle:hover { background: rgba(255, 255, 255, 0.2); }
-
+    .daily-reward h3 { color: #fbbf24; margin-bottom: 5px; }
+    .daily-reward p { font-size: 0.9rem; color: rgba(255,255,255,0.7); }
+    
+    .avatar-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-bottom: 20px; }
+    .avatar-option { aspect-ratio: 1; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.2s; }
+    .avatar-option:hover { border-color: rgba(255,255,255,0.3); }
+    .avatar-option.selected { border-color: #00d4ff; background: rgba(0,212,255,0.2); }
+    .avatar-option.locked { opacity: 0.3; cursor: not-allowed; }
+    
+    .color-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+    .color-option { width: 40px; height: 40px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: all 0.2s; }
+    .color-option:hover { transform: scale(1.1); }
+    .color-option.selected { border-color: white; }
+    .color-option.locked { opacity: 0.3; cursor: not-allowed; }
+    
+    .mode-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+    .mode-card { padding: 15px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.2s; }
+    .mode-card:hover { background: rgba(255,255,255,0.1); }
+    .mode-card.selected { background: rgba(0,212,255,0.2); border-color: #00d4ff; }
+    .mode-card .icon { font-size: 1.8rem; margin-bottom: 8px; }
+    .mode-card h3 { font-size: 0.9rem; margin-bottom: 3px; }
+    .mode-card p { font-size: 0.7rem; color: rgba(255,255,255,0.6); }
+    
+    .settings-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px; }
+    .setting { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; }
+    .setting label { display: block; font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
+    .setting input[type="range"] { width: 100%; -webkit-appearance: none; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.1); margin-bottom: 5px; }
+    .setting input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: linear-gradient(135deg, #00d4ff, #7c3aed); cursor: pointer; }
+    .setting-value { text-align: center; font-weight: 700; color: #00d4ff; }
+    .toggle { position: relative; width: 50px; height: 26px; background: rgba(255,255,255,0.1); border-radius: 13px; cursor: pointer; }
+    .toggle.active { background: linear-gradient(135deg, #00d4ff, #7c3aed); }
+    .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: left 0.2s; }
+    .toggle.active::after { left: 27px; }
+    
+    .room-code { font-size: 3.5rem; font-weight: 800; text-align: center; background: linear-gradient(135deg, #00d4ff, #7c3aed, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 10px; margin: 20px 0; }
+    .room-label { font-size: 0.85rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 2px; text-align: center; }
+    
+    .player-list { list-style: none; display: grid; gap: 8px; }
+    .player-list li { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; background: rgba(255,255,255,0.05); border-radius: 12px; }
+    .player-list li.answered { background: rgba(34,197,94,0.15); }
+    .player-list li .player-info { display: flex; align-items: center; gap: 10px; }
+    .player-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .player-list li .score { font-weight: 700; color: #00d4ff; }
+    .streak-badge { background: linear-gradient(135deg, #fbbf24, #f59e0b); padding: 2px 8px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; margin-left: 8px; }
+    
+    .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .progress { font-size: 0.9rem; color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 20px; }
+    .timer { font-size: 2rem; font-weight: 800; color: #00d4ff; min-width: 50px; text-align: center; }
+    .timer.warning { color: #f472b6; animation: pulse 0.5s infinite; }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    
+    .timer-bar { width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-bottom: 15px; overflow: hidden; }
+    .timer-fill { height: 100%; background: linear-gradient(90deg, #00d4ff, #7c3aed); transition: width 1s linear; }
+    .timer-fill.warning { background: linear-gradient(90deg, #f472b6, #ef4444); }
+    
+    .question { font-size: 1.4rem; text-align: center; margin-bottom: 15px; font-weight: 600; line-height: 1.3; }
+    .difficulty { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; margin-left: 8px; }
+    .difficulty.easy { background: rgba(34,197,94,0.3); color: #22c55e; }
+    .difficulty.medium { background: rgba(251,191,36,0.3); color: #fbbf24; }
+    .difficulty.hard { background: rgba(239,68,68,0.3); color: #ef4444; }
+    
+    .powers-bar { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 15px; }
+    .power-btn { display: flex; flex-direction: column; align-items: center; padding: 8px 12px; background: linear-gradient(135deg, rgba(251,191,36,0.2), rgba(245,158,11,0.1)); border: 2px solid rgba(251,191,36,0.3); border-radius: 10px; cursor: pointer; min-width: 65px; }
+    .power-btn:hover { background: linear-gradient(135deg, rgba(251,191,36,0.3), rgba(245,158,11,0.2)); }
+    .power-btn .icon { font-size: 1.2rem; }
+    .power-btn .name { font-size: 0.65rem; font-weight: 600; }
+    
+    .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+    .option { padding: 20px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 15px; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit; position: relative; transition: all 0.2s; }
+    .option:hover:not(:disabled) { background: rgba(0,212,255,0.1); border-color: #00d4ff; }
+    .option.selected { background: rgba(0,212,255,0.2); border-color: #00d4ff; }
+    .option.correct { background: rgba(34,197,94,0.3); border-color: #22c55e; }
+    .option.wrong { background: rgba(239,68,68,0.3); border-color: #ef4444; }
+    .option:disabled { cursor: not-allowed; }
+    .option.eliminated { opacity: 0.3; text-decoration: line-through; }
+    .option-label { position: absolute; top: 8px; left: 12px; font-size: 0.7rem; color: rgba(255,255,255,0.4); font-weight: 700; }
+    
+    .results-list { display: grid; gap: 10px; margin-bottom: 20px; }
+    .result { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-radius: 10px; }
+    .result.correct { background: rgba(34,197,94,0.2); border-left: 4px solid #22c55e; }
+    .result.wrong { background: rgba(239,68,68,0.2); border-left: 4px solid #ef4444; }
+    .result .mascot { font-size: 1.3rem; margin-right: 10px; }
+    .result .name { font-weight: 600; }
+    .result .pts { font-weight: 700; }
+    .result.correct .pts { color: #22c55e; }
+    .result.wrong .pts { color: #ef4444; }
+    
+    .scoreboard { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; }
+    .scoreboard h3 { text-align: center; margin-bottom: 12px; color: rgba(255,255,255,0.7); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+    .score-row { display: flex; justify-content: space-between; padding: 10px 12px; background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 6px; }
+    .score-row .mascot { font-size: 1.1rem; margin-right: 8px; }
+    .score-row .pts { font-weight: 700; color: #00d4ff; }
+    
+    .rankings { display: flex; flex-direction: column; gap: 10px; }
+    .rank { display: flex; align-items: center; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; }
+    .rank.winner { background: linear-gradient(135deg, rgba(251,191,36,0.2), rgba(245,158,11,0.1)); border: 2px solid rgba(251,191,36,0.5); }
+    .rank-num { font-size: 1.5rem; font-weight: 800; width: 50px; color: rgba(255,255,255,0.5); }
+    .rank-mascot { font-size: 1.8rem; margin-right: 12px; }
+    .rank-name { flex: 1; font-size: 1.1rem; font-weight: 600; }
+    .rank-score { font-size: 1.2rem; font-weight: 700; color: #00d4ff; }
+    .crown { font-size: 1.8rem; margin-right: 8px; }
+    
+    .rewards { background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(245,158,11,0.1)); border-radius: 12px; padding: 15px; margin-bottom: 15px; text-align: center; }
+    .rewards h3 { color: #fbbf24; margin-bottom: 10px; }
+    .rewards-grid { display: flex; gap: 30px; justify-content: center; }
+    .rewards-grid .val { font-size: 1.5rem; font-weight: 800; }
+    .rewards-grid .xp { color: #00d4ff; }
+    .rewards-grid .coins { color: #fbbf24; }
+    .rewards-grid .lbl { font-size: 0.8rem; color: rgba(255,255,255,0.6); }
+    
+    .leaderboard-list { display: grid; gap: 8px; }
+    .lb-item { display: flex; align-items: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; }
+    .lb-rank { width: 35px; font-weight: 800; }
+    .lb-rank.gold { color: #fbbf24; }
+    .lb-rank.silver { color: #94a3b8; }
+    .lb-rank.bronze { color: #cd7f32; }
+    .lb-avatar { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; margin-right: 12px; }
+    .lb-name { flex: 1; font-weight: 600; }
+    .lb-val { font-weight: 700; color: #00d4ff; }
+    
+    .achievements { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .achieve { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; text-align: center; opacity: 0.4; }
+    .achieve.unlocked { opacity: 1; background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(245,158,11,0.1)); border: 1px solid rgba(251,191,36,0.3); }
+    .achieve .icon { font-size: 1.8rem; margin-bottom: 8px; }
+    .achieve h4 { font-size: 0.85rem; margin-bottom: 4px; }
+    .achieve p { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
+    
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: rgba(239,68,68,0.95); padding: 12px 25px; border-radius: 10px; font-weight: 600; z-index: 1000; transition: transform 0.3s; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { background: rgba(34,197,94,0.95); }
+    .toast.info { background: rgba(251,191,36,0.95); }
+    
+    .popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background: rgba(0,0,0,0.95); padding: 25px 40px; border-radius: 16px; text-align: center; z-index: 2000; border: 2px solid rgba(251,191,36,0.5); opacity: 0; pointer-events: none; transition: all 0.2s; }
+    .popup.show { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
+    .popup .icon { font-size: 2.5rem; margin-bottom: 10px; }
+    .popup h3 { font-size: 1.3rem; color: #fbbf24; margin-bottom: 8px; }
+    .popup p { color: rgba(255,255,255,0.7); }
+    
+    .confetti { position: fixed; width: 8px; height: 8px; top: -10px; animation: conf 3s linear forwards; }
+    @keyframes conf { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+    
     @media (max-width: 600px) {
-      .logo h1 { font-size: 2.5rem; }
-      .room-code { font-size: 2.5rem; letter-spacing: 8px; }
+      .logo h1 { font-size: 2.2rem; }
+      .room-code { font-size: 2.5rem; }
       .options { grid-template-columns: 1fr; }
-      .question { font-size: 1.3rem; }
-      .card { padding: 25px; }
-      .avatar-selection { grid-template-columns: repeat(7, 1fr); }
-      .game-mode-grid { grid-template-columns: 1fr 1fr; }
-      .tabs { flex-wrap: wrap; }
-      .tab { flex: 1 1 45%; }
+      .mode-grid { grid-template-columns: 1fr 1fr; }
+      .avatar-grid { grid-template-columns: repeat(7, 1fr); }
     }
   </style>
 </head>
-<body data-theme="default">
-  <div class="bg-animation"></div>
-  <div class="particles" id="particles"></div>
-  
+<body>
+  <div class="bg"></div>
   <div class="container">
-    <div class="logo">
-      <h1>Trivia Battle</h1>
-      <p>Ultimate Multiplayer Quiz</p>
-    </div>
+    <div class="logo"><h1>Trivia Battle</h1><p>Ultimate Multiplayer Quiz</p></div>
     
-    <div id="landing-screen" class="screen active">
+    <div id="auth-screen" class="screen active">
       <div class="card">
-        <input type="text" id="landing-username" placeholder="Enter your username" maxlength="15" autocomplete="off">
-        <button class="btn-primary" onclick="loginOrRegister()">Play Now</button>
-        <p style="text-align: center; color: rgba(255,255,255,0.5); margin-top: 15px; font-size: 0.9rem;">
-          New players will be automatically registered
-        </p>
+        <div class="tabs">
+          <button class="tab active" onclick="showAuthTab('login')">Login</button>
+          <button class="tab" onclick="showAuthTab('register')">Register</button>
+        </div>
+        <div id="login-form">
+          <input type="text" id="login-username" placeholder="Username" maxlength="15" autocomplete="off">
+          <input type="password" id="login-password" placeholder="Password" autocomplete="off">
+          <button class="btn-primary" onclick="login()">Login</button>
+        </div>
+        <div id="register-form" style="display:none">
+          <input type="text" id="reg-username" placeholder="Username (2-15 chars)" maxlength="15" autocomplete="off">
+          <input type="password" id="reg-password" placeholder="Password (min 4 chars)" autocomplete="off">
+          <button class="btn-primary" onclick="register()">Create Account</button>
+        </div>
       </div>
     </div>
 
     <div id="main-screen" class="screen">
       <div class="user-bar">
         <div class="user-info">
-          <div class="user-avatar" id="main-user-avatar">🦊</div>
+          <div class="user-avatar" id="user-avatar">🦊</div>
           <div class="user-details">
-            <h3 id="main-username">Player</h3>
-            <p>Level <span id="main-level">1</span> • <span id="main-coins">0</span> 🪙</p>
-            <div class="xp-bar">
-              <div class="xp-fill" id="main-xp-bar" style="width: 0%"></div>
-            </div>
+            <h3 id="user-name">Player</h3>
+            <p>Lv.<span id="user-level">1</span> • <span id="user-coins">0</span> 🪙</p>
+            <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
           </div>
         </div>
         <div class="user-stats">
-          <div class="stat">
-            <div class="stat-value" id="main-wins">0</div>
-            <div class="stat-label">Wins</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value" id="main-streak">0</div>
-            <div class="stat-label">Best Streak</div>
-          </div>
+          <div class="stat"><div class="stat-value" id="user-wins">0</div><div class="stat-label">Wins</div></div>
+          <div class="stat"><div class="stat-value" id="user-streak">0</div><div class="stat-label">Best</div></div>
         </div>
       </div>
 
-      <div class="daily-reward" id="daily-reward" onclick="claimDailyReward()">
+      <div class="daily-reward" id="daily-reward" onclick="claimDaily()">
         <h3>🎁 Daily Reward</h3>
-        <p>Click to claim XP and coins!</p>
+        <p>Click to claim XP & coins!</p>
       </div>
 
       <div class="tabs">
-        <button class="tab active" onclick="showTab('play')">Play</button>
-        <button class="tab" onclick="showTab('customize')">Customize</button>
-        <button class="tab" onclick="showTab('achievements')">Achievements</button>
-        <button class="tab" onclick="showTab('leaderboard')">Leaderboard</button>
+        <button class="tab active" onclick="showMainTab('play')">Play</button>
+        <button class="tab" onclick="showMainTab('customize')">Customize</button>
+        <button class="tab" onclick="showMainTab('achievements')">Achievements</button>
+        <button class="tab" onclick="showMainTab('leaderboard')">Ranks</button>
       </div>
 
       <div id="play-tab" class="tab-content">
         <div class="card">
-          <p class="section-title">Select Game Mode</p>
-          <div class="game-mode-grid" id="game-mode-grid"></div>
-          
-          <p class="section-title">Select Theme</p>
-          <select id="theme-select">
-            <option value="Random">Random Theme</option>
-            <option value="Science">Science</option>
-            <option value="Geography">Geography</option>
-            <option value="History">History</option>
-            <option value="Space">Space</option>
-            <option value="Entertainment">Entertainment</option>
-            <option value="Sports">Sports</option>
-            <option value="Food">Food</option>
-            <option value="Technology">Technology</option>
-          </select>
-
-          <p class="section-title">Game Settings</p>
-          <div class="settings-grid">
-            <div class="setting-item">
-              <label>Questions</label>
-              <input type="range" id="question-count" min="5" max="30" value="15">
-              <div class="setting-value" id="question-count-value">15</div>
-            </div>
-            <div class="setting-item">
-              <label>Time Limit (sec)</label>
-              <input type="range" id="time-limit" min="3" max="30" value="10">
-              <div class="setting-value" id="time-limit-value">10</div>
-            </div>
-            <div class="setting-item">
-              <label>Difficulty</label>
-              <select id="difficulty-select" style="margin-bottom: 0; padding: 10px;">
-                <option value="mixed">Mixed</option>
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-              </select>
-            </div>
-            <div class="setting-item">
-              <label>Power-ups</label>
-              <div class="toggle active" id="powerups-toggle" onclick="togglePowerups()"></div>
-            </div>
-          </div>
-          
-          <button class="btn-primary" onclick="createRoom()" style="margin-top: 20px;">Create Room</button>
+          <button class="btn-primary" onclick="showCreateScreen()">Create Room</button>
           <button class="btn-secondary" onclick="showJoinScreen()">Join Room</button>
         </div>
       </div>
 
-      <div id="customize-tab" class="tab-content" style="display: none;">
+      <div id="customize-tab" class="tab-content" style="display:none">
         <div class="card">
           <p class="section-title">Your Avatar</p>
-          <div class="avatar-selection" id="customize-avatar-selection"></div>
-          
+          <div class="avatar-grid" id="avatar-grid"></div>
           <p class="section-title">Your Color</p>
-          <div class="color-selection" id="customize-color-selection"></div>
-          
-          <button class="btn-primary" onclick="saveCustomization()">Save Changes</button>
-        </div>
-
-        <div class="card">
-          <p class="section-title">Shop</p>
-          <h3 style="margin-bottom: 15px;">Avatars</h3>
-          <div class="avatar-selection" id="shop-avatars"></div>
-          
-          <h3 style="margin: 20px 0 15px;">Colors</h3>
-          <div class="color-selection" id="shop-colors"></div>
+          <div class="color-grid" id="color-grid"></div>
+          <button class="btn-primary" onclick="saveCustomize()">Save</button>
         </div>
       </div>
 
-      <div id="achievements-tab" class="tab-content" style="display: none;">
+      <div id="achievements-tab" class="tab-content" style="display:none">
         <div class="card">
           <p class="section-title">Achievements</p>
-          <div class="achievements-grid" id="achievements-grid"></div>
+          <div class="achievements" id="achievements-grid"></div>
         </div>
       </div>
 
-      <div id="leaderboard-tab" class="tab-content" style="display: none;">
+      <div id="leaderboard-tab" class="tab-content" style="display:none">
         <div class="card">
           <p class="section-title">Leaderboard</p>
-          <div class="leaderboard-tabs">
-            <button class="leaderboard-tab active" onclick="loadLeaderboard('xp')">XP</button>
-            <button class="leaderboard-tab" onclick="loadLeaderboard('wins')">Wins</button>
-            <button class="leaderboard-tab" onclick="loadLeaderboard('streak')">Streak</button>
+          <div class="tabs" style="margin-bottom:15px">
+            <button class="tab active" onclick="loadLB('xp', this)">XP</button>
+            <button class="tab" onclick="loadLB('wins', this)">Wins</button>
+            <button class="tab" onclick="loadLB('streak', this)">Streak</button>
           </div>
-          <div class="leaderboard" id="leaderboard-list"></div>
+          <div class="leaderboard-list" id="lb-list"></div>
         </div>
+      </div>
+    </div>
+
+    <div id="create-screen" class="screen">
+      <div class="card">
+        <p class="section-title">Select Theme</p>
+        <select id="theme-select">
+          <option value="Random">Random</option>
+          <option value="Science">Science</option>
+          <option value="Geography">Geography</option>
+          <option value="History">History</option>
+          <option value="Space">Space</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Sports">Sports</option>
+          <option value="Food">Food</option>
+          <option value="Technology">Technology</option>
+        </select>
+
+        <p class="section-title">Game Mode</p>
+        <div class="mode-grid" id="mode-grid"></div>
+
+        <p class="section-title">Settings</p>
+        <div class="settings-grid">
+          <div class="setting">
+            <label>Questions</label>
+            <input type="range" id="q-count" min="5" max="25" value="15">
+            <div class="setting-value" id="q-count-val">15</div>
+          </div>
+          <div class="setting">
+            <label>Time (sec)</label>
+            <input type="range" id="time-limit" min="3" max="20" value="10">
+            <div class="setting-value" id="time-val">10</div>
+          </div>
+          <div class="setting">
+            <label>Difficulty</label>
+            <select id="diff-select"><option value="mixed">Mixed</option><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select>
+          </div>
+          <div class="setting">
+            <label>Power-ups</label>
+            <div class="toggle active" id="pwr-toggle" onclick="togglePwr()"></div>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="createRoom()">Create Room</button>
+        <button class="btn-secondary" onclick="showMainScreen()">Back</button>
       </div>
     </div>
 
     <div id="join-screen" class="screen">
       <div class="card">
-        <input type="text" id="room-code-input" placeholder="Enter room code" maxlength="4" style="text-transform: uppercase; letter-spacing: 5px; text-align: center; font-size: 1.5rem;" autocomplete="off">
-        <button class="btn-primary" onclick="joinRoom()">Join Game</button>
+        <input type="text" id="join-code" placeholder="Room Code" maxlength="4" style="text-transform:uppercase;letter-spacing:8px;text-align:center;font-size:1.8rem">
+        <button class="btn-primary" onclick="joinRoom()">Join</button>
         <button class="btn-secondary" onclick="showMainScreen()">Back</button>
       </div>
     </div>
 
     <div id="lobby-screen" class="screen">
       <div class="card">
-        <div class="room-code-container">
-          <p class="room-code-label">Room Code</p>
-          <div class="room-code" id="display-code"></div>
+        <p class="room-label">Room Code</p>
+        <div class="room-code" id="room-code"></div>
+        <div style="text-align:center;margin-bottom:15px">
+          <span class="difficulty easy" id="lobby-theme">Theme</span>
+          <span class="difficulty medium" id="lobby-mode">Mode</span>
         </div>
-        <div style="text-align: center;">
-          <span class="theme-badge" id="theme-display"></span>
-          <span class="theme-badge" id="mode-display"></span>
+        <div style="text-align:center;margin-bottom:15px">
+          <span class="difficulty hard" id="lobby-settings">Settings</span>
         </div>
-        
-        <div class="player-section">
-          <div class="player-count-badge" id="player-badge">
-            <span>Players:</span>
-            <span class="count" id="player-count">0/10</span>
-          </div>
-          <ul class="player-list" id="player-list"></ul>
-        </div>
-        
-        <button class="btn-primary" id="start-btn" onclick="startGame()">Start Game</button>
+        <ul class="player-list" id="player-list"></ul>
+        <button class="btn-primary" id="start-btn" onclick="startGame()" disabled>Start</button>
       </div>
     </div>
 
     <div id="waiting-screen" class="screen">
-      <div class="card">
-        <div class="waiting">
-          <div class="spinner"></div>
-          <h2>Waiting for host...</h2>
-          <p>Share the code below with your friends!</p>
-          <div class="room-code-container" style="margin-top: 20px;">
-            <p class="room-code-label">Room Code</p>
-            <div class="room-code" id="waiting-code"></div>
-          </div>
-        </div>
-        <ul class="player-list" id="waiting-players"></ul>
+      <div class="card" style="text-align:center">
+        <div style="width:40px;height:40px;margin:0 auto 15px;border:3px solid rgba(255,255,255,0.1);border-top-color:#00d4ff;border-radius:50%;animation:spin 1s linear infinite"></div>
+        <h2>Waiting for host...</h2>
+        <p style="color:rgba(255,255,255,0.6);margin-top:8px">Share the code below!</p>
+        <p class="room-label" style="margin-top:20px">Room Code</p>
+        <div class="room-code" id="wait-code"></div>
+        <ul class="player-list" id="wait-list" style="margin-top:20px"></ul>
       </div>
     </div>
 
     <div id="game-screen" class="screen">
       <div class="card">
         <div class="game-header">
-          <div>
-            <span class="progress" id="progress-text">Question 1 of 15</span>
-            <span class="difficulty-badge easy" id="difficulty-badge"></span>
-          </div>
-          <div class="timer-container">
-            <span class="timer" id="timer">10</span>
-          </div>
+          <div><span class="progress" id="progress">Q 1/15</span><span class="difficulty easy" id="diff-badge"></span></div>
+          <div class="timer" id="timer">10</div>
         </div>
-        <div class="timer-bar">
-          <div class="timer-bar-fill" id="timer-bar-fill"></div>
-        </div>
-        <div class="theme-indicator" id="current-theme"></div>
-        <div class="superpowers-bar" id="superpowers-bar"></div>
-        <div class="question" id="question-text"></div>
-        <div class="options" id="options-container"></div>
-        <div class="submit-section">
-          <button class="btn-success submit-btn" id="submit-btn" onclick="confirmAnswer()" disabled>Submit Answer</button>
-        </div>
+        <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+        <div class="powers-bar" id="powers-bar"></div>
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>
+        <button class="btn-success" id="submit-btn" onclick="submitAnswer()" disabled>Submit</button>
       </div>
     </div>
 
     <div id="results-screen" class="screen">
       <div class="card">
-        <div class="results-header">
-          <h2>Round Results</h2>
-        </div>
-        <div class="team-scores" id="team-scores" style="display: none;"></div>
+        <h2 style="text-align:center;margin-bottom:20px;background:linear-gradient(90deg,#00d4ff,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Results</h2>
         <div class="results-list" id="results-list"></div>
-        <div class="scoreboard" id="score-board"></div>
-        <div class="skip-section" id="skip-section"></div>
+        <div class="scoreboard"><h3>Scores</h3><div id="scores"></div></div>
+        <div id="skip-section" style="text-align:center;margin-top:15px"></div>
       </div>
     </div>
 
     <div id="gameover-screen" class="screen">
       <div class="card">
-        <div class="gameover-header">
-          <h2>Game Over!</h2>
-        </div>
-        <div class="rewards-section" id="rewards-section">
-          <h3>Rewards Earned</h3>
+        <h2 style="text-align:center;font-size:2.5rem;background:linear-gradient(135deg,#f472b6,#fb923c,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Game Over!</h2>
+        <div class="rewards" id="rewards-box">
+          <h3>Rewards</h3>
           <div class="rewards-grid">
-            <div class="reward-item">
-              <div class="reward-value xp" id="xp-earned">+0</div>
-              <div class="reward-label">XP</div>
-            </div>
-            <div class="reward-item">
-              <div class="reward-value coins" id="coins-earned">+0</div>
-              <div class="reward-label">Coins</div>
-            </div>
+            <div><div class="val xp" id="xp-earned">+0</div><div class="lbl">XP</div></div>
+            <div><div class="val coins" id="coins-earned">+0</div><div class="lbl">Coins</div></div>
           </div>
         </div>
-        <div class="rankings" id="final-rankings"></div>
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <div class="rankings" id="rankings"></div>
+        <div style="display:flex;gap:10px;margin-top:15px">
           <button class="btn-warning" onclick="rematch()">Rematch</button>
-          <button class="btn-primary" onclick="location.reload()">Play Again</button>
+          <button class="btn-primary" onclick="location.reload()">Home</button>
         </div>
       </div>
     </div>
   </div>
 
-  <button class="sound-toggle" id="sound-toggle" onclick="toggleSound()">🔊</button>
   <div class="toast" id="toast"></div>
+  <div class="popup" id="popup"><div class="icon"></div><h3></h3><p></p></div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const AVATARS = ['🦊', '🐸', '🦁', '🐼', '🦄', '🐱', '🐶', '🐰', '🐻', '🦋', '🦅', '🐺', '🦈', '🐬', '🦉', '🐨', '🦜', '🐯', '🦩', '🐧', '🦚', '🦢', '🦤', '🦥', '🦦', '🦨', '🦘', '🦬', '🦙', '🦒'];
-    const COLORS = [
-      'linear-gradient(135deg, #00d4ff, #0099cc)',
-      'linear-gradient(135deg, #7c3aed, #5b21b6)',
-      'linear-gradient(135deg, #f472b6, #db2777)',
-      'linear-gradient(135deg, #22c55e, #16a34a)',
-      'linear-gradient(135deg, #f59e0b, #d97706)',
-      'linear-gradient(135deg, #ef4444, #dc2626)',
-      'linear-gradient(135deg, #06b6d4, #0891b2)',
-      'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-      'linear-gradient(135deg, #ec4899, #db2777)',
-      'linear-gradient(135deg, #14b8a6, #0d9488)'
-    ];
-    
+    const COLORS = ['linear-gradient(135deg,#00d4ff,#0099cc)','linear-gradient(135deg,#7c3aed,#5b21b6)','linear-gradient(135deg,#f472b6,#db2777)','linear-gradient(135deg,#22c55e,#16a34a)','linear-gradient(135deg,#f59e0b,#d97706)','linear-gradient(135deg,#ef4444,#dc2626)','linear-gradient(135deg,#06b6d4,#0891b2)','linear-gradient(135deg,#8b5cf6,#7c3aed)','linear-gradient(135deg,#ec4899,#db2777)','linear-gradient(135deg,#14b8a6,#0d9488)'];
     const socket = io();
-    let currentUser = null;
-    let isHost = false;
-    let currentRoom = '';
-    let timerInterval;
-    let selectedAnswer = null;
-    let answerConfirmed = false;
-    let currentGameMode = 'Classic';
-    let mySuperpowers = [];
-    let selectedAvatar = '🦊';
-    let selectedColor = COLORS[0];
-    let eliminatedOptions = [];
-    let extraTime = 0;
-    let isFrozen = false;
-    let soundEnabled = true;
-    let powerupsEnabled = true;
+    let user = null, isHost = false, room = '', timer, selected = null, confirmed = false, frozen = false, powers = [], pwrEnabled = true, mode = 'Classic';
     
-    const sounds = {
-      correct: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH+Onp6WjXx0dH6Il5+dlIuAfn+GkZiYkYt/fn2EkJiWj4SDgn2DjZaTjoSDgXyCi5GRjIuHhYB7goqOjoqHhYJ9goiLioiGg4GAfYGHioiHhYOBf4GGiIiGhIOBfYCFh4aFg4KAfYCEhYWEgoGAfH+DhISDgYB/fn+Dg4KBgH9+f4GCgoGAf35+gIGBgH9+fn6AgYB/fn5+f4CAf35+fn9/f39/f39/f39/'),
-      wrong: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAAB/fn5/gIGBgYKCg4OEhIWFhoaHh4iIiYmKiouLjIyNjY6Oj4+QkI+Pj46OjY2MjIuLiouKiYmJiIiHh4aGhYWEg4OCgYB/fnx7eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTVFJRUFBPTk1MS0pJSEdGRURDQkFAPz49PDs6OTg3NjU0My4tKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQA=')
-    };
+    function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+    function toast(msg, type='error') { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast show '+(type||''); setTimeout(()=>t.classList.remove('show'),2500); }
+    function popup(icon,title,msg) { const p=document.getElementById('popup'); p.querySelector('.icon').textContent=icon; p.querySelector('h3').textContent=title; p.querySelector('p').textContent=msg; p.classList.add('show'); setTimeout(()=>p.classList.remove('show'),2000); }
+    function confetti() { const c=['#00d4ff','#7c3aed','#f472b6','#22c55e','#fbbf24','#ef4444']; for(let i=0;i<40;i++){ setTimeout(()=>{ const e=document.createElement('div'); e.className='confetti'; e.style.left=Math.random()*100+'%'; e.style.background=c[Math.floor(Math.random()*c.length)]; e.style.borderRadius=Math.random()>.5?'50%':'0'; document.body.appendChild(e); setTimeout(()=>e.remove(),3000); },i*40); } }
 
-    createParticles();
-    initGameModes();
-    initSettings();
-    
-    function createParticles() {
-      const container = document.getElementById('particles');
-      for (let i = 0; i < 30; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 20 + 's';
-        particle.style.animationDuration = (15 + Math.random() * 10) + 's';
-        container.appendChild(particle);
-      }
-    }
+    function showAuthTab(t) { document.querySelectorAll('#auth-screen .tab').forEach(x=>x.classList.remove('active')); event.currentTarget.classList.add('active'); document.getElementById('login-form').style.display=t==='login'?'block':'none'; document.getElementById('register-form').style.display=t==='register'?'block':'none'; }
+    function showMainTab(t) { document.querySelectorAll('#main-screen .tab').forEach(x=>x.classList.remove('active')); event.currentTarget.classList.add('active'); document.querySelectorAll('.tab-content').forEach(x=>x.style.display='none'); document.getElementById(t+'-tab').style.display='block'; if(t==='leaderboard')loadLB('xp',document.querySelector('#leaderboard-tab .tab')); if(t==='achievements')loadAch(); if(t==='customize')loadInv(); }
+    function showCreateScreen() { initModes(); showScreen('create-screen'); }
+    function showJoinScreen() { showScreen('join-screen'); }
+    function showMainScreen() { showScreen('main-screen'); }
 
-    function initGameModes() {
-      const container = document.getElementById('game-mode-grid');
-      const modes = [
-        { id: 'Classic', icon: '🎯', name: 'Classic', desc: 'Standard trivia' },
-        { id: 'Speed', icon: '⚡', name: 'Speed', desc: '5 sec per Q' },
-        { id: 'Survival', icon: '❤️', name: 'Survival', desc: '3 lives' },
-        { id: 'Betting', icon: '🎰', name: 'Betting', desc: 'Bet points' },
-        { id: 'Lightning', icon: '🌩️', name: 'Lightning', desc: '3 sec rapid' },
-        { id: 'Team', icon: '👥', name: 'Team Battle', desc: '2v2 or 3v3' },
-        { id: 'BattleRoyale', icon: '🔫', name: 'Battle Royale', desc: 'Last standing' },
-        { id: 'Blitz', icon: '💥', name: 'Blitz', desc: 'Infinite Qs' },
-        { id: 'Reverse', icon: '🔄', name: 'Reverse', desc: 'Guess the Q' }
-      ];
-      
-      container.innerHTML = modes.map((m, i) => `
-        <div class="game-mode-card ${i === 0 ? 'selected' : ''}" onclick="selectGameMode('${m.id}')">
-          <div class="icon">${m.icon}</div>
-          <h3>${m.name}</h3>
-          <p>${m.desc}</p>
-        </div>
-      `).join('');
-    }
-
-    function initSettings() {
-      document.getElementById('question-count').addEventListener('input', (e) => {
-        document.getElementById('question-count-value').textContent = e.target.value;
-      });
-      
-      document.getElementById('time-limit').addEventListener('input', (e) => {
-        document.getElementById('time-limit-value').textContent = e.target.value;
-      });
-    }
-
-    function selectGameMode(modeId) {
-      currentGameMode = modeId;
-      document.querySelectorAll('.game-mode-card').forEach(card => card.classList.remove('selected'));
-      event.currentTarget.classList.add('selected');
-    }
-
-    function togglePowerups() {
-      powerupsEnabled = !powerupsEnabled;
-      document.getElementById('powerups-toggle').classList.toggle('active', powerupsEnabled);
-    }
-
-    function toggleSound() {
-      soundEnabled = !soundEnabled;
-      document.getElementById('sound-toggle').textContent = soundEnabled ? '🔊' : '🔇';
-    }
-
-    function playSound(type) {
-      if (soundEnabled && sounds[type]) {
-        sounds[type].currentTime = 0;
-        sounds[type].play().catch(() => {});
-      }
-    }
-
-    function showScreen(screenId) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(screenId).classList.add('active');
-    }
-
-    function showTab(tabId) {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-      event.currentTarget.classList.add('active');
-      document.getElementById(tabId + '-tab').style.display = 'block';
-      
-      if (tabId === 'leaderboard') loadLeaderboard('xp');
-      if (tabId === 'achievements') loadAchievements();
-      if (tabId === 'customize') loadInventory();
-    }
-
-    function showToast(message, type = 'error') {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.className = 'toast show ' + type;
-      setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-
-    function showPowerPopup(icon, title, message) {
-      const popup = document.createElement('div');
-      popup.className = 'power-popup';
-      popup.innerHTML = `<div class="icon">${icon}</div><h3>${title}</h3><p>${message}</p>`;
-      document.body.appendChild(popup);
-      setTimeout(() => popup.remove(), 2000);
-      playSound('correct');
-    }
-
-    function showAchievementPopup(icon, name, description) {
-      const popup = document.createElement('div');
-      popup.className = 'achievement-popup';
-      popup.innerHTML = `<div class="icon">${icon}</div><h3>${name}</h3><p>${description}</p>`;
-      document.body.appendChild(popup);
-      setTimeout(() => popup.remove(), 4000);
-    }
-
-    function showLevelUpPopup(level, unlocks) {
-      const popup = document.createElement('div');
-      popup.className = 'level-up-popup';
-      let unlocksHtml = '';
-      if (unlocks.avatars > 0) unlocksHtml += `<p>🎉 ${unlocks.avatars} new avatar${unlocks.avatars > 1 ? 's' : ''} unlocked!</p>`;
-      if (unlocks.colors > 0) unlocksHtml += `<p>🎨 ${unlocks.colors} new color${unlocks.colors > 1 ? 's' : ''} unlocked!</p>`;
-      popup.innerHTML = `<h2>Level Up!</h2><div class="level">${level}</div><div class="unlocks">${unlocksHtml}</div>`;
-      document.body.appendChild(popup);
-      setTimeout(() => popup.remove(), 3000);
-      createConfetti();
-    }
-
-    async function loginOrRegister() {
-      const username = document.getElementById('landing-username').value.trim();
-      if (!username) {
-        showToast('Please enter a username');
-        return;
-      }
-      
+    async function login() {
+      const u=document.getElementById('login-username').value.trim(), p=document.getElementById('login-password').value;
+      if(!u||!p) return toast('Enter username and password');
       try {
-        let res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username })
-        });
-        
-        if (!res.ok) {
-          res = await fetch('/api/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username })
-          });
-        }
-        
-        const data = await res.json();
-        if (data.error) {
-          showToast(data.error);
-          return;
-        }
-        
-        currentUser = data;
-        selectedAvatar = data.equippedAvatar;
-        selectedColor = data.equippedColor;
-        
-        socket.emit('set-user', currentUser);
-        updateUserUI();
-        showScreen('main-screen');
-        checkDailyReward();
-      } catch (e) {
-        showToast('Connection error');
-      }
+        const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+        const d=await r.json();
+        if(d.error) return toast(d.error);
+        user=d; socket.emit('set-user',user); updateUI(); showScreen('main-screen'); checkDaily();
+      } catch(e) { toast('Connection error'); }
     }
 
-    function updateUserUI() {
-      if (!currentUser) return;
-      
-      document.getElementById('main-username').textContent = currentUser.username;
-      document.getElementById('main-user-avatar').textContent = currentUser.equippedAvatar;
-      document.getElementById('main-user-avatar').style.background = currentUser.equippedColor;
-      document.getElementById('main-level').textContent = currentUser.level;
-      document.getElementById('main-coins').textContent = currentUser.coins;
-      document.getElementById('main-wins').textContent = currentUser.total_wins;
-      document.getElementById('main-streak').textContent = currentUser.best_streak;
-      
-      const xpPercent = (currentUser.xpProgress / currentUser.xpNeeded) * 100;
-      document.getElementById('main-xp-bar').style.width = xpPercent + '%';
+    async function register() {
+      const u=document.getElementById('reg-username').value.trim(), p=document.getElementById('reg-password').value;
+      if(!u||u.length<2) return toast('Username: 2-15 chars');
+      if(!p||p.length<4) return toast('Password: min 4 chars');
+      try {
+        const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+        const d=await r.json();
+        if(d.error) return toast(d.error);
+        user=d; socket.emit('set-user',user); updateUI(); showScreen('main-screen'); checkDaily();
+      } catch(e) { toast('Connection error'); }
     }
 
-    async function checkDailyReward() {
-      const el = document.getElementById('daily-reward');
-      const res = await fetch(`/api/user/${currentUser.id}`);
-      const user = await res.json();
-      
-      const today = new Date().toISOString().split('T')[0];
-      if (user.daily_reward_claimed === today) {
-        el.classList.add('claimed');
-        el.innerHTML = '<h3>✅ Daily Reward Claimed</h3><p>Come back tomorrow!</p>';
-      }
+    function updateUI() {
+      if(!user) return;
+      document.getElementById('user-name').textContent=user.username;
+      document.getElementById('user-avatar').textContent=user.equippedAvatar;
+      document.getElementById('user-avatar').style.background=user.equippedColor;
+      document.getElementById('user-level').textContent=user.level;
+      document.getElementById('user-coins').textContent=user.coins;
+      document.getElementById('user-wins').textContent=user.total_wins;
+      document.getElementById('user-streak').textContent=user.best_streak;
+      document.getElementById('xp-fill').style.width=(user.xpPercentage||0)+'%';
     }
 
-    async function claimDailyReward() {
-      const res = await fetch(`/api/daily-reward/${currentUser.id}`, { method: 'POST' });
-      const data = await res.json();
-      
-      if (data.claimed) {
-        showPowerPopup('🎁', 'Daily Reward!', `+${data.xpReward} XP, +${data.coinReward} coins`);
-        currentUser.xp += data.xpReward;
-        currentUser.coins += data.coinReward;
-        updateUserUI();
-        checkDailyReward();
-      } else {
-        showToast(data.message, 'info');
-      }
+    async function checkDaily() {
+      const r=await fetch('/api/user/'+user.id); const d=await r.json();
+      const el=document.getElementById('daily-reward');
+      const today=new Date().toISOString().split('T')[0];
+      if(d.daily_reward_claimed===today) { el.classList.add('claimed'); el.innerHTML='<h3>✅ Claimed</h3><p>Come back tomorrow!</p>'; }
     }
 
-    async function loadLeaderboard(type) {
-      document.querySelectorAll('.leaderboard-tab').forEach(t => t.classList.remove('active'));
-      event.currentTarget.classList.add('active');
-      
-      const res = await fetch(`/api/leaderboard/${type}`);
-      const list = await res.json();
-      
-      const container = document.getElementById('leaderboard-list');
-      container.innerHTML = list.map((p, i) => `
-        <div class="leaderboard-item">
-          <div class="leaderboard-rank ${i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : ''}">#${i + 1}</div>
-          <div class="leaderboard-avatar" style="background: ${COLORS[i % COLORS.length]}">🦊</div>
-          <div class="leaderboard-name">${p.username}</div>
-          <div class="leaderboard-value">${type === 'xp' ? p.xp : type === 'wins' ? p.total_wins : p.best_streak}</div>
+    async function claimDaily() {
+      if(document.getElementById('daily-reward').classList.contains('claimed')) return;
+      const r=await fetch('/api/daily-reward/'+user.id,{method:'POST'});
+      const d=await r.json();
+      if(d.claimed) { popup('🎁','Daily Reward!',`+${d.xpReward} XP, +${d.coinReward} coins`); user.xp+=d.xpReward; user.coins+=d.coinReward; updateUI(); checkDaily(); }
+      else toast(d.message,'info');
+    }
+
+    async function loadLB(type,btn) {
+      document.querySelectorAll('#leaderboard-tab .tab').forEach(x=>x.classList.remove('active')); if(btn)btn.classList.add('active');
+      const r=await fetch('/api/leaderboard/'+type); const list=await r.json();
+      document.getElementById('lb-list').innerHTML=list.map((p,i)=>`
+        <div class="lb-item">
+          <div class="lb-rank ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">#${i+1}</div>
+          <div class="lb-avatar" style="background:${COLORS[i%COLORS.length]}">🦊</div>
+          <div class="lb-name">${p.username}</div>
+          <div class="lb-val">${type==='xp'?p.xp:type==='wins'?p.total_wins:p.best_streak}</div>
         </div>
-      `).join('');
+      `).join('')||'<p style="text-align:center;color:rgba(255,255,255,0.5)">No players yet</p>';
     }
 
-    async function loadAchievements() {
-      const res = await fetch(`/api/achievements/${currentUser.id}`);
-      const achievements = await res.json();
-      
-      const container = document.getElementById('achievements-grid');
-      container.innerHTML = achievements.map(a => `
-        <div class="achievement-card ${a.unlocked ? 'unlocked' : ''}">
-          <div class="icon">${a.icon}</div>
-          <h4>${a.name}</h4>
-          <p>${a.description}</p>
-        </div>
-      `).join('');
+    async function loadAch() {
+      const r=await fetch('/api/achievements/'+user.id); const a=await r.json();
+      document.getElementById('achievements-grid').innerHTML=a.map(x=>`<div class="achieve ${x.unlocked?'unlocked':''}"><div class="icon">${x.icon}</div><h4>${x.name}</h4><p>${x.description}</p></div>`).join('');
     }
 
-    async function loadInventory() {
-      const res = await fetch(`/api/inventory/${currentUser.id}`);
-      const inventory = await res.json();
-      
-      const avatarContainer = document.getElementById('customize-avatar-selection');
-      avatarContainer.innerHTML = inventory.avatars.map(a => `
-        <div class="avatar-option ${a.equipped ? 'selected' : ''}" onclick="selectCustomizeAvatar(${a.id})">${a.emoji}</div>
-      `).join('');
-      
-      const colorContainer = document.getElementById('customize-color-selection');
-      colorContainer.innerHTML = inventory.colors.map(c => `
-        <div class="color-option ${c.equipped ? 'selected' : ''}" style="background: ${c.gradient}" onclick="selectCustomizeColor(${c.id})"></div>
-      `).join('');
-      
-      const shopAvatars = document.getElementById('shop-avatars');
-      shopAvatars.innerHTML = inventory.avatars.filter(a => !a.owned).map(a => `
-        <div class="avatar-option locked" onclick="buyAvatar(${a.id})">${a.emoji}<br><small>${a.unlock_cost}🪙</small></div>
-      `).join('');
-      
-      const shopColors = document.getElementById('shop-colors');
-      shopColors.innerHTML = inventory.colors.filter(c => !c.owned).map(c => `
-        <div class="color-option locked" style="background: ${c.gradient}" onclick="buyColor(${c.id})"></div>
-      `).join('');
+    async function loadInv() {
+      const r=await fetch('/api/inventory/'+user.id); const inv=await r.json();
+      document.getElementById('avatar-grid').innerHTML=inv.avatars.map(a=>`<div class="avatar-option ${a.equipped?'selected':''} ${!a.owned?'locked':''}" onclick="${a.owned?`selectAv(${a.id})`:''}">${a.emoji}</div>`).join('');
+      document.getElementById('color-grid').innerHTML=inv.colors.map(c=>`<div class="color-option ${c.equipped?'selected':''} ${!c.owned?'locked':''}" style="background:${c.gradient}" onclick="${c.owned?`selectCo(${c.id})`:''}"></div>`).join('');
     }
 
-    let selectedAvatarId = null;
-    let selectedColorId = null;
-
-    function selectCustomizeAvatar(id) {
-      selectedAvatarId = id;
-      document.querySelectorAll('#customize-avatar-selection .avatar-option').forEach(o => o.classList.remove('selected'));
-      event.currentTarget.classList.add('selected');
+    let selAv=null, selCo=null;
+    function selectAv(id) { selAv=id; document.querySelectorAll('#avatar-grid .avatar-option').forEach(x=>x.classList.remove('selected')); event.currentTarget.classList.add('selected'); }
+    function selectCo(id) { selCo=id; document.querySelectorAll('#color-grid .color-option').forEach(x=>x.classList.remove('selected')); event.currentTarget.classList.add('selected'); }
+    async function saveCustomize() {
+      if(selAv) await fetch('/api/equip-avatar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:user.id,avatarId:selAv})});
+      if(selCo) await fetch('/api/equip-color',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:user.id,colorId:selCo})});
+      toast('Saved!','success');
+      const r=await fetch('/api/user/'+user.id); user=await r.json(); updateUI();
     }
 
-    function selectCustomizeColor(id) {
-      selectedColorId = id;
-      document.querySelectorAll('#customize-color-selection .color-option').forEach(o => o.classList.remove('selected'));
-      event.currentTarget.classList.add('selected');
+    function initModes() {
+      const modes=[{id:'Classic',icon:'🎯',name:'Classic',desc:'Standard'},{id:'Speed',icon:'⚡',name:'Speed',desc:'5 sec'},{id:'Survival',icon:'❤️',name:'Survival',desc:'3 lives'},{id:'Betting',icon:'🎰',name:'Betting',desc:'Bet pts'},{id:'Lightning',icon:'🌩️',name:'Lightning',desc:'3 sec'},{id:'Team',icon:'👥',name:'Team',desc:'2v2'},{id:'BattleRoyale',icon:'🔫',name:'Royale',desc:'Last one'},{id:'Blitz',icon:'💥',name:'Blitz',desc:'Infinite'},{id:'Reverse',icon:'🔄',name:'Reverse',desc:'Guess Q'}];
+      document.getElementById('mode-grid').innerHTML=modes.map((m,i)=>`<div class="mode-card ${i===0?'selected':''}" onclick="selMode('${m.id}',this)"><div class="icon">${m.icon}</div><h3>${m.name}</h3><p>${m.desc}</p></div>`).join('');
+      document.getElementById('q-count').oninput=e=>document.getElementById('q-count-val').textContent=e.target.value;
+      document.getElementById('time-limit').oninput=e=>document.getElementById('time-val').textContent=e.target.value;
     }
-
-    async function saveCustomization() {
-      if (selectedAvatarId) {
-        await fetch('/api/equip-avatar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: currentUser.id, avatarId: selectedAvatarId })
-        });
-      }
-      if (selectedColorId) {
-        await fetch('/api/equip-color', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: currentUser.id, colorId: selectedColorId })
-        });
-      }
-      showToast('Customization saved!', 'success');
-      loadInventory();
-    }
-
-    async function buyAvatar(id) {
-      const res = await fetch('/api/buy-avatar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.id, avatarId: id })
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast('Avatar purchased!', 'success');
-        loadInventory();
-      } else {
-        showToast(data.message);
-      }
-    }
-
-    async function buyColor(id) {
-      const res = await fetch('/api/buy-color', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.id, colorId: id })
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast('Color purchased!', 'success');
-        loadInventory();
-      } else {
-        showToast(data.message);
-      }
-    }
-
-    function showJoinScreen() {
-      showScreen('join-screen');
-    }
-
-    function showMainScreen() {
-      showScreen('main-screen');
-    }
+    function selMode(id,el) { mode=id; document.querySelectorAll('.mode-card').forEach(x=>x.classList.remove('selected')); el.classList.add('selected'); }
+    function togglePwr() { pwrEnabled=!pwrEnabled; document.getElementById('pwr-toggle').classList.toggle('active',pwrEnabled); }
 
     function createRoom() {
-      const settings = {
-        questionCount: parseInt(document.getElementById('question-count').value),
-        timeLimit: parseInt(document.getElementById('time-limit').value),
-        difficulty: document.getElementById('difficulty-select').value,
-        powerupsEnabled: powerupsEnabled,
-        pointMultiplier: 1
-      };
-      
-      socket.emit('create-room', {
-        name: currentUser.username,
-        theme: document.getElementById('theme-select').value,
-        gameMode: currentGameMode,
-        avatar: selectedAvatar,
-        color: selectedColor,
-        settings: settings
-      });
+      const settings={questionCount:+document.getElementById('q-count').value,timeLimit:+document.getElementById('time-limit').value,difficulty:document.getElementById('diff-select').value,powerupsEnabled:pwrEnabled};
+      socket.emit('create-room',{name:user.username,theme:document.getElementById('theme-select').value,gameMode:mode,avatar:user.equippedAvatar,color:user.equippedColor,settings});
     }
 
     function joinRoom() {
-      const code = document.getElementById('room-code-input').value.trim().toUpperCase();
-      if (!code) {
-        showToast('Please enter a room code');
-        return;
-      }
-      socket.emit('join-room', {
-        roomCode: code,
-        name: currentUser.username,
-        avatar: selectedAvatar,
-        color: selectedColor
-      });
+      const code=document.getElementById('join-code').value.trim().toUpperCase();
+      if(!code) return toast('Enter room code');
+      socket.emit('join-room',{roomCode:code,name:user.username,avatar:user.equippedAvatar,color:user.equippedColor});
     }
 
     function startGame() { socket.emit('start-game'); }
-    function nextQuestion() { socket.emit('next-question'); }
+    function nextQ() { socket.emit('next-question'); }
     function rematch() { socket.emit('rematch'); }
 
-    function renderSuperpowers() {
-      const container = document.getElementById('superpowers-bar');
-      if (!powerupsEnabled || mySuperpowers.length === 0) {
-        container.innerHTML = '<span style="color: rgba(255,255,255,0.4); font-size: 0.9rem;">Earn superpowers by answering correctly!</span>';
-        return;
-      }
-      container.innerHTML = mySuperpowers.map(p => `
-        <button class="superpower-btn" onclick="useSuperpower('${p.id}')" title="${p.description}">
-          <span class="icon">${p.icon}</span>
-          <span class="name">${p.name}</span>
-        </button>
-      `).join('');
+    socket.on('room-created',d=>{ isHost=true; room=d.roomCode; document.getElementById('room-code').textContent=d.roomCode; showScreen('lobby-screen'); });
+    socket.on('room-joined',d=>{ isHost=d.isHost; room=d.roomCode; if(isHost){document.getElementById('room-code').textContent=d.roomCode;showScreen('lobby-screen');}else{document.getElementById('wait-code').textContent=d.roomCode;showScreen('waiting-screen');} });
+    
+    socket.on('players-update',d=>{
+      const html=d.players.map((p,i)=>`<li class="${p.answered?'answered':''}"><div class="player-info"><div class="player-avatar" style="background:${p.color||COLORS[i%COLORS.length]}">${p.mascot}</div><span>${p.name}</span>${p.streak>1?`<span class="streak-badge">🔥${p.streak}</span>`:''}</div><span class="score">${p.score}</span></li>`).join('');
+      document.getElementById('player-list').innerHTML=html;
+      document.getElementById('wait-list').innerHTML=html;
+      const cnt=d.players.length;
+      if(isHost){ const b=document.getElementById('start-btn'); b.disabled=cnt<2; b.textContent=cnt<2?`Need ${2-cnt} more`:'Start Game'; }
+    });
+
+    socket.on('game-started',()=>showScreen('game-screen'));
+    
+    socket.on('question',d=>{
+      showScreen('game-screen'); selected=null; confirmed=false; frozen=false;
+      document.getElementById('progress').textContent=`Q ${d.questionNumber}/${d.totalQuestions}`;
+      document.getElementById('diff-badge').textContent=d.difficulty||''; document.getElementById('diff-badge').className=`difficulty ${d.difficulty||'easy'}`;
+      document.getElementById('question').textContent=d.question;
+      const labels=['A','B','C','D'];
+      document.getElementById('options').innerHTML=d.options.map((o,i)=>o?`<button class="option" id="opt-${i}" onclick="sel(${i})"><span class="option-label">${labels[i]}</span>${o}</button>`:'').join('');
+      renderPowers();
+      document.getElementById('submit-btn').disabled=true; document.getElementById('submit-btn').textContent='Submit';
+      startTimer(d.timeLimit);
+    });
+
+    function startTimer(s){
+      const fill=document.getElementById('timer-fill'); fill.style.width='100%'; fill.classList.remove('warning');
+      let t=s; const el=document.getElementById('timer'); el.textContent=t; el.classList.remove('warning');
+      clearInterval(timer); timer=setInterval(()=>{ t--; el.textContent=t; fill.style.width=(t/s*100)+'%'; if(t<=3){el.classList.add('warning');fill.classList.add('warning');} if(t<=0)clearInterval(timer); },1000);
     }
 
-    function useSuperpower(powerId) {
-      if (answerConfirmed || isFrozen) return;
-      socket.emit('use-superpower', powerId);
+    function sel(i){ if(confirmed||frozen)return; selected=i; document.querySelectorAll('.option').forEach((b,j)=>b.classList.toggle('selected',j===i)); document.getElementById('submit-btn').disabled=false; }
+    function submitAnswer(){ if(selected===null||confirmed)return; confirmed=true; document.getElementById('submit-btn').disabled=true; document.getElementById('submit-btn').textContent='Submitted!'; socket.emit('submit-answer',selected); toast('Submitted!','success'); }
+
+    function renderPowers(){
+      const c=document.getElementById('powers-bar');
+      if(!pwrEnabled||!powers.length){ c.innerHTML='<span style="color:rgba(255,255,255,0.4);font-size:0.85rem">Answer correctly to earn power-ups!</span>'; return; }
+      c.innerHTML=powers.map(p=>`<button class="power-btn" onclick="usePower('${p.id}')"><span class="icon">${p.icon}</span><span class="name">${p.name}</span></button>`).join('');
     }
+    function usePower(id){ if(confirmed||frozen)return; socket.emit('use-superpower',id); }
 
-    socket.on('room-created', (data) => {
-      isHost = true;
-      currentRoom = data.roomCode;
-      document.getElementById('display-code').textContent = data.roomCode;
-      document.getElementById('theme-display').textContent = 'Theme: ' + (data.theme || 'Random');
-      document.getElementById('mode-display').textContent = 'Mode: ' + (data.gameMode || 'Classic');
-      showScreen('lobby-screen');
+    socket.on('superpower-earned',p=>{ powers.push(p); renderPowers(); popup(p.icon,'Power-Up!',`${p.name}: ${p.description}`); });
+    socket.on('frozen',d=>{ frozen=true; toast(`Frozen by ${d.freezer}!`,'info'); setTimeout(()=>{frozen=false;toast('Unfrozen!','success');},5000); });
+    socket.on('fifty-fifty',d=>{ d.remove.forEach(i=>{ const b=document.getElementById(`opt-${i}`); if(b){b.classList.add('eliminated');} }); powers=powers.filter(p=>p.id!=='fifty_fifty'); renderPowers(); popup('✂️','50/50','2 wrong removed!'); });
+    socket.on('time-freeze',d=>{ popup('⏱️','Time Freeze','+5 sec!'); powers=powers.filter(p=>p.id!=='time_freeze'); renderPowers(); });
+    socket.on('double-points-activated',()=>{ popup('✨','Double Points!','2x this round!'); powers=powers.filter(p=>p.id!=='double_points'); renderPowers(); });
+    socket.on('shield-activated',()=>{ popup('🛡️','Shield!','Protected!'); powers=powers.filter(p=>p.id!=='shield'); renderPowers(); });
+    socket.on('stolen',d=>toast(`${d.thief} stole ${d.amount} pts!`)); socket.on('bombed',d=>toast(`${d.bomber} bombed you!`)); socket.on('gamble-result',d=>toast(`${d.amount>=0?'+'+d.amount:d.amount} pts!`,d.amount>=0?'success':'error'));
+
+    socket.on('answer-reveal',d=>{
+      clearInterval(timer);
+      document.querySelectorAll('.option').forEach((b,i)=>{ b.disabled=true; if(i===d.correctAnswer)b.classList.add('correct'); else if(i===selected&&i!==d.correctAnswer)b.classList.add('wrong'); });
+      document.getElementById('results-list').innerHTML=d.results.map(r=>`<div class="result ${r.correct?'correct':'wrong'}"><span><span class="mascot">${r.mascot}</span><span class="name">${r.name}</span></span><span class="pts">${r.points>=0?'+':''}${r.points}</span></div>`).join('');
+      document.getElementById('scores').innerHTML=d.scores.sort((a,b)=>b.score-a.score).map(s=>`<div class="score-row"><span><span class="mascot">${s.mascot}</span>${s.name}</span><span class="pts">${s.score}</span></div>`).join('');
+      document.getElementById('skip-section').innerHTML=isHost?`<button class="btn-primary" onclick="nextQ()" style="max-width:200px;margin:0 auto">${d.isLastQuestion?'Finish':'Next'}</button>`:'<p style="color:rgba(255,255,255,0.5)">Waiting...</p>';
+      setTimeout(()=>showScreen('results-screen'),1200);
     });
 
-    socket.on('room-joined', (data) => {
-      isHost = data.isHost;
-      currentRoom = data.roomCode;
-      powerupsEnabled = data.settings?.powerupsEnabled !== false;
-      if (isHost) {
-        document.getElementById('display-code').textContent = data.roomCode;
-        showScreen('lobby-screen');
-      } else {
-        document.getElementById('waiting-code').textContent = data.roomCode;
-        showScreen('waiting-screen');
-      }
+    socket.on('game-over',d=>{
+      showScreen('gameover-screen'); confetti();
+      const me=d.rankings.find(p=>p.id===socket.id);
+      if(me){ document.getElementById('xp-earned').textContent='+'+(me.xpGained||0); document.getElementById('coins-earned').textContent='+'+(me.coinsGained||0); }
+      document.getElementById('rankings').innerHTML=d.rankings.map((p,i)=>`<div class="rank ${i===0?'winner':''}"><span class="rank-num">${i===0?'👑':''}#${i+1}</span><span class="rank-mascot">${p.mascot}</span><span class="rank-name">${p.name}</span><span class="rank-score">${p.score}</span></div>`).join('');
     });
 
-    socket.on('players-update', (data) => {
-      const players = data.players;
-      currentGameMode = data.gameMode || 'Classic';
-      
-      const listHtml = players.map((p, i) => {
-        let statusClass = '';
-        if (p.lives !== undefined && p.lives <= 0) statusClass = 'eliminated';
-        else if (p.answered) statusClass = 'answered';
-        
-        let teamClass = p.team ? `team-${p.team}` : '';
-        
-        let livesHtml = '';
-        if (currentGameMode === 'Survival' || currentGameMode === 'Blitz' || currentGameMode === 'BattleRoyale') {
-          livesHtml = `<div class="lives">${[0,1,2].map(j => `<span class="life ${j >= p.lives ? 'lost' : ''}">❤️</span>`).join('')}</div>`;
-        }
-        
-        let streakHtml = '';
-        if (p.streak > 1) {
-          streakHtml = `<span class="streak-badge">🔥 ${p.streak}</span>`;
-        }
-        
-        return `
-          <li class="${statusClass} ${teamClass}">
-            <div class="player-info">
-              <div class="player-avatar" style="background: ${p.color || COLORS[i % COLORS.length]}">${p.mascot}</div>
-              <span>${p.name}</span>
-              ${p.answered ? '<span class="answered-check">✓</span>' : ''}
-              ${streakHtml}
-            </div>
-            <div style="display: flex; align-items: center; gap: 15px;">
-              ${livesHtml}
-              <span class="score">${p.score} pts</span>
-            </div>
-          </li>
-        `;
-      }).join('');
-      
-      document.getElementById('player-list').innerHTML = listHtml;
-      document.getElementById('waiting-players').innerHTML = listHtml;
-      
-      const playerCount = players.length;
-      document.getElementById('player-count').textContent = `${playerCount}/10`;
-      
-      const badge = document.getElementById('player-badge');
-      badge.classList.toggle('ready', playerCount >= 2);
-      
-      if (isHost) {
-        const startBtn = document.getElementById('start-btn');
-        if (playerCount >= 2) {
-          startBtn.disabled = false;
-          startBtn.textContent = 'Start Game';
-        } else {
-          startBtn.disabled = true;
-          startBtn.textContent = `Need ${2 - playerCount} more player${2 - playerCount > 1 ? 's' : ''}`;
-        }
-      }
-    });
+    socket.on('error',m=>toast(m));
 
-    socket.on('teams-assigned', (data) => {
-      showToast('Teams assigned! Red vs Blue', 'info');
-    });
-
-    socket.on('game-started', (data) => {
-      currentGameMode = data.gameMode;
-      showScreen('game-screen');
-    });
-
-    socket.on('question', (data) => {
-      showScreen('game-screen');
-      selectedAnswer = null;
-      answerConfirmed = false;
-      eliminatedOptions = [];
-      extraTime = 0;
-      isFrozen = false;
-      
-      document.getElementById('progress-text').textContent = `Question ${data.questionNumber} of ${data.totalQuestions}`;
-      document.getElementById('question-text').textContent = data.question;
-      document.getElementById('current-theme').innerHTML = `<span>${data.theme || ''}</span>`;
-      
-      const diffBadge = document.getElementById('difficulty-badge');
-      if (data.difficulty) {
-        diffBadge.textContent = data.difficulty;
-        diffBadge.className = `difficulty-badge ${data.difficulty}`;
-        diffBadge.style.display = 'inline';
-      } else {
-        diffBadge.style.display = 'none';
-      }
-      
-      const submitBtn = document.getElementById('submit-btn');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Select an answer';
-      
-      renderSuperpowers();
-      
-      const optionLabels = ['A', 'B', 'C', 'D'];
-      let optionsHtml = '';
-      
-      if (data.type === 'truefalse') {
-        optionsHtml = `
-          <button class="option-btn" onclick="selectAnswer(0)" id="opt-0" style="grid-column: span 2;">
-            <span class="option-label">A</span>True
-          </button>
-          <button class="option-btn" onclick="selectAnswer(1)" id="opt-1" style="grid-column: span 2;">
-            <span class="option-label">B</span>False
-          </button>
-        `;
-      } else {
-        optionsHtml = data.options.map((opt, i) => 
-          opt ? `<button class="option-btn" onclick="selectAnswer(${i})" id="opt-${i}">
-            <span class="option-label">${optionLabels[i]}</span>
-            ${opt}
-          </button>` : ''
-        ).join('');
-      }
-      
-      document.getElementById('options-container').innerHTML = optionsHtml;
-      
-      startTimer(data.timeLimit || 10);
-    });
-
-    function startTimer(seconds) {
-      const timerBar = document.getElementById('timer-bar-fill');
-      timerBar.style.width = '100%';
-      timerBar.classList.remove('warning');
-      
-      let timeLeft = seconds + extraTime;
-      const totalTime = timeLeft;
-      const timerEl = document.getElementById('timer');
-      timerEl.textContent = timeLeft;
-      timerEl.classList.remove('warning');
-      
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        timerEl.textContent = timeLeft;
-        timerBar.style.width = (timeLeft / totalTime * 100) + '%';
-        
-        if (timeLeft <= 3) {
-          timerEl.classList.add('warning');
-          timerBar.classList.add('warning');
-        }
-        
-        if (timeLeft <= 0) clearInterval(timerInterval);
-      }, 1000);
-    }
-
-    function selectAnswer(index) {
-      if (answerConfirmed || eliminatedOptions.includes(index) || isFrozen) return;
-      selectedAnswer = index;
-      document.querySelectorAll('.option-btn').forEach((btn, i) => {
-        btn.classList.remove('selected');
-        if (i === index) btn.classList.add('selected');
-      });
-      
-      const submitBtn = document.getElementById('submit-btn');
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit Answer';
-    }
-
-    function confirmAnswer() {
-      if (selectedAnswer === null || answerConfirmed || isFrozen) return;
-      answerConfirmed = true;
-      
-      const submitBtn = document.getElementById('submit-btn');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Answer submitted!';
-      
-      socket.emit('submit-answer', selectedAnswer);
-      showToast('Answer submitted!', 'success');
-    }
-
-    socket.on('fifty-fifty', (data) => {
-      data.remove.forEach(i => {
-        const btn = document.getElementById(`opt-${i}`);
-        if (btn) {
-          btn.classList.add('eliminated');
-          eliminatedOptions.push(i);
-        }
-      });
-      mySuperpowers = mySuperpowers.filter(p => p.id !== 'fifty_fifty');
-      renderSuperpowers();
-      showPowerPopup('✂️', '50/50', 'Two wrong answers eliminated!');
-    });
-
-    socket.on('time-freeze', (data) => {
-      extraTime = data.extraSeconds;
-      mySuperpowers = mySuperpowers.filter(p => p.id !== 'time_freeze');
-      renderSuperpowers();
-      showPowerPopup('⏱️', 'Time Freeze', `+${data.extraSeconds} seconds!`);
-    });
-
-    socket.on('double-points-activated', () => {
-      mySuperpowers = mySuperpowers.filter(p => p.id !== 'double_points');
-      renderSuperpowers();
-      showPowerPopup('✨', 'Double Points!', '2x points this round!');
-    });
-
-    socket.on('shield-activated', () => {
-      mySuperpowers = mySuperpowers.filter(p => p.id !== 'shield');
-      renderSuperpowers();
-      showPowerPopup('🛡️', 'Shield Active!', 'Protected!');
-    });
-
-    socket.on('oracle-result', (data) => {
-      mySuperpowers = mySuperpowers.filter(p => p.id !== 'oracle');
-      renderSuperpowers();
-      const btn = document.getElementById(`opt-${data.correctAnswer}`);
-      if (btn) btn.classList.add('oracle-hint');
-      showPowerPopup('🔮', 'Oracle', 'One answer glows slightly...');
-    });
-
-    socket.on('answer-banned', (data) => {
-      const btn = document.getElementById(`opt-${data.bannedAnswer}`);
-      if (btn) btn.classList.add('banned');
-      showToast(`${data.banner} banned an answer!`, 'info');
-    });
-
-    socket.on('superpower-earned', (power) => {
-      mySuperpowers.push(power);
-      renderSuperpowers();
-      showPowerPopup(power.icon, 'Power-Up!', `${power.name}: ${power.description}`);
-    });
-
-    socket.on('stolen', (data) => {
-      showToast(`${data.thief} stole ${data.amount} points!`, 'error');
-      playSound('wrong');
-    });
-
-    socket.on('swapped', (data) => {
-      showToast(`Scores swapped with ${data.thief}!`, 'info');
-    });
-
-    socket.on('bombed', (data) => {
-      showToast(`${data.bomber} bombed you for 30 points!`, 'error');
-      playSound('wrong');
-    });
-
-    socket.on('frozen', (data) => {
-      isFrozen = true;
-      showToast(`Frozen by ${data.freezer}!`, 'info');
-      document.querySelectorAll('.option-btn').forEach(btn => btn.classList.add('frozen'));
-      
-      setTimeout(() => {
-        isFrozen = false;
-        document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('frozen'));
-        showToast('Unfrozen!', 'success');
-      }, 5000);
-    });
-
-    socket.on('gamble-result', (data) => {
-      const msg = data.amount >= 0 ? `Won ${data.amount} points!` : `Lost ${Math.abs(data.amount)} points`;
-      showToast(msg, data.amount >= 0 ? 'success' : 'error');
-    });
-
-    socket.on('answer-reveal', (data) => {
-      clearInterval(timerInterval);
-      
-      const correct = data.correctAnswer === selectedAnswer;
-      playSound(correct ? 'correct' : 'wrong');
-      
-      document.querySelectorAll('.option-btn').forEach((btn, i) => {
-        btn.disabled = true;
-        if (i === data.correctAnswer) btn.classList.add('correct');
-        else if (i === selectedAnswer && i !== data.correctAnswer) btn.classList.add('wrong');
-      });
-      
-      const resultsHtml = data.results.map(r => `
-        <div class="result-item ${r.correct ? 'correct' : 'wrong'}">
-          <div class="result-info">
-            <span class="mascot">${r.mascot}</span>
-            <span class="name">${r.name}</span>
-          </div>
-          <div class="result-details">
-            <span class="time">${r.time}s</span>
-            <span class="points">${r.points >= 0 ? '+' : ''}${r.points} pts</span>
-          </div>
-        </div>
-      `).join('');
-      document.getElementById('results-list').innerHTML = resultsHtml;
-      
-      if (data.teamScores) {
-        const teamScores = document.getElementById('team-scores');
-        const winner = data.teamScores.red > data.teamScores.blue ? 'red' : data.teamScores.blue > data.teamScores.red ? 'blue' : null;
-        teamScores.innerHTML = `
-          <div class="team-score-card red ${winner === 'red' ? 'winner' : ''}">
-            <h3>Red Team</h3>
-            <div class="score">${data.teamScores.red}</div>
-          </div>
-          <div class="team-score-card blue ${winner === 'blue' ? 'winner' : ''}">
-            <h3>Blue Team</h3>
-            <div class="score">${data.teamScores.blue}</div>
-          </div>
-        `;
-        teamScores.style.display = 'flex';
-      }
-      
-      const scoresHtml = data.scores.sort((a,b) => b.score - a.score).map((s, i) => {
-        let livesHtml = '';
-        if (currentGameMode === 'Survival' || currentGameMode === 'Blitz' || currentGameMode === 'BattleRoyale') {
-          livesHtml = `<div class="lives">${[0,1,2].map(j => `<span class="life ${j >= s.lives ? 'lost' : ''}">❤️</span>`).join('')}</div>`;
-        }
-        return `
-          <div class="score-item">
-            <div class="score-info">
-              <span class="score-mascot">${s.mascot}</span>
-              <span>${s.name}</span>
-              ${livesHtml}
-            </div>
-            <span class="score-value">${s.score} pts</span>
-          </div>
-        `;
-      }).join('');
-      document.getElementById('score-board').innerHTML = '<h3>Scores</h3>' + scoresHtml;
-      
-      const skipSection = document.getElementById('skip-section');
-      if (isHost) {
-        skipSection.innerHTML = `<button class="btn-primary skip-btn" onclick="nextQuestion()">${data.isLastQuestion ? 'See Final Results' : 'Next Question'}</button>`;
-      } else {
-        skipSection.innerHTML = '<p style="color: rgba(255,255,255,0.5);">Waiting for host...</p>';
-      }
-      
-      setTimeout(() => showScreen('results-screen'), 1500);
-    });
-
-    socket.on('game-over', (data) => {
-      showScreen('gameover-screen');
-      createConfetti();
-      
-      if (data.rankings[0]?.xpGained !== undefined) {
-        document.getElementById('xp-earned').textContent = '+' + data.rankings.find(p => p.id === socket.id)?.xpGained || 0;
-        document.getElementById('coins-earned').textContent = '+' + data.rankings.find(p => p.id === socket.id)?.coinsGained || 0;
-        document.getElementById('rewards-section').style.display = 'block';
-      }
-      
-      const rankingsHtml = data.rankings.map((p, i) => `
-        <div class="rank-item ${i === 0 ? 'winner' : ''}" style="animation-delay: ${i * 0.1}s">
-          <span class="rank-number">${i === 0 ? '<span class="crown">&#128081;</span>' : ''}#${i + 1}</span>
-          <span class="rank-mascot">${p.mascot}</span>
-          <span class="rank-name">${p.name}</span>
-          <span class="rank-score">${p.score} pts</span>
-        </div>
-      `).join('');
-      document.getElementById('final-rankings').innerHTML = rankingsHtml;
-    });
-
-    function createConfetti() {
-      const colors = ['#00d4ff', '#7c3aed', '#f472b6', '#22c55e', '#fbbf24', '#ef4444'];
-      for (let i = 0; i < 50; i++) {
-        setTimeout(() => {
-          const confetti = document.createElement('div');
-          confetti.className = 'confetti';
-          confetti.style.left = Math.random() * 100 + '%';
-          confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-          confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-          confetti.style.width = (5 + Math.random() * 10) + 'px';
-          confetti.style.height = (5 + Math.random() * 10) + 'px';
-          document.body.appendChild(confetti);
-          setTimeout(() => confetti.remove(), 3000);
-        }, i * 50);
-      }
-    }
-
-    socket.on('error', (msg) => showToast(msg));
+    document.getElementById('q-count').addEventListener('input',e=>document.getElementById('q-count-val').textContent=e.target.value);
+    document.getElementById('time-limit').addEventListener('input',e=>document.getElementById('time-val').textContent=e.target.value);
   </script>
 </body>
 </html>

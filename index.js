@@ -279,13 +279,16 @@ function clearTimer(roomCode) {
 }
 
 app.post('/api/register', (req, res) => {
-  const { username } = req.body;
+  const { username, password } = req.body;
   if (!username || username.length < 2 || username.length > 15) {
     return res.status(400).json({ error: 'Username must be 2-15 characters' });
   }
+  if (!password || password.length < 4) {
+    return res.status(400).json({ error: 'Password must be at least 4 characters' });
+  }
   
   try {
-    const user = User.create(username);
+    const user = User.create(username, password);
     res.json({ success: true, user });
   } catch (e) {
     if (e.code === 'SQLITE_CONSTRAINT') {
@@ -297,10 +300,10 @@ app.post('/api/register', (req, res) => {
 });
 
 app.post('/api/login', (req, res) => {
-  const { username } = req.body;
-  const user = User.getByUsername(username);
+  const { username, password } = req.body;
+  const user = User.validatePassword(username, password);
   if (!user) {
-    return res.status(404).json({ error: 'User not found' });
+    return res.status(401).json({ error: 'Invalid username or password' });
   }
   res.json({ success: true, user });
 });
@@ -1117,7 +1120,9 @@ io.on('connection', (socket) => {
           correctAnswers: p.correctThisGame || 0,
           totalQuestions: room.questions.length,
           rank: rank + 1,
-          playersCount: players.length
+          playersCount: players.length,
+          xpEarned: xpGained,
+          coinsEarned: coinsGained
         });
         
         p.xpGained = xpGained;
