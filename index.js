@@ -21,8 +21,26 @@ const QUESTIONS = [
   { question: "Which country invented pizza?", options: ["USA", "Italy", "France", "Greece"], answer: 1 },
   { question: "How many continents are there?", options: ["5", "6", "7", "8"], answer: 2 },
   { question: "What is the fastest land animal?", options: ["Lion", "Cheetah", "Horse", "Leopard"], answer: 1 },
-  { question: "Who wrote 'Romeo and Juliet'?", options: ["Dickens", "Shakespeare", "Austen", "Hemingway"], answer: 1 }
+  { question: "Who wrote 'Romeo and Juliet'?", options: ["Dickens", "Shakespeare", "Austen", "Hemingway"], answer: 1 },
+  { question: "What is the largest mammal?", options: ["Elephant", "Blue Whale", "Giraffe", "Polar Bear"], answer: 1 },
+  { question: "Which element has the chemical symbol 'O'?", options: ["Gold", "Oxygen", "Osmium", "Oganesson"], answer: 1 },
+  { question: "How many sides does a hexagon have?", options: ["5", "6", "7", "8"], answer: 1 },
+  { question: "What is the capital of Japan?", options: ["Beijing", "Seoul", "Tokyo", "Bangkok"], answer: 2 },
+  { question: "Which planet is closest to the Sun?", options: ["Venus", "Mercury", "Earth", "Mars"], answer: 1 },
+  { question: "What year did the Titanic sink?", options: ["1910", "1911", "1912", "1913"], answer: 2 },
+  { question: "What is the hardest natural substance?", options: ["Gold", "Iron", "Diamond", "Platinum"], answer: 2 },
+  { question: "How many strings does a guitar have?", options: ["4", "5", "6", "7"], answer: 2 },
+  { question: "What is the capital of Australia?", options: ["Sydney", "Melbourne", "Canberra", "Perth"], answer: 2 },
+  { question: "Which vitamin do we get from sunlight?", options: ["Vitamin A", "Vitamin B", "Vitamin C", "Vitamin D"], answer: 3 },
+  { question: "What is the smallest country in the world?", options: ["Monaco", "Vatican City", "San Marino", "Liechtenstein"], answer: 1 },
+  { question: "How many bones in the adult human body?", options: ["186", "206", "226", "246"], answer: 1 },
+  { question: "What is the longest river in the world?", options: ["Amazon", "Nile", "Yangtze", "Mississippi"], answer: 1 },
+  { question: "Which gas do plants absorb?", options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"], answer: 2 },
+  { question: "What is the capital of Brazil?", options: ["Rio de Janeiro", "Sao Paulo", "Brasilia", "Salvador"], answer: 2 }
 ];
+
+const MIN_PLAYERS = 2;
+const MAX_PLAYERS = 10;
 
 let rooms = new Map();
 
@@ -32,7 +50,7 @@ function generateCode() {
 
 function shuffleQuestions() {
   const shuffled = [...QUESTIONS].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, 5);
+  return shuffled.slice(0, 7);
 }
 
 function getRoomPlayers(roomCode) {
@@ -69,8 +87,8 @@ io.on('connection', (socket) => {
     socket.join(roomCode);
     socket.data.currentRoom = roomCode;
     
-    socket.emit('room-created', { roomCode, isHost: true });
-    io.to(roomCode).emit('players-update', getRoomPlayers(roomCode));
+    socket.emit('room-created', { roomCode, isHost: true, minPlayers: MIN_PLAYERS, maxPlayers: MAX_PLAYERS });
+    io.to(roomCode).emit('players-update', { players: getRoomPlayers(roomCode), minPlayers: MIN_PLAYERS, maxPlayers: MAX_PLAYERS });
   });
 
   socket.on('join-room', ({ roomCode, name }) => {
@@ -85,6 +103,12 @@ io.on('connection', (socket) => {
       return;
     }
 
+    const currentPlayers = getRoomPlayers(roomCode).length;
+    if (currentPlayers >= MAX_PLAYERS) {
+      socket.emit('error', 'Room is full (max ' + MAX_PLAYERS + ' players)');
+      return;
+    }
+
     socket.data.name = name;
     socket.data.score = 0;
     socket.data.currentRoom = roomCode;
@@ -92,8 +116,8 @@ io.on('connection', (socket) => {
     room.players.push(socket.id);
     socket.join(roomCode);
     
-    socket.emit('room-joined', { roomCode, isHost: false });
-    io.to(roomCode).emit('players-update', getRoomPlayers(roomCode));
+    socket.emit('room-joined', { roomCode, isHost: false, minPlayers: MIN_PLAYERS, maxPlayers: MAX_PLAYERS });
+    io.to(roomCode).emit('players-update', { players: getRoomPlayers(roomCode), minPlayers: MIN_PLAYERS, maxPlayers: MAX_PLAYERS });
   });
 
   socket.on('start-game', () => {
@@ -101,8 +125,10 @@ io.on('connection', (socket) => {
     const room = rooms.get(roomCode);
     
     if (!room || room.host !== socket.id) return;
-    if (getRoomPlayers(roomCode).length < 3) {
-      socket.emit('error', 'Need at least 3 players to start');
+    
+    const playerCount = getRoomPlayers(roomCode).length;
+    if (playerCount < MIN_PLAYERS) {
+      socket.emit('error', 'Need at least ' + MIN_PLAYERS + ' players to start');
       return;
     }
     
@@ -201,7 +227,7 @@ io.on('connection', (socket) => {
     if (!room) return;
     
     room.players = room.players.filter(id => id !== socket.id);
-    io.to(roomCode).emit('players-update', getRoomPlayers(roomCode));
+    io.to(roomCode).emit('players-update', { players: getRoomPlayers(roomCode), minPlayers: MIN_PLAYERS, maxPlayers: MAX_PLAYERS });
     
     if (room.players.length === 0) {
       rooms.delete(roomCode);
