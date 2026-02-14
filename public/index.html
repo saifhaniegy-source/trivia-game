@@ -526,7 +526,7 @@
         const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
         const d=await r.json();
         if(d.error) return toast(d.error);
-        user=d; socket.emit('set-user',user); updateUI(); showScreen('main-screen'); checkDaily();
+        user=d.user; socket.emit('set-user',user); updateUI(); showScreen('main-screen'); checkDaily();
       } catch(e) { toast('Connection error'); }
     }
 
@@ -538,7 +538,7 @@
         const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
         const d=await r.json();
         if(d.error) return toast(d.error);
-        user=d; socket.emit('set-user',user); updateUI(); showScreen('main-screen'); checkDaily();
+        user=d.user; socket.emit('set-user',user); updateUI(); showScreen('main-screen'); checkDaily();
       } catch(e) { toast('Connection error'); }
     }
 

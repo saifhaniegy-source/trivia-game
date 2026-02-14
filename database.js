@@ -1,6 +1,6 @@
 const Database = require('better-sqlite3');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 
 const db = new Database(path.join(__dirname, 'trivia.db'));
 
@@ -216,7 +216,7 @@ function xpToNextLevel(currentXp) {
 
 const User = {
   create: (username, password) => {
-    const id = uuidv4();
+    const id = randomUUID();
     const stmt = db.prepare('INSERT INTO users (id, username, password) VALUES (?, ?, ?)');
     stmt.run(id, username.toLowerCase(), password);
     
