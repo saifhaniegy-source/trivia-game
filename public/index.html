@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trivia Battle - Multiplayer Quiz</title>
+  <title>Trivia Battle - Ultimate Multiplayer Quiz</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -15,6 +15,25 @@
       overflow-x: hidden;
     }
 
+    :root {
+      --primary: #00d4ff;
+      --secondary: #7c3aed;
+      --accent: #f472b6;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #fbbf24;
+    }
+
+    [data-theme="neon"] {
+      --bg-gradient: linear-gradient(-45deg, #000000, #0a0a0a, #001a00, #00001a);
+    }
+    [data-theme="retro"] {
+      --bg-gradient: linear-gradient(-45deg, #2d1b4e, #1a1a2e, #4a1942, #1f1f3d);
+    }
+    [data-theme="minimal"] {
+      --bg-gradient: linear-gradient(-45deg, #1a1a1a, #2a2a2a, #1a1a1a, #2a2a2a);
+    }
+
     .bg-animation {
       position: fixed;
       top: 0;
@@ -22,7 +41,7 @@
       width: 100%;
       height: 100%;
       z-index: -1;
-      background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #0f0c29);
+      background: var(--bg-gradient, linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #0f0c29));
       background-size: 400% 400%;
       animation: gradientShift 15s ease infinite;
     }
@@ -36,8 +55,7 @@
       height: 100%;
       background: 
         radial-gradient(circle at 20% 80%, rgba(120, 0, 255, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(0, 212, 255, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(255, 0, 128, 0.2) 0%, transparent 50%);
+        radial-gradient(circle at 80% 20%, rgba(0, 212, 255, 0.3) 0%, transparent 50%);
     }
 
     .particles {
@@ -73,7 +91,7 @@
     }
 
     .container { 
-      max-width: 900px; 
+      max-width: 1000px; 
       margin: 0 auto; 
       padding: 20px;
       min-height: 100vh;
@@ -94,7 +112,6 @@
       background-size: 300% 300%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      background-clip: text;
       animation: logoGradient 5s ease infinite;
       letter-spacing: -2px;
     }
@@ -131,11 +148,37 @@
       background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(20px);
       border-radius: 24px;
-      padding: 40px;
+      padding: 30px;
       margin-bottom: 20px;
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
     }
+
+    .tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 5px;
+      border-radius: 15px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .tab:hover { color: white; }
+    .tab.active { background: linear-gradient(135deg, #00d4ff, #7c3aed); color: white; }
 
     .section-title {
       font-size: 0.9rem;
@@ -146,8 +189,71 @@
       margin-top: 20px;
     }
 
-    .section-title:first-child {
-      margin-top: 0;
+    .section-title:first-child { margin-top: 0; }
+
+    .user-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .user-details h3 { font-size: 1.1rem; }
+    .user-details p { font-size: 0.8rem; color: rgba(255, 255, 255, 0.5); }
+
+    .user-stats {
+      display: flex;
+      gap: 20px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .xp-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .xp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 4px;
+      transition: width 0.5s ease;
     }
 
     input { 
@@ -165,7 +271,7 @@
 
     input:focus {
       outline: none;
-      border-color: #00d4ff;
+      border-color: var(--primary);
       background: rgba(0, 212, 255, 0.1);
     }
 
@@ -189,7 +295,7 @@
       background-size: 20px;
     }
 
-    select:focus { outline: none; border-color: #7c3aed; }
+    select:focus { outline: none; border-color: var(--secondary); }
     select option { background: #1a1a2e; color: white; }
 
     .avatar-selection {
@@ -209,7 +315,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 1.3rem;
     }
 
     .avatar-option:hover {
@@ -218,24 +324,20 @@
     }
 
     .avatar-option.selected {
-      border-color: #00d4ff;
+      border-color: var(--primary);
       background: rgba(0, 212, 255, 0.2);
       box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
-      transform: scale(1.15);
     }
 
-    .avatar-preview {
-      text-align: center;
-      margin-bottom: 20px;
+    .avatar-option.locked {
+      opacity: 0.4;
+      cursor: not-allowed;
     }
 
-    .avatar-preview .big-avatar {
-      font-size: 4rem;
-      display: inline-block;
-      padding: 20px;
-      background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(124, 58, 237, 0.2));
-      border-radius: 50%;
-      border: 3px solid rgba(255, 255, 255, 0.2);
+    .avatar-option.locked::after {
+      content: '🔒';
+      position: absolute;
+      font-size: 0.7rem;
     }
 
     .color-selection {
@@ -256,16 +358,17 @@
 
     .color-option:hover { transform: scale(1.1); }
     .color-option.selected { border-color: white; transform: scale(1.15); }
+    .color-option.locked { opacity: 0.4; cursor: not-allowed; }
 
     .game-mode-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
       margin-bottom: 15px;
     }
 
     .game-mode-card {
-      padding: 20px;
+      padding: 18px;
       background: rgba(255, 255, 255, 0.05);
       border: 2px solid rgba(255, 255, 255, 0.1);
       border-radius: 16px;
@@ -276,19 +379,87 @@
 
     .game-mode-card:hover {
       background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
       transform: translateY(-3px);
     }
 
     .game-mode-card.selected {
       background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(124, 58, 237, 0.2));
-      border-color: #00d4ff;
-      box-shadow: 0 5px 30px rgba(0, 212, 255, 0.3);
+      border-color: var(--primary);
     }
 
-    .game-mode-card .icon { font-size: 2.5rem; margin-bottom: 10px; }
-    .game-mode-card h3 { font-size: 1.1rem; margin-bottom: 5px; }
-    .game-mode-card p { font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); }
+    .game-mode-card .icon { font-size: 2rem; margin-bottom: 8px; }
+    .game-mode-card h3 { font-size: 1rem; margin-bottom: 3px; }
+    .game-mode-card p { font-size: 0.75rem; color: rgba(255, 255, 255, 0.6); }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .setting-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      border-radius: 12px;
+    }
+
+    .setting-item label {
+      display: block;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+    }
+
+    .setting-item input[type="range"] {
+      width: 100%;
+      margin-bottom: 5px;
+      -webkit-appearance: none;
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .setting-item input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      cursor: pointer;
+    }
+
+    .setting-value {
+      text-align: center;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .toggle {
+      position: relative;
+      width: 50px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .toggle.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .toggle.active::after { left: 26px; }
 
     button { 
       width: 100%; 
@@ -304,7 +475,7 @@
     }
 
     .btn-primary { 
-      background: linear-gradient(135deg, #00d4ff, #7c3aed);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
       box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
     }
@@ -325,13 +496,19 @@
     .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
 
     .btn-success {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
+      background: linear-gradient(135deg, var(--success), #16a34a);
       color: white;
-      box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
     }
 
-    .btn-success:hover:not(:disabled) { transform: translateY(-3px); }
-    .btn-success:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger), #dc2626);
+      color: white;
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, var(--warning), #d97706);
+      color: white;
+    }
 
     .room-code-container { text-align: center; margin: 25px 0; }
 
@@ -346,7 +523,7 @@
     .room-code { 
       font-size: 4rem; 
       font-weight: 800;
-      background: linear-gradient(135deg, #00d4ff, #7c3aed, #f472b6);
+      background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       letter-spacing: 15px;
@@ -364,7 +541,7 @@
       padding: 8px 16px;
       border-radius: 20px;
       font-size: 0.9rem;
-      margin-bottom: 20px;
+      margin: 5px;
     }
 
     .player-section { margin: 25px 0; }
@@ -383,7 +560,7 @@
       background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(0, 212, 255, 0.2));
     }
 
-    .player-count-badge .count { font-weight: 700; color: #00d4ff; }
+    .player-count-badge .count { font-weight: 700; color: var(--primary); }
 
     .player-list { list-style: none; display: grid; gap: 10px; }
 
@@ -398,8 +575,7 @@
       animation: slideIn 0.3s ease;
     }
 
-    .player-list li.answered,
-    .player-list li.eliminated {
+    .player-list li.answered {
       background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
       border-color: rgba(34, 197, 94, 0.3);
     }
@@ -407,8 +583,10 @@
     .player-list li.eliminated {
       opacity: 0.5;
       background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
-      border-color: rgba(239, 68, 68, 0.3);
     }
+
+    .player-list li.team-red { border-left: 4px solid #ef4444; }
+    .player-list li.team-blue { border-left: 4px solid #3b82f6; }
 
     @keyframes slideIn {
       from { opacity: 0; transform: translateX(-20px); }
@@ -427,18 +605,28 @@
       font-size: 1.3rem;
     }
 
-    .player-list li .score { font-weight: 700; color: #00d4ff; }
-    .answered-check { color: #22c55e; font-size: 1.2rem; margin-left: 10px; }
+    .player-list li .score { font-weight: 700; color: var(--primary); }
+    .answered-check { color: var(--success); font-size: 1.2rem; margin-left: 10px; }
+    
     .lives { display: flex; gap: 3px; }
-    .life { color: #ef4444; }
+    .life { color: var(--danger); }
     .life.lost { opacity: 0.3; }
+
+    .streak-badge {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      padding: 3px 10px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-left: 10px;
+    }
 
     .waiting { text-align: center; padding: 30px; }
 
     .waiting h2 {
       font-size: 1.5rem;
       margin-bottom: 10px;
-      background: linear-gradient(90deg, #fff, #00d4ff);
+      background: linear-gradient(90deg, #fff, var(--primary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -450,7 +638,7 @@
       height: 50px;
       margin: 20px auto;
       border: 3px solid rgba(255, 255, 255, 0.1);
-      border-top-color: #00d4ff;
+      border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
@@ -461,7 +649,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
     .progress { 
@@ -472,17 +660,29 @@
       border-radius: 20px;
     }
 
+    .difficulty-badge {
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+
+    .difficulty-badge.easy { background: rgba(34, 197, 94, 0.3); color: #22c55e; }
+    .difficulty-badge.medium { background: rgba(251, 191, 36, 0.3); color: #fbbf24; }
+    .difficulty-badge.hard { background: rgba(239, 68, 68, 0.3); color: #ef4444; }
+
     .timer-container { display: flex; align-items: center; gap: 10px; }
 
     .timer { 
       font-size: 2.5rem;
       font-weight: 800;
-      color: #00d4ff;
+      color: var(--primary);
       min-width: 60px;
       text-align: center;
     }
 
-    .timer.warning { color: #f472b6; animation: timerPulse 0.5s ease infinite; }
+    .timer.warning { color: var(--accent); animation: timerPulse 0.5s ease infinite; }
 
     @keyframes timerPulse {
       0%, 100% { transform: scale(1); }
@@ -500,15 +700,15 @@
 
     .timer-bar-fill {
       height: 100%;
-      background: linear-gradient(90deg, #00d4ff, #7c3aed);
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
       border-radius: 3px;
       transition: width 1s linear;
     }
 
-    .timer-bar-fill.warning { background: linear-gradient(90deg, #f472b6, #ef4444); }
+    .timer-bar-fill.warning { background: linear-gradient(90deg, var(--accent), var(--danger)); }
 
     .question { 
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       text-align: center;
       margin-bottom: 15px;
       line-height: 1.4;
@@ -528,42 +728,9 @@
       border-radius: 15px;
     }
 
-    .betting-section {
-      text-align: center;
-      margin-bottom: 20px;
-      padding: 20px;
-      background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05));
-      border-radius: 16px;
-      border: 1px solid rgba(251, 191, 36, 0.2);
-    }
-
-    .betting-section h3 { color: #fbbf24; margin-bottom: 10px; }
-    .betting-section .current-score { font-size: 1.5rem; font-weight: 700; margin-bottom: 15px; }
-
-    .bet-slider {
-      width: 100%;
-      margin: 15px 0;
-      -webkit-appearance: none;
-      height: 10px;
-      border-radius: 5px;
-      background: rgba(255, 255, 255, 0.1);
-      outline: none;
-    }
-
-    .bet-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #fbbf24, #f59e0b);
-      cursor: pointer;
-    }
-
-    .bet-amount { font-size: 2rem; font-weight: 800; color: #fbbf24; }
-
     .superpowers-bar {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       margin-bottom: 20px;
       flex-wrap: wrap;
       justify-content: center;
@@ -573,13 +740,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 12px 16px;
+      padding: 10px 14px;
       background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.1));
       border: 2px solid rgba(251, 191, 36, 0.3);
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s ease;
-      min-width: 80px;
+      min-width: 70px;
     }
 
     .superpower-btn:hover {
@@ -587,8 +754,8 @@
       transform: translateY(-2px);
     }
 
-    .superpower-btn .icon { font-size: 1.5rem; margin-bottom: 5px; }
-    .superpower-btn .name { font-size: 0.75rem; font-weight: 600; }
+    .superpower-btn .icon { font-size: 1.3rem; margin-bottom: 3px; }
+    .superpower-btn .name { font-size: 0.7rem; font-weight: 600; }
 
     .options {
       display: grid;
@@ -613,29 +780,31 @@
 
     .option-btn:hover:not(:disabled) {
       background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(124, 58, 237, 0.1));
-      border-color: #00d4ff;
+      border-color: var(--primary);
       transform: translateY(-3px);
     }
 
     .option-btn.selected {
       background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(124, 58, 237, 0.2));
-      border-color: #00d4ff;
+      border-color: var(--primary);
       box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
     }
 
     .option-btn.correct {
       background: linear-gradient(135deg, rgba(34, 197, 94, 0.4), rgba(16, 185, 129, 0.3));
-      border-color: #22c55e;
+      border-color: var(--success);
     }
 
     .option-btn.wrong {
       background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(220, 38, 38, 0.3));
-      border-color: #ef4444;
+      border-color: var(--danger);
     }
 
     .option-btn:disabled { cursor: not-allowed; }
     .option-btn.eliminated { opacity: 0.3; text-decoration: line-through; }
     .option-btn.frozen { opacity: 0.5; pointer-events: none; }
+    .option-btn.oracle-hint { box-shadow: inset 0 0 20px rgba(251, 191, 36, 0.3); }
+    .option-btn.banned { opacity: 0.2; pointer-events: none; }
 
     .option-label {
       position: absolute;
@@ -652,10 +821,30 @@
     .results-header { text-align: center; margin-bottom: 30px; }
     .results-header h2 {
       font-size: 2rem;
-      background: linear-gradient(90deg, #00d4ff, #7c3aed);
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
+    .team-scores {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .team-score-card {
+      padding: 20px 40px;
+      border-radius: 16px;
+      text-align: center;
+    }
+
+    .team-score-card.red { background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(239, 68, 68, 0.1)); border: 2px solid rgba(239, 68, 68, 0.5); }
+    .team-score-card.blue { background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.1)); border: 2px solid rgba(59, 130, 246, 0.5); }
+    .team-score-card.winner { box-shadow: 0 0 30px rgba(251, 191, 36, 0.5); }
+
+    .team-score-card h3 { font-size: 1.5rem; margin-bottom: 10px; }
+    .team-score-card .score { font-size: 2rem; font-weight: 800; }
 
     .results-list { display: grid; gap: 12px; margin-bottom: 25px; }
 
@@ -675,12 +864,12 @@
 
     .result-item.correct {
       background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
-      border-left: 4px solid #22c55e;
+      border-left: 4px solid var(--success);
     }
 
     .result-item.wrong {
       background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
-      border-left: 4px solid #ef4444;
+      border-left: 4px solid var(--danger);
     }
 
     .result-item .result-info { display: flex; align-items: center; gap: 12px; }
@@ -688,8 +877,8 @@
     .result-item .name { font-weight: 600; }
     .result-item .result-details { display: flex; align-items: center; gap: 15px; }
     .result-item .points { font-weight: 700; font-size: 1.1rem; }
-    .result-item.correct .points { color: #22c55e; }
-    .result-item.wrong .points { color: #ef4444; }
+    .result-item.correct .points { color: var(--success); }
+    .result-item.wrong .points { color: var(--danger); }
     .result-item .time { font-size: 0.85rem; color: rgba(255, 255, 255, 0.5); }
 
     .scoreboard {
@@ -719,7 +908,7 @@
 
     .score-item .score-info { display: flex; align-items: center; gap: 10px; }
     .score-item .score-mascot { font-size: 1.2rem; }
-    .score-item .score-value { font-weight: 700; color: #00d4ff; }
+    .score-item .score-value { font-weight: 700; color: var(--primary); }
 
     .skip-section { text-align: center; margin-top: 20px; }
     .skip-btn { max-width: 250px; margin: 0 auto; }
@@ -728,10 +917,26 @@
     .gameover-header h2 {
       font-size: 3rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #f472b6, #fb923c, #fbbf24);
+      background: linear-gradient(135deg, var(--accent), #fb923c, var(--warning));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
+    .rewards-section {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.1));
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .rewards-section h3 { color: var(--warning); margin-bottom: 15px; }
+    .rewards-grid { display: flex; gap: 30px; justify-content: center; }
+    .reward-item { text-align: center; }
+    .reward-value { font-size: 1.8rem; font-weight: 800; }
+    .reward-value.xp { color: var(--primary); }
+    .reward-value.coins { color: var(--warning); }
+    .reward-label { font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); }
 
     .rankings { display: flex; flex-direction: column; gap: 12px; }
 
@@ -758,13 +963,34 @@
     .rank-number { font-size: 1.8rem; font-weight: 800; width: 60px; color: rgba(255, 255, 255, 0.5); }
     .rank-mascot { font-size: 2rem; margin-right: 15px; }
     .rank-name { flex: 1; font-size: 1.2rem; font-weight: 600; }
-    .rank-score { font-size: 1.3rem; font-weight: 700; color: #00d4ff; }
+    .rank-score { font-size: 1.3rem; font-weight: 700; color: var(--primary); }
     .crown { font-size: 2rem; margin-right: 10px; animation: crownBounce 1s ease-in-out infinite; }
 
     @keyframes crownBounce {
       0%, 100% { transform: rotate(-5deg); }
       50% { transform: rotate(5deg); }
     }
+
+    .achievement-popup {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.9), rgba(245, 158, 11, 0.9));
+      padding: 20px 30px;
+      border-radius: 16px;
+      text-align: center;
+      animation: slideInRight 0.5s ease;
+      z-index: 2000;
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .achievement-popup .icon { font-size: 2.5rem; }
+    .achievement-popup h3 { font-size: 1.2rem; margin: 10px 0 5px; }
+    .achievement-popup p { font-size: 0.9rem; opacity: 0.8; }
 
     .confetti {
       position: fixed;
@@ -815,28 +1041,142 @@
     }
 
     .power-popup .icon { font-size: 3rem; margin-bottom: 15px; }
-    .power-popup h3 { font-size: 1.5rem; margin-bottom: 10px; color: #fbbf24; }
+    .power-popup h3 { font-size: 1.5rem; margin-bottom: 10px; color: var(--warning); }
     .power-popup p { color: rgba(255, 255, 255, 0.7); }
 
-    .frozen-overlay {
+    .level-up-popup {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 150, 255, 0.3);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.95), rgba(0, 212, 255, 0.95));
+      padding: 40px 60px;
+      border-radius: 24px;
+      text-align: center;
+      z-index: 3000;
+      animation: popIn 0.3s ease;
+    }
+
+    .level-up-popup h2 { font-size: 2.5rem; margin-bottom: 10px; }
+    .level-up-popup .level { font-size: 5rem; font-weight: 800; }
+    .level-up-popup .unlocks { margin-top: 20px; }
+
+    .leaderboard {
+      margin-top: 20px;
+    }
+
+    .leaderboard-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .leaderboard-tab {
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: none;
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+    }
+
+    .leaderboard-tab:hover { color: white; }
+    .leaderboard-tab.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .leaderboard-rank {
+      width: 40px;
+      font-weight: 800;
+      font-size: 1.2rem;
+    }
+
+    .leaderboard-rank.gold { color: #fbbf24; }
+    .leaderboard-rank.silver { color: #94a3b8; }
+    .leaderboard-rank.bronze { color: #cd7f32; }
+
+    .leaderboard-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 1500;
-      backdrop-filter: blur(5px);
+      margin-right: 15px;
+      font-size: 1.2rem;
     }
 
-    .frozen-overlay h2 {
-      font-size: 3rem;
-      color: #00d4ff;
-      text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+    .leaderboard-name { flex: 1; font-weight: 600; }
+    .leaderboard-value { font-weight: 700; color: var(--primary); }
+
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
     }
+
+    .achievement-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      opacity: 0.4;
+      transition: all 0.3s ease;
+    }
+
+    .achievement-card.unlocked {
+      opacity: 1;
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.1));
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    .achievement-card .icon { font-size: 2rem; margin-bottom: 10px; }
+    .achievement-card h4 { font-size: 0.9rem; margin-bottom: 5px; }
+    .achievement-card p { font-size: 0.7rem; color: rgba(255, 255, 255, 0.5); }
+
+    .daily-reward {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.2));
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .daily-reward:hover { transform: translateY(-3px); }
+    .daily-reward.claimed { opacity: 0.5; cursor: not-allowed; }
+
+    .daily-reward h3 { color: var(--warning); margin-bottom: 5px; }
+    .daily-reward p { font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); }
+
+    .sound-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .sound-toggle:hover { background: rgba(255, 255, 255, 0.2); }
 
     @media (max-width: 600px) {
       .logo h1 { font-size: 2.5rem; }
@@ -845,71 +1185,164 @@
       .question { font-size: 1.3rem; }
       .card { padding: 25px; }
       .avatar-selection { grid-template-columns: repeat(7, 1fr); }
-      .game-mode-grid { grid-template-columns: 1fr; }
+      .game-mode-grid { grid-template-columns: 1fr 1fr; }
+      .tabs { flex-wrap: wrap; }
+      .tab { flex: 1 1 45%; }
     }
   </style>
 </head>
-<body>
+<body data-theme="default">
   <div class="bg-animation"></div>
   <div class="particles" id="particles"></div>
   
   <div class="container">
     <div class="logo">
       <h1>Trivia Battle</h1>
-      <p>Multiplayer Quiz Challenge</p>
+      <p>Ultimate Multiplayer Quiz</p>
     </div>
     
-    <div id="menu-screen" class="screen active">
+    <div id="landing-screen" class="screen active">
       <div class="card">
-        <div class="avatar-preview">
-          <div class="big-avatar" id="selected-avatar-preview">🦊</div>
+        <input type="text" id="landing-username" placeholder="Enter your username" maxlength="15" autocomplete="off">
+        <button class="btn-primary" onclick="loginOrRegister()">Play Now</button>
+        <p style="text-align: center; color: rgba(255,255,255,0.5); margin-top: 15px; font-size: 0.9rem;">
+          New players will be automatically registered
+        </p>
+      </div>
+    </div>
+
+    <div id="main-screen" class="screen">
+      <div class="user-bar">
+        <div class="user-info">
+          <div class="user-avatar" id="main-user-avatar">🦊</div>
+          <div class="user-details">
+            <h3 id="main-username">Player</h3>
+            <p>Level <span id="main-level">1</span> • <span id="main-coins">0</span> 🪙</p>
+            <div class="xp-bar">
+              <div class="xp-fill" id="main-xp-bar" style="width: 0%"></div>
+            </div>
+          </div>
         </div>
-        
-        <p class="section-title">Choose Your Avatar</p>
-        <div class="avatar-selection" id="avatar-selection"></div>
-        
-        <p class="section-title">Choose Your Color</p>
-        <div class="color-selection" id="color-selection"></div>
-        
-        <input type="text" id="player-name" placeholder="Enter your name" maxlength="12" autocomplete="off">
-        
-        <p class="section-title">Select Theme</p>
-        <select id="theme-select">
-          <option value="Random">Random Theme</option>
-          <option value="Science">Science</option>
-          <option value="Geography">Geography</option>
-          <option value="History">History</option>
-          <option value="Space">Space</option>
-          <option value="Entertainment">Entertainment</option>
-          <option value="Sports">Sports</option>
-          <option value="Food">Food</option>
-          <option value="Technology">Technology</option>
-        </select>
-        
-        <p class="section-title">Select Game Mode</p>
-        <div class="game-mode-grid" id="game-mode-grid"></div>
-        
-        <button class="btn-primary" onclick="createRoom()">Create Room</button>
-        <button class="btn-secondary" onclick="showJoinScreen()">Join Room</button>
+        <div class="user-stats">
+          <div class="stat">
+            <div class="stat-value" id="main-wins">0</div>
+            <div class="stat-label">Wins</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="main-streak">0</div>
+            <div class="stat-label">Best Streak</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="daily-reward" id="daily-reward" onclick="claimDailyReward()">
+        <h3>🎁 Daily Reward</h3>
+        <p>Click to claim XP and coins!</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('play')">Play</button>
+        <button class="tab" onclick="showTab('customize')">Customize</button>
+        <button class="tab" onclick="showTab('achievements')">Achievements</button>
+        <button class="tab" onclick="showTab('leaderboard')">Leaderboard</button>
+      </div>
+
+      <div id="play-tab" class="tab-content">
+        <div class="card">
+          <p class="section-title">Select Game Mode</p>
+          <div class="game-mode-grid" id="game-mode-grid"></div>
+          
+          <p class="section-title">Select Theme</p>
+          <select id="theme-select">
+            <option value="Random">Random Theme</option>
+            <option value="Science">Science</option>
+            <option value="Geography">Geography</option>
+            <option value="History">History</option>
+            <option value="Space">Space</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Sports">Sports</option>
+            <option value="Food">Food</option>
+            <option value="Technology">Technology</option>
+          </select>
+
+          <p class="section-title">Game Settings</p>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>Questions</label>
+              <input type="range" id="question-count" min="5" max="30" value="15">
+              <div class="setting-value" id="question-count-value">15</div>
+            </div>
+            <div class="setting-item">
+              <label>Time Limit (sec)</label>
+              <input type="range" id="time-limit" min="3" max="30" value="10">
+              <div class="setting-value" id="time-limit-value">10</div>
+            </div>
+            <div class="setting-item">
+              <label>Difficulty</label>
+              <select id="difficulty-select" style="margin-bottom: 0; padding: 10px;">
+                <option value="mixed">Mixed</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Power-ups</label>
+              <div class="toggle active" id="powerups-toggle" onclick="togglePowerups()"></div>
+            </div>
+          </div>
+          
+          <button class="btn-primary" onclick="createRoom()" style="margin-top: 20px;">Create Room</button>
+          <button class="btn-secondary" onclick="showJoinScreen()">Join Room</button>
+        </div>
+      </div>
+
+      <div id="customize-tab" class="tab-content" style="display: none;">
+        <div class="card">
+          <p class="section-title">Your Avatar</p>
+          <div class="avatar-selection" id="customize-avatar-selection"></div>
+          
+          <p class="section-title">Your Color</p>
+          <div class="color-selection" id="customize-color-selection"></div>
+          
+          <button class="btn-primary" onclick="saveCustomization()">Save Changes</button>
+        </div>
+
+        <div class="card">
+          <p class="section-title">Shop</p>
+          <h3 style="margin-bottom: 15px;">Avatars</h3>
+          <div class="avatar-selection" id="shop-avatars"></div>
+          
+          <h3 style="margin: 20px 0 15px;">Colors</h3>
+          <div class="color-selection" id="shop-colors"></div>
+        </div>
+      </div>
+
+      <div id="achievements-tab" class="tab-content" style="display: none;">
+        <div class="card">
+          <p class="section-title">Achievements</p>
+          <div class="achievements-grid" id="achievements-grid"></div>
+        </div>
+      </div>
+
+      <div id="leaderboard-tab" class="tab-content" style="display: none;">
+        <div class="card">
+          <p class="section-title">Leaderboard</p>
+          <div class="leaderboard-tabs">
+            <button class="leaderboard-tab active" onclick="loadLeaderboard('xp')">XP</button>
+            <button class="leaderboard-tab" onclick="loadLeaderboard('wins')">Wins</button>
+            <button class="leaderboard-tab" onclick="loadLeaderboard('streak')">Streak</button>
+          </div>
+          <div class="leaderboard" id="leaderboard-list"></div>
+        </div>
       </div>
     </div>
 
     <div id="join-screen" class="screen">
       <div class="card">
-        <div class="avatar-preview">
-          <div class="big-avatar" id="join-avatar-preview">🦊</div>
-        </div>
-        
-        <p class="section-title">Choose Your Avatar</p>
-        <div class="avatar-selection" id="join-avatar-selection"></div>
-        
-        <p class="section-title">Choose Your Color</p>
-        <div class="color-selection" id="join-color-selection"></div>
-        
-        <input type="text" id="join-name" placeholder="Enter your name" maxlength="12" autocomplete="off">
         <input type="text" id="room-code-input" placeholder="Enter room code" maxlength="4" style="text-transform: uppercase; letter-spacing: 5px; text-align: center; font-size: 1.5rem;" autocomplete="off">
         <button class="btn-primary" onclick="joinRoom()">Join Game</button>
-        <button class="btn-secondary" onclick="showMenuScreen()">Back</button>
+        <button class="btn-secondary" onclick="showMainScreen()">Back</button>
       </div>
     </div>
 
@@ -921,7 +1354,7 @@
         </div>
         <div style="text-align: center;">
           <span class="theme-badge" id="theme-display"></span>
-          <span class="theme-badge" id="mode-display" style="margin-left: 10px;"></span>
+          <span class="theme-badge" id="mode-display"></span>
         </div>
         
         <div class="player-section">
@@ -951,26 +1384,13 @@
       </div>
     </div>
 
-    <div id="betting-screen" class="screen">
-      <div class="card">
-        <div class="game-header">
-          <span class="progress" id="bet-progress-text">Question 1 of 10</span>
-        </div>
-        <div class="betting-section">
-          <h3>Place Your Bet!</h3>
-          <div class="current-score">Your Score: <span id="bet-current-score">0</span></div>
-          <input type="range" class="bet-slider" id="bet-slider" min="0" max="100" value="0">
-          <div class="bet-amount">Bet: <span id="bet-amount">0</span> pts</div>
-        </div>
-        <button class="btn-primary" id="confirm-bet-btn" onclick="confirmBet()">Confirm Bet</button>
-        <p style="text-align: center; color: rgba(255,255,255,0.5); margin-top: 10px;">Betting closes in <span id="bet-timer">8</span>s</p>
-      </div>
-    </div>
-
     <div id="game-screen" class="screen">
       <div class="card">
         <div class="game-header">
-          <span class="progress" id="progress-text">Question 1 of 15</span>
+          <div>
+            <span class="progress" id="progress-text">Question 1 of 15</span>
+            <span class="difficulty-badge easy" id="difficulty-badge"></span>
+          </div>
           <div class="timer-container">
             <span class="timer" id="timer">10</span>
           </div>
@@ -993,6 +1413,7 @@
         <div class="results-header">
           <h2>Round Results</h2>
         </div>
+        <div class="team-scores" id="team-scores" style="display: none;"></div>
         <div class="results-list" id="results-list"></div>
         <div class="scoreboard" id="score-board"></div>
         <div class="skip-section" id="skip-section"></div>
@@ -1004,18 +1425,33 @@
         <div class="gameover-header">
           <h2>Game Over!</h2>
         </div>
+        <div class="rewards-section" id="rewards-section">
+          <h3>Rewards Earned</h3>
+          <div class="rewards-grid">
+            <div class="reward-item">
+              <div class="reward-value xp" id="xp-earned">+0</div>
+              <div class="reward-label">XP</div>
+            </div>
+            <div class="reward-item">
+              <div class="reward-value coins" id="coins-earned">+0</div>
+              <div class="reward-label">Coins</div>
+            </div>
+          </div>
+        </div>
         <div class="rankings" id="final-rankings"></div>
-        <button class="btn-primary" onclick="location.reload()" style="margin-top: 30px;">Play Again</button>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button class="btn-warning" onclick="rematch()">Rematch</button>
+          <button class="btn-primary" onclick="location.reload()">Play Again</button>
+        </div>
       </div>
     </div>
   </div>
 
+  <button class="sound-toggle" id="sound-toggle" onclick="toggleSound()">🔊</button>
   <div class="toast" id="toast"></div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    createParticles();
-    
     const AVATARS = ['🦊', '🐸', '🦁', '🐼', '🦄', '🐱', '🐶', '🐰', '🐻', '🦋', '🦅', '🐺', '🦈', '🐬', '🦉', '🐨', '🦜', '🐯', '🦩', '🐧', '🦚', '🦢', '🦤', '🦥', '🦦', '🦨', '🦘', '🦬', '🦙', '🦒'];
     const COLORS = [
       'linear-gradient(135deg, #00d4ff, #0099cc)',
@@ -1031,23 +1467,30 @@
     ];
     
     const socket = io();
+    let currentUser = null;
     let isHost = false;
     let currentRoom = '';
     let timerInterval;
     let selectedAnswer = null;
     let answerConfirmed = false;
-    let minPlayers = 2;
-    let maxPlayers = 10;
-    let currentTheme = 'Random';
     let currentGameMode = 'Classic';
     let mySuperpowers = [];
     let selectedAvatar = '🦊';
     let selectedColor = COLORS[0];
     let eliminatedOptions = [];
     let extraTime = 0;
-    let totalQuestions = 15;
-    let currentScore = 0;
     let isFrozen = false;
+    let soundEnabled = true;
+    let powerupsEnabled = true;
+    
+    const sounds = {
+      correct: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH+Onp6WjXx0dH6Il5+dlIuAfn+GkZiYkYt/fn2EkJiWj4SDgn2DjZaTjoSDgXyCi5GRjIuHhYB7goqOjoqHhYJ9goiLioiGg4GAfYGHioiHhYOBf4GGiIiGhIOBfYCFh4aFg4KAfYCEhYWEgoGAfH+DhISDgYB/fn+Dg4KBgH9+f4GCgoGAf35+gIGBgH9+fn6AgYB/fn5+f4CAf35+fn9/f39/f39/f39/'),
+      wrong: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAAB/fn5/gIGBgYKCg4OEhIWFhoaHh4iIiYmKiouLjIyNjY6Oj4+QkI+Pj46OjY2MjIuLiouKiYmJiIiHh4aGhYWEg4OCgYB/fnx7eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTVFJRUFBPTk1MS0pJSEdGRURDQkFAPz49PDs6OTg3NjU0My4tKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQA=')
+    };
+
+    createParticles();
+    initGameModes();
+    initSettings();
     
     function createParticles() {
       const container = document.getElementById('particles');
@@ -1060,68 +1503,61 @@
         container.appendChild(particle);
       }
     }
-    
-    function initAvatarSelection() {
-      const containers = ['avatar-selection', 'join-avatar-selection'];
-      containers.forEach(containerId => {
-        const container = document.getElementById(containerId);
-        container.innerHTML = AVATARS.map((avatar, i) => `
-          <div class="avatar-option ${i === 0 ? 'selected' : ''}" onclick="selectAvatar('${avatar}', '${containerId}')">${avatar}</div>
-        `).join('');
-      });
-      
-      const colorContainers = ['color-selection', 'join-color-selection'];
-      colorContainers.forEach(containerId => {
-        const container = document.getElementById(containerId);
-        container.innerHTML = COLORS.map((color, i) => `
-          <div class="color-option ${i === 0 ? 'selected' : ''}" style="background: ${color}" onclick="selectColor('${color.replace(/'/g, "\\'")}', '${containerId}')"></div>
-        `).join('');
-      });
-    }
-    
-    function selectAvatar(avatar, containerId) {
-      selectedAvatar = avatar;
-      const container = document.getElementById(containerId);
-      container.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
-      event.target.classList.add('selected');
-      
-      if (containerId === 'avatar-selection') {
-        document.getElementById('selected-avatar-preview').textContent = avatar;
-      } else {
-        document.getElementById('join-avatar-preview').textContent = avatar;
-      }
-    }
-    
-    function selectColor(color, containerId) {
-      selectedColor = color;
-      const container = document.getElementById(containerId);
-      container.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
-      event.target.classList.add('selected');
-    }
-    
+
     function initGameModes() {
       const container = document.getElementById('game-mode-grid');
       const modes = [
-        { id: 'Classic', icon: '🎯', name: 'Classic Trivia', desc: '15 questions, 10 sec each' },
-        { id: 'Speed', icon: '⚡', name: 'Speed Round', desc: '15 questions, 5 sec each' },
-        { id: 'Survival', icon: '❤️', name: 'Survival Mode', desc: '3 lives, last one wins!' },
-        { id: 'Betting', icon: '🎰', name: 'Betting Mode', desc: 'Bet points each round' },
-        { id: 'Lightning', icon: '🌩️', name: 'Lightning Round', desc: '20 questions, 3 sec each' }
+        { id: 'Classic', icon: '🎯', name: 'Classic', desc: 'Standard trivia' },
+        { id: 'Speed', icon: '⚡', name: 'Speed', desc: '5 sec per Q' },
+        { id: 'Survival', icon: '❤️', name: 'Survival', desc: '3 lives' },
+        { id: 'Betting', icon: '🎰', name: 'Betting', desc: 'Bet points' },
+        { id: 'Lightning', icon: '🌩️', name: 'Lightning', desc: '3 sec rapid' },
+        { id: 'Team', icon: '👥', name: 'Team Battle', desc: '2v2 or 3v3' },
+        { id: 'BattleRoyale', icon: '🔫', name: 'Battle Royale', desc: 'Last standing' },
+        { id: 'Blitz', icon: '💥', name: 'Blitz', desc: 'Infinite Qs' },
+        { id: 'Reverse', icon: '🔄', name: 'Reverse', desc: 'Guess the Q' }
       ];
       
-      container.innerHTML = modes.map((mode, i) => `
-        <div class="game-mode-card ${i === 0 ? 'selected' : ''}" onclick="selectGameMode('${mode.id}')">
-          <div class="icon">${mode.icon}</div>
-          <h3>${mode.name}</h3>
-          <p>${mode.desc}</p>
+      container.innerHTML = modes.map((m, i) => `
+        <div class="game-mode-card ${i === 0 ? 'selected' : ''}" onclick="selectGameMode('${m.id}')">
+          <div class="icon">${m.icon}</div>
+          <h3>${m.name}</h3>
+          <p>${m.desc}</p>
         </div>
       `).join('');
     }
-    
+
+    function initSettings() {
+      document.getElementById('question-count').addEventListener('input', (e) => {
+        document.getElementById('question-count-value').textContent = e.target.value;
+      });
+      
+      document.getElementById('time-limit').addEventListener('input', (e) => {
+        document.getElementById('time-limit-value').textContent = e.target.value;
+      });
+    }
+
     function selectGameMode(modeId) {
       currentGameMode = modeId;
       document.querySelectorAll('.game-mode-card').forEach(card => card.classList.remove('selected'));
       event.currentTarget.classList.add('selected');
+    }
+
+    function togglePowerups() {
+      powerupsEnabled = !powerupsEnabled;
+      document.getElementById('powerups-toggle').classList.toggle('active', powerupsEnabled);
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('sound-toggle').textContent = soundEnabled ? '🔊' : '🔇';
+    }
+
+    function playSound(type) {
+      if (soundEnabled && sounds[type]) {
+        sounds[type].currentTime = 0;
+        sounds[type].play().catch(() => {});
+      }
     }
 
     function showScreen(screenId) {
@@ -1129,8 +1565,16 @@
       document.getElementById(screenId).classList.add('active');
     }
 
-    function showJoinScreen() { showScreen('join-screen'); }
-    function showMenuScreen() { showScreen('menu-screen'); }
+    function showTab(tabId) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      event.currentTarget.classList.add('active');
+      document.getElementById(tabId + '-tab').style.display = 'block';
+      
+      if (tabId === 'leaderboard') loadLeaderboard('xp');
+      if (tabId === 'achievements') loadAchievements();
+      if (tabId === 'customize') loadInventory();
+    }
 
     function showToast(message, type = 'error') {
       const toast = document.getElementById('toast');
@@ -1145,29 +1589,281 @@
       popup.innerHTML = `<div class="icon">${icon}</div><h3>${title}</h3><p>${message}</p>`;
       document.body.appendChild(popup);
       setTimeout(() => popup.remove(), 2000);
+      playSound('correct');
+    }
+
+    function showAchievementPopup(icon, name, description) {
+      const popup = document.createElement('div');
+      popup.className = 'achievement-popup';
+      popup.innerHTML = `<div class="icon">${icon}</div><h3>${name}</h3><p>${description}</p>`;
+      document.body.appendChild(popup);
+      setTimeout(() => popup.remove(), 4000);
+    }
+
+    function showLevelUpPopup(level, unlocks) {
+      const popup = document.createElement('div');
+      popup.className = 'level-up-popup';
+      let unlocksHtml = '';
+      if (unlocks.avatars > 0) unlocksHtml += `<p>🎉 ${unlocks.avatars} new avatar${unlocks.avatars > 1 ? 's' : ''} unlocked!</p>`;
+      if (unlocks.colors > 0) unlocksHtml += `<p>🎨 ${unlocks.colors} new color${unlocks.colors > 1 ? 's' : ''} unlocked!</p>`;
+      popup.innerHTML = `<h2>Level Up!</h2><div class="level">${level}</div><div class="unlocks">${unlocksHtml}</div>`;
+      document.body.appendChild(popup);
+      setTimeout(() => popup.remove(), 3000);
+      createConfetti();
+    }
+
+    async function loginOrRegister() {
+      const username = document.getElementById('landing-username').value.trim();
+      if (!username) {
+        showToast('Please enter a username');
+        return;
+      }
+      
+      try {
+        let res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username })
+        });
+        
+        if (!res.ok) {
+          res = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username })
+          });
+        }
+        
+        const data = await res.json();
+        if (data.error) {
+          showToast(data.error);
+          return;
+        }
+        
+        currentUser = data;
+        selectedAvatar = data.equippedAvatar;
+        selectedColor = data.equippedColor;
+        
+        socket.emit('set-user', currentUser);
+        updateUserUI();
+        showScreen('main-screen');
+        checkDailyReward();
+      } catch (e) {
+        showToast('Connection error');
+      }
+    }
+
+    function updateUserUI() {
+      if (!currentUser) return;
+      
+      document.getElementById('main-username').textContent = currentUser.username;
+      document.getElementById('main-user-avatar').textContent = currentUser.equippedAvatar;
+      document.getElementById('main-user-avatar').style.background = currentUser.equippedColor;
+      document.getElementById('main-level').textContent = currentUser.level;
+      document.getElementById('main-coins').textContent = currentUser.coins;
+      document.getElementById('main-wins').textContent = currentUser.total_wins;
+      document.getElementById('main-streak').textContent = currentUser.best_streak;
+      
+      const xpPercent = (currentUser.xpProgress / currentUser.xpNeeded) * 100;
+      document.getElementById('main-xp-bar').style.width = xpPercent + '%';
+    }
+
+    async function checkDailyReward() {
+      const el = document.getElementById('daily-reward');
+      const res = await fetch(`/api/user/${currentUser.id}`);
+      const user = await res.json();
+      
+      const today = new Date().toISOString().split('T')[0];
+      if (user.daily_reward_claimed === today) {
+        el.classList.add('claimed');
+        el.innerHTML = '<h3>✅ Daily Reward Claimed</h3><p>Come back tomorrow!</p>';
+      }
+    }
+
+    async function claimDailyReward() {
+      const res = await fetch(`/api/daily-reward/${currentUser.id}`, { method: 'POST' });
+      const data = await res.json();
+      
+      if (data.claimed) {
+        showPowerPopup('🎁', 'Daily Reward!', `+${data.xpReward} XP, +${data.coinReward} coins`);
+        currentUser.xp += data.xpReward;
+        currentUser.coins += data.coinReward;
+        updateUserUI();
+        checkDailyReward();
+      } else {
+        showToast(data.message, 'info');
+      }
+    }
+
+    async function loadLeaderboard(type) {
+      document.querySelectorAll('.leaderboard-tab').forEach(t => t.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      
+      const res = await fetch(`/api/leaderboard/${type}`);
+      const list = await res.json();
+      
+      const container = document.getElementById('leaderboard-list');
+      container.innerHTML = list.map((p, i) => `
+        <div class="leaderboard-item">
+          <div class="leaderboard-rank ${i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : ''}">#${i + 1}</div>
+          <div class="leaderboard-avatar" style="background: ${COLORS[i % COLORS.length]}">🦊</div>
+          <div class="leaderboard-name">${p.username}</div>
+          <div class="leaderboard-value">${type === 'xp' ? p.xp : type === 'wins' ? p.total_wins : p.best_streak}</div>
+        </div>
+      `).join('');
+    }
+
+    async function loadAchievements() {
+      const res = await fetch(`/api/achievements/${currentUser.id}`);
+      const achievements = await res.json();
+      
+      const container = document.getElementById('achievements-grid');
+      container.innerHTML = achievements.map(a => `
+        <div class="achievement-card ${a.unlocked ? 'unlocked' : ''}">
+          <div class="icon">${a.icon}</div>
+          <h4>${a.name}</h4>
+          <p>${a.description}</p>
+        </div>
+      `).join('');
+    }
+
+    async function loadInventory() {
+      const res = await fetch(`/api/inventory/${currentUser.id}`);
+      const inventory = await res.json();
+      
+      const avatarContainer = document.getElementById('customize-avatar-selection');
+      avatarContainer.innerHTML = inventory.avatars.map(a => `
+        <div class="avatar-option ${a.equipped ? 'selected' : ''}" onclick="selectCustomizeAvatar(${a.id})">${a.emoji}</div>
+      `).join('');
+      
+      const colorContainer = document.getElementById('customize-color-selection');
+      colorContainer.innerHTML = inventory.colors.map(c => `
+        <div class="color-option ${c.equipped ? 'selected' : ''}" style="background: ${c.gradient}" onclick="selectCustomizeColor(${c.id})"></div>
+      `).join('');
+      
+      const shopAvatars = document.getElementById('shop-avatars');
+      shopAvatars.innerHTML = inventory.avatars.filter(a => !a.owned).map(a => `
+        <div class="avatar-option locked" onclick="buyAvatar(${a.id})">${a.emoji}<br><small>${a.unlock_cost}🪙</small></div>
+      `).join('');
+      
+      const shopColors = document.getElementById('shop-colors');
+      shopColors.innerHTML = inventory.colors.filter(c => !c.owned).map(c => `
+        <div class="color-option locked" style="background: ${c.gradient}" onclick="buyColor(${c.id})"></div>
+      `).join('');
+    }
+
+    let selectedAvatarId = null;
+    let selectedColorId = null;
+
+    function selectCustomizeAvatar(id) {
+      selectedAvatarId = id;
+      document.querySelectorAll('#customize-avatar-selection .avatar-option').forEach(o => o.classList.remove('selected'));
+      event.currentTarget.classList.add('selected');
+    }
+
+    function selectCustomizeColor(id) {
+      selectedColorId = id;
+      document.querySelectorAll('#customize-color-selection .color-option').forEach(o => o.classList.remove('selected'));
+      event.currentTarget.classList.add('selected');
+    }
+
+    async function saveCustomization() {
+      if (selectedAvatarId) {
+        await fetch('/api/equip-avatar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: currentUser.id, avatarId: selectedAvatarId })
+        });
+      }
+      if (selectedColorId) {
+        await fetch('/api/equip-color', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: currentUser.id, colorId: selectedColorId })
+        });
+      }
+      showToast('Customization saved!', 'success');
+      loadInventory();
+    }
+
+    async function buyAvatar(id) {
+      const res = await fetch('/api/buy-avatar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: currentUser.id, avatarId: id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Avatar purchased!', 'success');
+        loadInventory();
+      } else {
+        showToast(data.message);
+      }
+    }
+
+    async function buyColor(id) {
+      const res = await fetch('/api/buy-color', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: currentUser.id, colorId: id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Color purchased!', 'success');
+        loadInventory();
+      } else {
+        showToast(data.message);
+      }
+    }
+
+    function showJoinScreen() {
+      showScreen('join-screen');
+    }
+
+    function showMainScreen() {
+      showScreen('main-screen');
     }
 
     function createRoom() {
-      const name = document.getElementById('player-name').value.trim();
-      const theme = document.getElementById('theme-select').value;
-      if (!name) { showToast('Please enter your name'); return; }
-      currentTheme = theme;
-      socket.emit('create-room', { name, theme, gameMode: currentGameMode, avatar: selectedAvatar, color: selectedColor });
+      const settings = {
+        questionCount: parseInt(document.getElementById('question-count').value),
+        timeLimit: parseInt(document.getElementById('time-limit').value),
+        difficulty: document.getElementById('difficulty-select').value,
+        powerupsEnabled: powerupsEnabled,
+        pointMultiplier: 1
+      };
+      
+      socket.emit('create-room', {
+        name: currentUser.username,
+        theme: document.getElementById('theme-select').value,
+        gameMode: currentGameMode,
+        avatar: selectedAvatar,
+        color: selectedColor,
+        settings: settings
+      });
     }
 
     function joinRoom() {
-      const name = document.getElementById('join-name').value.trim();
       const code = document.getElementById('room-code-input').value.trim().toUpperCase();
-      if (!name || !code) { showToast('Please enter your name and room code'); return; }
-      socket.emit('join-room', { roomCode: code, name, avatar: selectedAvatar, color: selectedColor });
+      if (!code) {
+        showToast('Please enter a room code');
+        return;
+      }
+      socket.emit('join-room', {
+        roomCode: code,
+        name: currentUser.username,
+        avatar: selectedAvatar,
+        color: selectedColor
+      });
     }
 
     function startGame() { socket.emit('start-game'); }
     function nextQuestion() { socket.emit('next-question'); }
+    function rematch() { socket.emit('rematch'); }
 
     function renderSuperpowers() {
       const container = document.getElementById('superpowers-bar');
-      if (mySuperpowers.length === 0) {
+      if (!powerupsEnabled || mySuperpowers.length === 0) {
         container.innerHTML = '<span style="color: rgba(255,255,255,0.4); font-size: 0.9rem;">Earn superpowers by answering correctly!</span>';
         return;
       }
@@ -1187,10 +1883,8 @@
     socket.on('room-created', (data) => {
       isHost = true;
       currentRoom = data.roomCode;
-      minPlayers = data.minPlayers;
-      maxPlayers = data.maxPlayers;
       document.getElementById('display-code').textContent = data.roomCode;
-      document.getElementById('theme-display').textContent = 'Theme: ' + currentTheme;
+      document.getElementById('theme-display').textContent = 'Theme: ' + (data.theme || 'Random');
       document.getElementById('mode-display').textContent = 'Mode: ' + (data.gameMode || 'Classic');
       showScreen('lobby-screen');
     });
@@ -1198,8 +1892,7 @@
     socket.on('room-joined', (data) => {
       isHost = data.isHost;
       currentRoom = data.roomCode;
-      minPlayers = data.minPlayers;
-      maxPlayers = data.maxPlayers;
+      powerupsEnabled = data.settings?.powerupsEnabled !== false;
       if (isHost) {
         document.getElementById('display-code').textContent = data.roomCode;
         showScreen('lobby-screen');
@@ -1211,8 +1904,6 @@
 
     socket.on('players-update', (data) => {
       const players = data.players;
-      minPlayers = data.minPlayers;
-      maxPlayers = data.maxPlayers;
       currentGameMode = data.gameMode || 'Classic';
       
       const listHtml = players.map((p, i) => {
@@ -1220,17 +1911,25 @@
         if (p.lives !== undefined && p.lives <= 0) statusClass = 'eliminated';
         else if (p.answered) statusClass = 'answered';
         
+        let teamClass = p.team ? `team-${p.team}` : '';
+        
         let livesHtml = '';
-        if (currentGameMode === 'Survival') {
+        if (currentGameMode === 'Survival' || currentGameMode === 'Blitz' || currentGameMode === 'BattleRoyale') {
           livesHtml = `<div class="lives">${[0,1,2].map(j => `<span class="life ${j >= p.lives ? 'lost' : ''}">❤️</span>`).join('')}</div>`;
         }
         
+        let streakHtml = '';
+        if (p.streak > 1) {
+          streakHtml = `<span class="streak-badge">🔥 ${p.streak}</span>`;
+        }
+        
         return `
-          <li class="${statusClass}">
+          <li class="${statusClass} ${teamClass}">
             <div class="player-info">
               <div class="player-avatar" style="background: ${p.color || COLORS[i % COLORS.length]}">${p.mascot}</div>
               <span>${p.name}</span>
               ${p.answered ? '<span class="answered-check">✓</span>' : ''}
+              ${streakHtml}
             </div>
             <div style="display: flex; align-items: center; gap: 15px;">
               ${livesHtml}
@@ -1244,64 +1943,31 @@
       document.getElementById('waiting-players').innerHTML = listHtml;
       
       const playerCount = players.length;
-      document.getElementById('player-count').textContent = `${playerCount}/${maxPlayers}`;
+      document.getElementById('player-count').textContent = `${playerCount}/10`;
       
       const badge = document.getElementById('player-badge');
-      badge.classList.toggle('ready', playerCount >= minPlayers);
+      badge.classList.toggle('ready', playerCount >= 2);
       
       if (isHost) {
         const startBtn = document.getElementById('start-btn');
-        if (playerCount >= minPlayers) {
+        if (playerCount >= 2) {
           startBtn.disabled = false;
           startBtn.textContent = 'Start Game';
         } else {
           startBtn.disabled = true;
-          startBtn.textContent = `Need ${minPlayers - playerCount} more player${minPlayers - playerCount > 1 ? 's' : ''}`;
+          startBtn.textContent = `Need ${2 - playerCount} more player${2 - playerCount > 1 ? 's' : ''}`;
         }
       }
     });
 
+    socket.on('teams-assigned', (data) => {
+      showToast('Teams assigned! Red vs Blue', 'info');
+    });
+
     socket.on('game-started', (data) => {
-      if (data && data.theme) currentTheme = data.theme;
-      if (data && data.totalQuestions) totalQuestions = data.totalQuestions;
-      if (data && data.gameMode) currentGameMode = data.gameMode;
-      
-      if (currentGameMode === 'Betting') {
-        showScreen('betting-screen');
-      } else {
-        showScreen('game-screen');
-      }
+      currentGameMode = data.gameMode;
+      showScreen('game-screen');
     });
-
-    socket.on('betting-phase', (data) => {
-      showScreen('betting-screen');
-      document.getElementById('bet-progress-text').textContent = `Question ${data.questionNumber} of ${data.totalQuestions}`;
-      document.getElementById('bet-current-score').textContent = currentScore;
-      
-      const slider = document.getElementById('bet-slider');
-      slider.max = currentScore;
-      slider.value = 0;
-      document.getElementById('bet-amount').textContent = '0';
-      
-      let betTimer = 8;
-      document.getElementById('bet-timer').textContent = betTimer;
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        betTimer--;
-        document.getElementById('bet-timer').textContent = betTimer;
-        if (betTimer <= 0) clearInterval(timerInterval);
-      }, 1000);
-    });
-
-    document.getElementById('bet-slider')?.addEventListener('input', (e) => {
-      document.getElementById('bet-amount').textContent = e.target.value;
-    });
-
-    function confirmBet() {
-      const betAmount = parseInt(document.getElementById('bet-slider').value);
-      socket.emit('place-bet', betAmount);
-      showToast(`Bet placed: ${betAmount} points!`, 'info');
-    }
 
     socket.on('question', (data) => {
       showScreen('game-screen');
@@ -1313,7 +1979,16 @@
       
       document.getElementById('progress-text').textContent = `Question ${data.questionNumber} of ${data.totalQuestions}`;
       document.getElementById('question-text').textContent = data.question;
-      document.getElementById('current-theme').innerHTML = `<span>${currentTheme}</span>`;
+      document.getElementById('current-theme').innerHTML = `<span>${data.theme || ''}</span>`;
+      
+      const diffBadge = document.getElementById('difficulty-badge');
+      if (data.difficulty) {
+        diffBadge.textContent = data.difficulty;
+        diffBadge.className = `difficulty-badge ${data.difficulty}`;
+        diffBadge.style.display = 'inline';
+      } else {
+        diffBadge.style.display = 'none';
+      }
       
       const submitBtn = document.getElementById('submit-btn');
       submitBtn.disabled = true;
@@ -1322,12 +1997,26 @@
       renderSuperpowers();
       
       const optionLabels = ['A', 'B', 'C', 'D'];
-      const optionsHtml = data.options.map((opt, i) => 
-        `<button class="option-btn" onclick="selectAnswer(${i})" id="opt-${i}">
-          <span class="option-label">${optionLabels[i]}</span>
-          ${opt}
-        </button>`
-      ).join('');
+      let optionsHtml = '';
+      
+      if (data.type === 'truefalse') {
+        optionsHtml = `
+          <button class="option-btn" onclick="selectAnswer(0)" id="opt-0" style="grid-column: span 2;">
+            <span class="option-label">A</span>True
+          </button>
+          <button class="option-btn" onclick="selectAnswer(1)" id="opt-1" style="grid-column: span 2;">
+            <span class="option-label">B</span>False
+          </button>
+        `;
+      } else {
+        optionsHtml = data.options.map((opt, i) => 
+          opt ? `<button class="option-btn" onclick="selectAnswer(${i})" id="opt-${i}">
+            <span class="option-label">${optionLabels[i]}</span>
+            ${opt}
+          </button>` : ''
+        ).join('');
+      }
+      
       document.getElementById('options-container').innerHTML = optionsHtml;
       
       startTimer(data.timeLimit || 10);
@@ -1394,14 +2083,14 @@
       });
       mySuperpowers = mySuperpowers.filter(p => p.id !== 'fifty_fifty');
       renderSuperpowers();
-      showPowerPopup('✂️', '50/50 Used!', 'Two wrong answers eliminated!');
+      showPowerPopup('✂️', '50/50', 'Two wrong answers eliminated!');
     });
 
     socket.on('time-freeze', (data) => {
       extraTime = data.extraSeconds;
       mySuperpowers = mySuperpowers.filter(p => p.id !== 'time_freeze');
       renderSuperpowers();
-      showPowerPopup('⏱️', 'Time Freeze!', `+${data.extraSeconds} seconds added!`);
+      showPowerPopup('⏱️', 'Time Freeze', `+${data.extraSeconds} seconds!`);
     });
 
     socket.on('double-points-activated', () => {
@@ -1413,51 +2102,65 @@
     socket.on('shield-activated', () => {
       mySuperpowers = mySuperpowers.filter(p => p.id !== 'shield');
       renderSuperpowers();
-      showPowerPopup('🛡️', 'Shield Active!', 'Protected from one wrong answer!');
+      showPowerPopup('🛡️', 'Shield Active!', 'Protected!');
     });
 
-    socket.on('second-chance-activated', () => {
-      mySuperpowers = mySuperpowers.filter(p => p.id !== 'second_chance');
+    socket.on('oracle-result', (data) => {
+      mySuperpowers = mySuperpowers.filter(p => p.id !== 'oracle');
       renderSuperpowers();
-      showPowerPopup('🔄', 'Second Chance!', 'Answer again if wrong!');
+      const btn = document.getElementById(`opt-${data.correctAnswer}`);
+      if (btn) btn.classList.add('oracle-hint');
+      showPowerPopup('🔮', 'Oracle', 'One answer glows slightly...');
     });
 
-    socket.on('steal-result', (data) => {
-      mySuperpowers = mySuperpowers.filter(p => p.id !== 'steal');
-      renderSuperpowers();
-      showPowerPopup('💰', 'Steal Successful!', `Stole ${data.amount} points from ${data.victim}!`);
-    });
-
-    socket.on('stolen', (data) => {
-      showToast(`${data.thief} stole ${data.amount} points from you!`, 'error');
-    });
-
-    socket.on('freeze-result', (data) => {
-      mySuperpowers = mySuperpowers.filter(p => p.id !== 'freeze_player');
-      renderSuperpowers();
-      showPowerPopup('❄️', 'Player Frozen!', `${data.target} is frozen for 5 seconds!`);
-    });
-
-    socket.on('frozen', (data) => {
-      isFrozen = true;
-      showToast(`You've been frozen by ${data.freezer}!`, 'info');
-      document.querySelectorAll('.option-btn').forEach(btn => btn.classList.add('frozen'));
-      
-      setTimeout(() => {
-        isFrozen = false;
-        document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('frozen'));
-        showToast('You are unfrozen!', 'success');
-      }, 5000);
+    socket.on('answer-banned', (data) => {
+      const btn = document.getElementById(`opt-${data.bannedAnswer}`);
+      if (btn) btn.classList.add('banned');
+      showToast(`${data.banner} banned an answer!`, 'info');
     });
 
     socket.on('superpower-earned', (power) => {
       mySuperpowers.push(power);
       renderSuperpowers();
-      showPowerPopup(power.icon, 'Superpower Earned!', `${power.name}: ${power.description}`);
+      showPowerPopup(power.icon, 'Power-Up!', `${power.name}: ${power.description}`);
+    });
+
+    socket.on('stolen', (data) => {
+      showToast(`${data.thief} stole ${data.amount} points!`, 'error');
+      playSound('wrong');
+    });
+
+    socket.on('swapped', (data) => {
+      showToast(`Scores swapped with ${data.thief}!`, 'info');
+    });
+
+    socket.on('bombed', (data) => {
+      showToast(`${data.bomber} bombed you for 30 points!`, 'error');
+      playSound('wrong');
+    });
+
+    socket.on('frozen', (data) => {
+      isFrozen = true;
+      showToast(`Frozen by ${data.freezer}!`, 'info');
+      document.querySelectorAll('.option-btn').forEach(btn => btn.classList.add('frozen'));
+      
+      setTimeout(() => {
+        isFrozen = false;
+        document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('frozen'));
+        showToast('Unfrozen!', 'success');
+      }, 5000);
+    });
+
+    socket.on('gamble-result', (data) => {
+      const msg = data.amount >= 0 ? `Won ${data.amount} points!` : `Lost ${Math.abs(data.amount)} points`;
+      showToast(msg, data.amount >= 0 ? 'success' : 'error');
     });
 
     socket.on('answer-reveal', (data) => {
       clearInterval(timerInterval);
+      
+      const correct = data.correctAnswer === selectedAnswer;
+      playSound(correct ? 'correct' : 'wrong');
       
       document.querySelectorAll('.option-btn').forEach((btn, i) => {
         btn.disabled = true;
@@ -1479,9 +2182,25 @@
       `).join('');
       document.getElementById('results-list').innerHTML = resultsHtml;
       
+      if (data.teamScores) {
+        const teamScores = document.getElementById('team-scores');
+        const winner = data.teamScores.red > data.teamScores.blue ? 'red' : data.teamScores.blue > data.teamScores.red ? 'blue' : null;
+        teamScores.innerHTML = `
+          <div class="team-score-card red ${winner === 'red' ? 'winner' : ''}">
+            <h3>Red Team</h3>
+            <div class="score">${data.teamScores.red}</div>
+          </div>
+          <div class="team-score-card blue ${winner === 'blue' ? 'winner' : ''}">
+            <h3>Blue Team</h3>
+            <div class="score">${data.teamScores.blue}</div>
+          </div>
+        `;
+        teamScores.style.display = 'flex';
+      }
+      
       const scoresHtml = data.scores.sort((a,b) => b.score - a.score).map((s, i) => {
         let livesHtml = '';
-        if (currentGameMode === 'Survival') {
+        if (currentGameMode === 'Survival' || currentGameMode === 'Blitz' || currentGameMode === 'BattleRoyale') {
           livesHtml = `<div class="lives">${[0,1,2].map(j => `<span class="life ${j >= s.lives ? 'lost' : ''}">❤️</span>`).join('')}</div>`;
         }
         return `
@@ -1497,9 +2216,6 @@
       }).join('');
       document.getElementById('score-board').innerHTML = '<h3>Scores</h3>' + scoresHtml;
       
-      const me = data.scores.find(s => s.id === socket.id);
-      if (me) currentScore = me.score;
-      
       const skipSection = document.getElementById('skip-section');
       if (isHost) {
         skipSection.innerHTML = `<button class="btn-primary skip-btn" onclick="nextQuestion()">${data.isLastQuestion ? 'See Final Results' : 'Next Question'}</button>`;
@@ -1513,6 +2229,12 @@
     socket.on('game-over', (data) => {
       showScreen('gameover-screen');
       createConfetti();
+      
+      if (data.rankings[0]?.xpGained !== undefined) {
+        document.getElementById('xp-earned').textContent = '+' + data.rankings.find(p => p.id === socket.id)?.xpGained || 0;
+        document.getElementById('coins-earned').textContent = '+' + data.rankings.find(p => p.id === socket.id)?.coinsGained || 0;
+        document.getElementById('rewards-section').style.display = 'block';
+      }
       
       const rankingsHtml = data.rankings.map((p, i) => `
         <div class="rank-item ${i === 0 ? 'winner' : ''}" style="animation-delay: ${i * 0.1}s">
@@ -1543,9 +2265,6 @@
     }
 
     socket.on('error', (msg) => showToast(msg));
-
-    initAvatarSelection();
-    initGameModes();
   </script>
 </body>
 </html>
