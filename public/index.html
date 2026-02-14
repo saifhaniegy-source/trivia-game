@@ -1142,6 +1142,7 @@
     });
 
     socket.on('question', (data) => {
+      showScreen('game-screen');
       selectedAnswer = null;
       answerConfirmed = false;
       document.getElementById('progress-text').textContent = `Question ${data.questionNumber} of ${data.totalQuestions}`;
