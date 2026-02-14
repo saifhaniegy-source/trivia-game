@@ -138,12 +138,6 @@
       box-shadow: 
         0 25px 50px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      animation: cardPulse 3s ease-in-out infinite;
-    }
-
-    @keyframes cardPulse {
-      0%, 100% { box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1); }
-      50% { box-shadow: 0 25px 60px rgba(0, 212, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15); }
     }
 
     input { 
@@ -168,6 +162,36 @@
 
     input::placeholder { 
       color: rgba(255, 255, 255, 0.4); 
+    }
+
+    select {
+      width: 100%; 
+      padding: 18px 24px; 
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px; 
+      font-size: 1.1rem; 
+      margin-bottom: 15px; 
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 15px center;
+      background-size: 20px;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #7c3aed;
+      background-color: rgba(124, 58, 237, 0.1);
+    }
+
+    select option {
+      background: #1a1a2e;
+      color: white;
     }
 
     button { 
@@ -229,6 +253,22 @@
       transform: translateY(-2px);
     }
 
+    .btn-success {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
+    }
+
+    .btn-success:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(34, 197, 94, 0.4);
+    }
+
+    .btn-success:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .room-code-container {
       text-align: center;
       margin: 25px 0;
@@ -256,6 +296,16 @@
     @keyframes codeGlow {
       from { filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.5)); }
       to { filter: drop-shadow(0 0 40px rgba(124, 58, 237, 0.8)); }
+    }
+
+    .theme-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(0, 212, 255, 0.2));
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .player-section {
@@ -302,6 +352,11 @@
       transition: all 0.3s ease;
     }
 
+    .player-list li.answered {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
+      border-color: rgba(34, 197, 94, 0.3);
+    }
+
     .player-list li:hover {
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
       transform: translateX(5px);
@@ -319,19 +374,25 @@
     }
 
     .player-avatar {
-      width: 40px;
-      height: 40px;
+      width: 45px;
+      height: 45px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 1.3rem;
     }
 
     .player-list li .score {
       font-weight: 700;
       color: #00d4ff;
+    }
+
+    .answered-check {
+      color: #22c55e;
+      font-size: 1.2rem;
+      margin-left: 10px;
     }
 
     .waiting { 
@@ -428,15 +489,29 @@
     .question { 
       font-size: 1.6rem;
       text-align: center;
-      margin-bottom: 35px;
+      margin-bottom: 15px;
       line-height: 1.4;
       font-weight: 600;
+    }
+
+    .theme-indicator {
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .theme-indicator span {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(0, 212, 255, 0.2));
+      padding: 5px 15px;
+      border-radius: 15px;
     }
 
     .options {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 15px;
+      margin-bottom: 20px;
     }
 
     .option-btn {
@@ -504,6 +579,16 @@
       font-weight: 700;
     }
 
+    .submit-section {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .submit-btn {
+      max-width: 300px;
+      margin: 0 auto;
+    }
+
     .results-header {
       text-align: center;
       margin-bottom: 30px;
@@ -518,7 +603,7 @@
 
     .results-list {
       display: grid;
-      gap: 8px;
+      gap: 12px;
       margin-bottom: 25px;
     }
 
@@ -526,7 +611,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 18px;
+      padding: 15px 20px;
       border-radius: 12px;
       animation: resultSlide 0.3s ease;
     }
@@ -546,8 +631,38 @@
       border-left: 4px solid #ef4444;
     }
 
+    .result-item .result-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .result-item .mascot {
+      font-size: 1.5rem;
+    }
+
     .result-item .name {
       font-weight: 600;
+    }
+
+    .result-item .result-details {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .result-item .points {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .result-item.correct .points {
+      color: #22c55e;
+    }
+
+    .result-item .time {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.5);
     }
 
     .result-item .status {
@@ -561,6 +676,12 @@
 
     .result-item.wrong .status {
       color: #ef4444;
+    }
+
+    .speed-bonus {
+      font-size: 0.75rem;
+      color: #fbbf24;
+      display: block;
     }
 
     .scoreboard {
@@ -581,6 +702,7 @@
     .score-item {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 12px 15px;
       background: rgba(255, 255, 255, 0.05);
       border-radius: 10px;
@@ -592,9 +714,29 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
+    .score-item .score-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .score-item .score-mascot {
+      font-size: 1.2rem;
+    }
+
     .score-item .score-value {
       font-weight: 700;
       color: #00d4ff;
+    }
+
+    .skip-section {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .skip-btn {
+      max-width: 250px;
+      margin: 0 auto;
     }
 
     .gameover-header {
@@ -655,6 +797,11 @@
       color: rgba(255, 255, 255, 0.5);
     }
 
+    .rank-mascot {
+      font-size: 2rem;
+      margin-right: 15px;
+    }
+
     .rank-name {
       flex: 1;
       font-size: 1.2rem;
@@ -710,6 +857,10 @@
       transform: translateX(-50%) translateY(0);
     }
 
+    .toast.success {
+      background: rgba(34, 197, 94, 0.9);
+    }
+
     @media (max-width: 600px) {
       .logo h1 { font-size: 2.5rem; }
       .room-code { font-size: 2.5rem; letter-spacing: 8px; }
@@ -732,6 +883,14 @@
     <div id="menu-screen" class="screen active">
       <div class="card">
         <input type="text" id="player-name" placeholder="Enter your name" maxlength="12" autocomplete="off">
+        <select id="theme-select">
+          <option value="Random">Random Theme</option>
+          <option value="Science">Science</option>
+          <option value="Geography">Geography</option>
+          <option value="History">History</option>
+          <option value="Space">Space</option>
+          <option value="Entertainment">Entertainment</option>
+        </select>
         <button class="btn-primary" onclick="createRoom()">Create Room</button>
         <button class="btn-secondary" onclick="showJoinScreen()">Join Room</button>
       </div>
@@ -752,6 +911,7 @@
           <p class="room-code-label">Room Code</p>
           <div class="room-code" id="display-code"></div>
         </div>
+        <div class="theme-badge" id="theme-display"></div>
         
         <div class="player-section">
           <div class="player-count-badge" id="player-badge">
@@ -791,8 +951,12 @@
         <div class="timer-bar">
           <div class="timer-bar-fill" id="timer-bar-fill"></div>
         </div>
+        <div class="theme-indicator" id="current-theme"></div>
         <div class="question" id="question-text"></div>
         <div class="options" id="options-container"></div>
+        <div class="submit-section">
+          <button class="btn-success submit-btn" id="submit-btn" onclick="confirmAnswer()" disabled>Submit Answer</button>
+        </div>
       </div>
     </div>
 
@@ -803,6 +967,7 @@
         </div>
         <div class="results-list" id="results-list"></div>
         <div class="scoreboard" id="score-board"></div>
+        <div class="skip-section" id="skip-section"></div>
       </div>
     </div>
 
@@ -828,8 +993,10 @@
     let currentRoom = '';
     let timerInterval;
     let selectedAnswer = null;
+    let answerConfirmed = false;
     let minPlayers = 2;
     let maxPlayers = 10;
+    let currentTheme = 'Random';
 
     function createParticles() {
       const container = document.getElementById('particles');
@@ -856,20 +1023,22 @@
       showScreen('menu-screen');
     }
 
-    function showToast(message) {
+    function showToast(message, success = false) {
       const toast = document.getElementById('toast');
       toast.textContent = message;
-      toast.classList.add('show');
+      toast.className = 'toast show' + (success ? ' success' : '');
       setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
     function createRoom() {
       const name = document.getElementById('player-name').value.trim();
+      const theme = document.getElementById('theme-select').value;
       if (!name) {
         showToast('Please enter your name');
         return;
       }
-      socket.emit('create-room', name);
+      currentTheme = theme;
+      socket.emit('create-room', { name, theme });
     }
 
     function joinRoom() {
@@ -905,6 +1074,7 @@
       minPlayers = data.minPlayers;
       maxPlayers = data.maxPlayers;
       document.getElementById('display-code').textContent = data.roomCode;
+      document.getElementById('theme-display').textContent = 'Theme: ' + currentTheme;
       showScreen('lobby-screen');
     });
 
@@ -928,10 +1098,11 @@
       maxPlayers = data.maxPlayers;
       
       const listHtml = players.map((p, i) => `
-        <li>
+        <li class="${p.answered ? 'answered' : ''}">
           <div class="player-info">
-            <div class="player-avatar" style="background: ${avatarColors[i % avatarColors.length]}">${p.name.charAt(0).toUpperCase()}</div>
+            <div class="player-avatar" style="background: ${avatarColors[i % avatarColors.length]}">${p.mascot || p.name.charAt(0).toUpperCase()}</div>
             <span>${p.name}</span>
+            ${p.answered ? '<span class="answered-check">✓</span>' : ''}
           </div>
           <span class="score">${p.score} pts</span>
         </li>
@@ -963,14 +1134,23 @@
       }
     });
 
-    socket.on('game-started', () => {
+    socket.on('game-started', (data) => {
+      if (data && data.theme) {
+        currentTheme = data.theme;
+      }
       showScreen('game-screen');
     });
 
     socket.on('question', (data) => {
       selectedAnswer = null;
+      answerConfirmed = false;
       document.getElementById('progress-text').textContent = `Question ${data.questionNumber} of ${data.totalQuestions}`;
       document.getElementById('question-text').textContent = data.question;
+      document.getElementById('current-theme').innerHTML = `<span>${currentTheme}</span>`;
+      
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Select an answer';
       
       const optionLabels = ['A', 'B', 'C', 'D'];
       const optionsHtml = data.options.map((opt, i) => 
@@ -985,7 +1165,7 @@
       timerBar.style.width = '100%';
       timerBar.classList.remove('warning');
       
-      let timeLeft = 10;
+      let timeLeft = data.timeLimit || 10;
       const timerEl = document.getElementById('timer');
       timerEl.textContent = timeLeft;
       timerEl.classList.remove('warning');
@@ -994,7 +1174,7 @@
       timerInterval = setInterval(() => {
         timeLeft--;
         timerEl.textContent = timeLeft;
-        timerBar.style.width = (timeLeft / 10 * 100) + '%';
+        timerBar.style.width = (timeLeft / (data.timeLimit || 10) * 100) + '%';
         
         if (timeLeft <= 3) {
           timerEl.classList.add('warning');
@@ -1006,13 +1186,28 @@
     });
 
     function selectAnswer(index) {
-      if (selectedAnswer !== null) return;
+      if (answerConfirmed) return;
       selectedAnswer = index;
       document.querySelectorAll('.option-btn').forEach((btn, i) => {
+        btn.classList.remove('selected');
         if (i === index) btn.classList.add('selected');
-        else btn.classList.remove('selected');
       });
-      socket.emit('submit-answer', index);
+      
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Answer';
+    }
+
+    function confirmAnswer() {
+      if (selectedAnswer === null || answerConfirmed) return;
+      answerConfirmed = true;
+      
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Answer submitted!';
+      
+      socket.emit('submit-answer', selectedAnswer);
+      showToast('Answer submitted!', true);
     }
 
     socket.on('answer-reveal', (data) => {
@@ -1024,24 +1219,45 @@
         else if (i === selectedAnswer && i !== data.correctAnswer) btn.classList.add('wrong');
       });
       
-      const resultsHtml = data.results.map(r => 
-        `<div class="result-item ${r.correct ? 'correct' : 'wrong'}">
-          <span class="name">${r.name}</span>
-          <span class="status">${r.correct ? 'Correct!' : 'Wrong'}</span>
-        </div>`
-      ).join('');
+      const resultsHtml = data.results.map(r => `
+        <div class="result-item ${r.correct ? 'correct' : 'wrong'}">
+          <div class="result-info">
+            <span class="mascot">${r.mascot}</span>
+            <span class="name">${r.name}</span>
+          </div>
+          <div class="result-details">
+            <span class="time">${r.time}s</span>
+            <span class="points">${r.correct ? '+' + r.points : '0'} pts</span>
+            ${r.correct && r.points > 100 ? '<span class="speed-bonus">speed bonus!</span>' : ''}
+          </div>
+        </div>
+      `).join('');
       document.getElementById('results-list').innerHTML = resultsHtml;
       
       const scoresHtml = data.scores.sort((a,b) => b.score - a.score).map((s, i) => 
         `<div class="score-item">
-          <span>${s.name}</span>
+          <div class="score-info">
+            <span class="score-mascot">${s.mascot}</span>
+            <span>${s.name}</span>
+          </div>
           <span class="score-value">${s.score} pts</span>
         </div>`
       ).join('');
       document.getElementById('score-board').innerHTML = '<h3>Scores</h3>' + scoresHtml;
       
+      const skipSection = document.getElementById('skip-section');
+      if (isHost) {
+        skipSection.innerHTML = `<button class="btn-primary skip-btn" onclick="nextQuestion()">${data.isLastQuestion ? 'See Final Results' : 'Next Question'}</button>`;
+      } else {
+        skipSection.innerHTML = '<p style="color: rgba(255,255,255,0.5);">Waiting for host...</p>';
+      }
+      
       setTimeout(() => showScreen('results-screen'), 1500);
     });
+
+    function nextQuestion() {
+      socket.emit('next-question');
+    }
 
     socket.on('game-over', (data) => {
       showScreen('gameover-screen');
@@ -1050,6 +1266,7 @@
       const rankingsHtml = data.rankings.map((p, i) => `
         <div class="rank-item ${i === 0 ? 'winner' : ''}" style="animation-delay: ${i * 0.1}s">
           <span class="rank-number">${i === 0 ? '<span class="crown">&#128081;</span>' : ''}#${i + 1}</span>
+          <span class="rank-mascot">${p.mascot}</span>
           <span class="rank-name">${p.name}</span>
           <span class="rank-score">${p.score} pts</span>
         </div>
