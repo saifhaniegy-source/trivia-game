@@ -263,6 +263,7 @@
         <button class="tab" onclick="showMainTab('customize')">Customize</button>
         <button class="tab" onclick="showMainTab('achievements')">Achievements</button>
         <button class="tab" onclick="showMainTab('leaderboard')">Ranks</button>
+        <button class="tab" onclick="showMainTab('sandbox')">Sandbox</button>
       </div>
 
       <div id="play-tab" class="tab-content">
@@ -298,6 +299,80 @@
             <button class="tab" onclick="loadLB('streak', this)">Streak</button>
           </div>
           <div class="leaderboard-list" id="lb-list"></div>
+        </div>
+      </div>
+
+      <div id="sandbox-tab" class="tab-content" style="display:none">
+        <div class="card">
+          <p class="section-title">🧪 Sandbox Testing Area</p>
+          
+          <div style="background:rgba(0,212,255,0.1);padding:15px;border-radius:10px;margin-bottom:15px">
+            <h3 style="color:#00d4ff;margin-bottom:10px">Points Calculator</h3>
+            <div class="settings-grid">
+              <div class="setting">
+                <label>Base Points</label>
+                <input type="number" id="test-base" value="100" style="width:100%">
+              </div>
+              <div class="setting">
+                <label>Time Left (sec)</label>
+                <input type="number" id="test-time" value="5" style="width:100%">
+              </div>
+              <div class="setting">
+                <label>Streak</label>
+                <input type="number" id="test-streak" value="3" style="width:100%">
+              </div>
+              <div class="setting">
+                <label>Difficulty</label>
+                <select id="test-diff"><option value="1">Easy (1x)</option><option value="1.5" selected>Medium (1.5x)</option><option value="2">Hard (2x)</option><option value="1.25">Mixed (1.25x)</option></select>
+              </div>
+            </div>
+            <button class="btn-primary" onclick="calcPoints()">Calculate Points</button>
+            <div id="points-result" style="margin-top:10px;padding:10px;background:rgba(34,197,94,0.2);border-radius:8px;display:none"></div>
+          </div>
+
+          <div style="background:rgba(251,191,36,0.1);padding:15px;border-radius:10px;margin-bottom:15px">
+            <h3 style="color:#fbbf24;margin-bottom:10px">XP & Level Calculator</h3>
+            <div class="settings-grid">
+              <div class="setting">
+                <label>Current XP</label>
+                <input type="number" id="test-xp" value="0" style="width:100%">
+              </div>
+              <div class="setting">
+                <label>XP to Add</label>
+                <input type="number" id="test-xp-add" value="150" style="width:100%">
+              </div>
+            </div>
+            <button class="btn-primary" onclick="calcXP()">Calculate Level</button>
+            <div id="xp-result" style="margin-top:10px;padding:10px;background:rgba(251,191,36,0.2);border-radius:8px;display:none"></div>
+          </div>
+
+          <div style="background:rgba(124,58,237,0.1);padding:15px;border-radius:10px;margin-bottom:15px">
+            <h3 style="color:#7c3aed;margin-bottom:10px">Simulate Game End</h3>
+            <div class="settings-grid">
+              <div class="setting">
+                <label>Your Score</label>
+                <input type="number" id="sim-score" value="500" style="width:100%">
+              </div>
+              <div class="setting">
+                <label>Your Rank</label>
+                <select id="sim-rank"><option value="0">1st 🥇</option><option value="1">2nd 🥈</option><option value="2">3rd 🥉</option><option value="3">4th+</option></select>
+              </div>
+            </div>
+            <button class="btn-warning" onclick="simGame()">Simulate Rewards</button>
+            <div id="sim-result" style="margin-top:10px;padding:10px;background:rgba(124,58,237,0.2);border-radius:8px;display:none"></div>
+          </div>
+
+          <div style="background:rgba(239,68,68,0.1);padding:15px;border-radius:10px;margin-bottom:15px">
+            <h3 style="color:#ef4444;margin-bottom:10px">Superpowers Reference</h3>
+            <div id="powers-ref" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px"></div>
+          </div>
+
+          <div style="background:rgba(34,197,94,0.1);padding:15px;border-radius:10px;margin-bottom:15px">
+            <h3 style="color:#22c55e;margin-bottom:10px">Avatar & Color Unlocks</h3>
+            <div id="unlocks-ref"></div>
+          </div>
+
+          <button class="btn-secondary" onclick="resetSandbox()">Reset Test Data</button>
         </div>
       </div>
     </div>
@@ -621,6 +696,144 @@
 
     document.getElementById('q-count').addEventListener('input',e=>document.getElementById('q-count-val').textContent=e.target.value);
     document.getElementById('time-limit').addEventListener('input',e=>document.getElementById('time-val').textContent=e.target.value);
+
+    function calcPoints() {
+      const base = +document.getElementById('test-base').value;
+      const timeLeft = +document.getElementById('test-time').value;
+      const streak = +document.getElementById('test-streak').value;
+      const diffMult = +document.getElementById('test-diff').value;
+      const timeLimit = 10;
+      
+      const speedBonus = timeLeft * 10;
+      const streakBonus = Math.min(streak * 10, 50);
+      const total = Math.floor((base + speedBonus) * diffMult) + streakBonus;
+      
+      const el = document.getElementById('points-result');
+      el.style.display = 'block';
+      el.innerHTML = `<strong>Points Breakdown:</strong><br>
+        Base: ${base}<br>
+        Speed Bonus: +${speedBonus} (${timeLeft}s left × 10)<br>
+        Streak Bonus: +${streakBonus} (${streak} streak × 10, max 50)<br>
+        Difficulty: ${diffMult}x<br>
+        <hr style="border-color:rgba(255,255,255,0.2);margin:8px 0">
+        <strong style="font-size:1.3rem;color:#22c55e">Total: ${total} pts</strong>`;
+    }
+
+    function calcXP() {
+      const currentXp = +document.getElementById('test-xp').value;
+      const addXp = +document.getElementById('test-xp-add').value;
+      
+      const calcLevel = (xp) => Math.floor(Math.sqrt(xp / 100)) + 1;
+      const xpForLevel = (lvl) => Math.pow(lvl - 1, 2) * 100;
+      
+      const oldLevel = calcLevel(currentXp);
+      const newLevel = calcLevel(currentXp + addXp);
+      const leveledUp = newLevel > oldLevel;
+      
+      const currentLevelXp = xpForLevel(oldLevel);
+      const nextLevelXp = xpForLevel(oldLevel + 1);
+      const progress = ((currentXp + addXp) - currentLevelXp) / (nextLevelXp - currentLevelXp) * 100;
+      
+      const el = document.getElementById('xp-result');
+      el.style.display = 'block';
+      el.innerHTML = `<strong>XP & Level:</strong><br>
+        Current Level: ${oldLevel}<br>
+        XP: ${currentXp} → ${currentXp + addXp}<br>
+        ${leveledUp ? `<span style="color:#fbbf24">🎉 Level Up! Now Level ${newLevel}</span><br>` : ''}
+        Progress to Level ${oldLevel + 1}: ${Math.min(100, progress).toFixed(1)}%<br>
+        XP needed for next level: ${nextLevelXp - (currentXp + addXp)}<br>
+        <hr style="border-color:rgba(255,255,255,0.2);margin:8px 0">
+        <div style="background:rgba(255,255,255,0.1);height:10px;border-radius:5px;overflow:hidden">
+          <div style="background:linear-gradient(90deg,#00d4ff,#7c3aed);height:100%;width:${Math.min(100, progress)}%"></div>
+        </div>`;
+    }
+
+    function simGame() {
+      const score = +document.getElementById('sim-score').value;
+      const rank = +document.getElementById('sim-rank').value;
+      
+      const xpGained = Math.floor((score / 10) + (rank === 0 ? 100 : rank === 1 ? 50 : rank === 2 ? 25 : 10));
+      const coinsGained = Math.floor(score / 20) + (rank === 0 ? 20 : 10);
+      
+      const el = document.getElementById('sim-result');
+      el.style.display = 'block';
+      el.innerHTML = `<strong>Game End Rewards:</strong><br>
+        Score: ${score}<br>
+        Rank: ${['🥇 1st','🥈 2nd','🥉 3rd','4th+'][rank]}<br>
+        <hr style="border-color:rgba(255,255,255,0.2);margin:8px 0">
+        <span style="color:#00d4ff;font-size:1.3rem">+${xpGained} XP</span><br>
+        <span style="color:#fbbf24;font-size:1.3rem">+${coinsGained} 🪙</span><br>
+        <small style="color:rgba(255,255,255,0.5)">XP = score/10 + rank bonus<br>Coins = score/20 + rank bonus</small>`;
+    }
+
+    function initSandbox() {
+      const powers = [
+        {id:'fifty_fifty',name:'50/50',desc:'Remove 2 wrong answers',icon:'✂️'},
+        {id:'time_freeze',name:'Time Freeze',desc:'+5 seconds',icon:'⏱️'},
+        {id:'double_points',name:'Double Points',desc:'2x points this round',icon:'✨'},
+        {id:'shield',name:'Shield',desc:'Protected from one wrong',icon:'🛡️'},
+        {id:'peek',name:'Peek',desc:'See most popular answer',icon:'👁️'},
+        {id:'second_chance',name:'Second Chance',desc:'Answer again if wrong',icon:'🔄'},
+        {id:'steal',name:'Steal',desc:'Steal 50 pts from player',icon:'💰'},
+        {id:'freeze_player',name:'Freeze',desc:'Freeze player for 5s',icon:'❄️'},
+        {id:'imposter',name:'Imposter',desc:'Swap scores with player',icon:'🎭'},
+        {id:'oracle',name:'Oracle',desc:'Hint at correct answer',icon:'🔮'},
+        {id:'bomb',name:'Bomb',desc:'Others lose 30 pts',icon:'💣'},
+        {id:'gamble',name:'Gamble',desc:'Random -50 to +200 pts',icon:'🎲'},
+        {id:'ban',name:'Ban',desc:'Ban one answer for all',icon:'📛'}
+      ];
+      
+      document.getElementById('powers-ref').innerHTML = powers.map(p => 
+        `<div style="background:rgba(255,255,255,0.05);padding:8px;border-radius:8px">
+          <span style="font-size:1.2rem">${p.icon}</span> <strong>${p.name}</strong><br>
+          <small style="color:rgba(255,255,255,0.6)">${p.desc}</small>
+        </div>`
+      ).join('');
+      
+      const avatars = [
+        {emoji:'🦊🐸🐱🐶🐰🐻',level:1,rarity:'common'},
+        {emoji:'🦁🐼',level:5,rarity:'rare'},
+        {emoji:'🦄🦋',level:10,rarity:'rare'},
+        {emoji:'🦅🐺🦈🐬',level:15,rarity:'epic'},
+        {emoji:'🦉🐲🦚',level:20,rarity:'legendary'},
+        {emoji:'👑🌟🔥',level:50,rarity:'mythic'}
+      ];
+      
+      const colors = [
+        {name:'Ocean Blue, Purple Haze, Pink Dream, Forest Green, Golden Sun, Fire Red',level:1,rarity:'common'},
+        {name:'Cyan Wave, Violet Storm',level:5,rarity:'rare'},
+        {name:'Hot Pink, Teal Ocean',level:10,rarity:'rare'},
+        {name:'Rainbow, Galaxy',level:20,rarity:'epic'},
+        {name:'Sunset',level:30,rarity:'legendary'},
+        {name:'Neon',level:35,rarity:'legendary'},
+        {name:'Aurora',level:50,rarity:'mythic'}
+      ];
+      
+      document.getElementById('unlocks-ref').innerHTML = `
+        <p style="margin-bottom:10px"><strong>Avatars unlock at levels:</strong></p>
+        ${avatars.map(a => `<div style="margin-bottom:5px"><span style="background:${a.rarity==='mythic'?'linear-gradient(90deg,#ff00ff,#00ffff)':a.rarity==='legendary'?'linear-gradient(90deg,#fbbf24,#f59e0b)':a.rarity==='epic'?'linear-gradient(90deg,#8b5cf6,#7c3aed)':a.rarity==='rare'?'linear-gradient(90deg,#3b82f6,#2563eb)':'rgba(255,255,255,0.2)'};padding:2px 6px;border-radius:4px;font-size:0.8rem">${a.rarity}</span> Lv.${a.level}: ${a.emoji}</div>`).join('')}
+        <p style="margin:15px 0 10px"><strong>Colors unlock at levels:</strong></p>
+        ${colors.map(c => `<div style="margin-bottom:5px"><span style="background:${c.rarity==='mythic'?'linear-gradient(90deg,#ff00ff,#00ffff)':c.rarity==='legendary'?'linear-gradient(90deg,#fbbf24,#f59e0b)':c.rarity==='epic'?'linear-gradient(90deg,#8b5cf6,#7c3aed)':c.rarity==='rare'?'linear-gradient(90deg,#3b82f6,#2563eb)':'rgba(255,255,255,0.2)'};padding:2px 6px;border-radius:4px;font-size:0.8rem">${c.rarity}</span> Lv.${c.level}: ${c.name}</div>`).join('')}
+      `;
+    }
+
+    function resetSandbox() {
+      if(confirm('This will reset all test inputs. Continue?')) {
+        document.getElementById('test-base').value = 100;
+        document.getElementById('test-time').value = 5;
+        document.getElementById('test-streak').value = 3;
+        document.getElementById('test-diff').value = 1.5;
+        document.getElementById('test-xp').value = 0;
+        document.getElementById('test-xp-add').value = 150;
+        document.getElementById('sim-score').value = 500;
+        document.getElementById('sim-rank').value = 0;
+        document.getElementById('points-result').style.display = 'none';
+        document.getElementById('xp-result').style.display = 'none';
+        document.getElementById('sim-result').style.display = 'none';
+      }
+    }
+
+    initSandbox();
   </script>
 </body>
 </html>
