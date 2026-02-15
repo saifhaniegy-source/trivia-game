@@ -6,10 +6,17 @@ const pool = new Pool({
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
+let dbInitialized = false;
+let initPromise = null;
+
 async function initDatabase() {
-  const client = await pool.connect();
-  try {
-    await client.query(`
+  if (initPromise) return initPromise;
+  
+  initPromise = (async () => {
+    console.log('Initializing database...');
+    const client = await pool.connect();
+    try {
+      await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
         username TEXT UNIQUE NOT NULL,
@@ -210,12 +217,24 @@ async function initDatabase() {
     }
 
     console.log('Database initialized successfully');
-  } finally {
-    client.release();
-  }
+      dbInitialized = true;
+    } finally {
+      client.release();
+    }
+  })();
+  
+  return initPromise;
 }
 
-initDatabase().catch(console.error);
+initDatabase().catch(err => {
+  console.error('Database initialization failed:', err.message);
+});
+
+async function ensureDb() {
+  if (!dbInitialized) {
+    await initDatabase();
+  }
+}
 
 function calculateLevel(xp) {
   if (xp < 100) return 1;
@@ -241,6 +260,7 @@ function xpToNextLevel(currentXp) {
 
 const User = {
   create: async (username, password) => {
+    await ensureDb();
     const id = randomUUID();
     await pool.query('INSERT INTO users (id, username, password) VALUES ($1, $2, $3)', [id, username.toLowerCase(), password]);
     
@@ -262,12 +282,14 @@ const User = {
   },
   
   getById: async (id) => {
+    await ensureDb();
     const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
     if (!result.rows[0]) return null;
     return User.addCalculatedFields(result.rows[0]);
   },
   
   getByUsername: async (username) => {
+    await ensureDb();
     const result = await pool.query('SELECT * FROM users WHERE username ILIKE $1', [username]);
     if (!result.rows[0]) return null;
     return User.addCalculatedFields(result.rows[0]);
@@ -302,6 +324,7 @@ const User = {
   },
   
   validatePassword: async (username, password) => {
+    await ensureDb();
     const result = await pool.query('SELECT * FROM users WHERE username ILIKE $1', [username]);
     if (!result.rows[0]) return null;
     if (result.rows[0].password !== password) return null;
@@ -309,6 +332,7 @@ const User = {
   },
   
   addXp: async (id, amount) => {
+    await ensureDb();
     const userResult = await pool.query('SELECT xp FROM users WHERE id = $1', [id]);
     if (!userResult.rows[0]) return null;
     
@@ -332,10 +356,12 @@ const User = {
   },
   
   addCoins: async (id, amount) => {
+    await ensureDb();
     await pool.query('UPDATE users SET coins = coins + $1 WHERE id = $2', [amount, id]);
   },
   
   checkUnlocks: async (id, level) => {
+    await ensureDb();
     const newAvatarsResult = await pool.query(`
       SELECT id FROM avatars 
       WHERE unlock_level <= $1 
@@ -360,6 +386,7 @@ const User = {
   },
   
   updateStats: async (id, stats) => {
+    await ensureDb();
     const setClauses = [];
     const values = [];
     let paramIndex = 1;
@@ -392,6 +419,7 @@ const User = {
   },
   
   claimDailyReward: async (id) => {
+    await ensureDb();
     const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
     if (!userResult.rows[0]) return null;
     
@@ -415,6 +443,7 @@ const User = {
   },
   
   getLeaderboard: async (type = 'xp', limit = 100) => {
+    await ensureDb();
     const orderBy = {
       xp: 'xp DESC',
       wins: 'total_wins DESC',
@@ -433,6 +462,7 @@ const User = {
   },
   
   equipAvatar: async (userId, avatarId) => {
+    await ensureDb();
     const ownedResult = await pool.query('SELECT * FROM user_avatars WHERE user_id = $1 AND avatar_id = $2', [userId, avatarId]);
     if (!ownedResult.rows[0]) return false;
     
@@ -442,6 +472,7 @@ const User = {
   },
   
   equipColor: async (userId, colorId) => {
+    await ensureDb();
     const ownedResult = await pool.query('SELECT * FROM user_colors WHERE user_id = $1 AND color_id = $2', [userId, colorId]);
     if (!ownedResult.rows[0]) return false;
     
@@ -451,6 +482,7 @@ const User = {
   },
   
   buyAvatar: async (userId, avatarId) => {
+    await ensureDb();
     const avatarResult = await pool.query('SELECT * FROM avatars WHERE id = $1', [avatarId]);
     const userResult = await pool.query('SELECT coins FROM users WHERE id = $1', [userId]);
     
@@ -471,6 +503,7 @@ const User = {
   },
   
   buyColor: async (userId, colorId) => {
+    await ensureDb();
     const colorResult = await pool.query('SELECT * FROM colors WHERE id = $1', [colorId]);
     const userResult = await pool.query('SELECT coins FROM users WHERE id = $1', [userId]);
     
@@ -491,6 +524,7 @@ const User = {
   },
   
   getInventory: async (userId) => {
+    await ensureDb();
     const avatarsResult = await pool.query(`
       SELECT a.*, ua.equipped, true as owned FROM avatars a
       JOIN user_avatars ua ON a.id = ua.avatar_id
@@ -515,6 +549,7 @@ const User = {
   },
   
   getAchievements: async (userId) => {
+    await ensureDb();
     const result = await pool.query(`
       SELECT a.*, ua.unlocked_at IS NOT NULL as unlocked, ua.unlocked_at
       FROM achievements a
@@ -526,6 +561,7 @@ const User = {
   },
   
   unlockAchievement: async (userId, achievementId) => {
+    await ensureDb();
     const achievementResult = await pool.query('SELECT * FROM achievements WHERE id = $1', [achievementId]);
     if (!achievementResult.rows[0]) return null;
     
@@ -541,6 +577,7 @@ const User = {
   },
   
   checkAchievements: async (userId, stats) => {
+    await ensureDb();
     const unlocked = [];
     
     if (stats.gamesPlayed) {
@@ -588,6 +625,7 @@ const User = {
 
 const Friends = {
   add: async (userId, friendId) => {
+    await ensureDb();
     if (userId === friendId) return { success: false, message: 'Cannot add yourself' };
     
     const existingResult = await pool.query('SELECT * FROM friends WHERE user_id = $1 AND friend_id = $2', [userId, friendId]);
@@ -600,16 +638,19 @@ const Friends = {
   },
   
   accept: async (userId, friendId) => {
+    await ensureDb();
     await pool.query('UPDATE friends SET status = $1 WHERE user_id = $2 AND friend_id = $3', ['accepted', userId, friendId]);
     await pool.query('UPDATE friends SET status = $1 WHERE user_id = $2 AND friend_id = $3', ['accepted', friendId, userId]);
   },
   
   remove: async (userId, friendId) => {
+    await ensureDb();
     await pool.query('DELETE FROM friends WHERE user_id = $1 AND friend_id = $2', [userId, friendId]);
     await pool.query('DELETE FROM friends WHERE user_id = $1 AND friend_id = $2', [friendId, userId]);
   },
   
   getFriends: async (userId) => {
+    await ensureDb();
     const result = await pool.query(`
       SELECT u.id, u.username, u.xp, u.level, f.status
       FROM users u
@@ -621,6 +662,7 @@ const Friends = {
   },
   
   getPending: async (userId) => {
+    await ensureDb();
     const result = await pool.query(`
       SELECT u.id, u.username, u.xp, u.level
       FROM users u
@@ -634,6 +676,7 @@ const Friends = {
 
 const Questions = {
   submit: async (userId, question, options, correctAnswer, theme, difficulty) => {
+    await ensureDb();
     const result = await pool.query(`
       INSERT INTO custom_questions (user_id, question, option_a, option_b, option_c, option_d, correct_answer, theme, difficulty)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -644,6 +687,7 @@ const Questions = {
   },
   
   vote: async (questionId, upvote) => {
+    await ensureDb();
     if (upvote) {
       await pool.query('UPDATE custom_questions SET votes_up = votes_up + 1 WHERE id = $1', [questionId]);
     } else {
@@ -659,6 +703,7 @@ const Questions = {
   },
   
   getApproved: async (theme = null) => {
+    await ensureDb();
     if (theme) {
       const result = await pool.query('SELECT * FROM custom_questions WHERE approved = true AND theme = $1', [theme]);
       return result.rows;
@@ -668,6 +713,7 @@ const Questions = {
   },
   
   getPending: async () => {
+    await ensureDb();
     const result = await pool.query('SELECT * FROM custom_questions WHERE approved = false ORDER BY created_at DESC LIMIT 50');
     return result.rows;
   }
@@ -675,6 +721,7 @@ const Questions = {
 
 const GameHistory = {
   record: async (userId, data) => {
+    await ensureDb();
     await pool.query(`
       INSERT INTO game_history (user_id, room_code, game_mode, theme, score, correct_answers, total_questions, rank, players_count, xp_earned, coins_earned)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
@@ -682,6 +729,83 @@ const GameHistory = {
   },
   
   getRecent: async (userId, limit = 10) => {
+    await ensureDb();
+    const result = await pool.query(`
+      SELECT * FROM game_history WHERE user_id = $1 ORDER BY played_at DESC LIMIT $2
+    `, [userId, limit]);
+    
+    return result.rows;
+  },
+  
+  getPending: async (userId) => {
+    await ensureDb();
+    const result = await pool.query(`
+      SELECT u.id, u.username, u.xp, u.level
+      FROM users u
+      JOIN friends f ON u.id = f.friend_id
+      WHERE f.user_id = $1 AND f.status = 'pending' AND f.friend_id != $1
+    `, [userId]);
+    
+    return result.rows;
+  }
+};
+
+const Questions = {
+  submit: async (userId, question, options, correctAnswer, theme, difficulty) => {
+    await ensureDb();
+    const result = await pool.query(`
+      INSERT INTO custom_questions (user_id, question, option_a, option_b, option_c, option_d, correct_answer, theme, difficulty)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING id
+    `, [userId, question, options[0], options[1], options[2], options[3], correctAnswer, theme, difficulty]);
+    
+    return result.rows[0]?.id;
+  },
+  
+  vote: async (questionId, upvote) => {
+    await ensureDb();
+    if (upvote) {
+      await pool.query('UPDATE custom_questions SET votes_up = votes_up + 1 WHERE id = $1', [questionId]);
+    } else {
+      await pool.query('UPDATE custom_questions SET votes_down = votes_down + 1 WHERE id = $1', [questionId]);
+    }
+    
+    const qResult = await pool.query('SELECT votes_up, votes_down FROM custom_questions WHERE id = $1', [questionId]);
+    const q = qResult.rows[0];
+    
+    if (q && q.votes_up - q.votes_down >= 5 && q.votes_up >= 10) {
+      await pool.query('UPDATE custom_questions SET approved = true WHERE id = $1', [questionId]);
+    }
+  },
+  
+  getApproved: async (theme = null) => {
+    await ensureDb();
+    if (theme) {
+      const result = await pool.query('SELECT * FROM custom_questions WHERE approved = true AND theme = $1', [theme]);
+      return result.rows;
+    }
+    const result = await pool.query('SELECT * FROM custom_questions WHERE approved = true');
+    return result.rows;
+  },
+  
+  getPending: async () => {
+    await ensureDb();
+    const result = await pool.query('SELECT * FROM custom_questions WHERE approved = false ORDER BY created_at DESC LIMIT 50');
+    return result.rows;
+  }
+};
+
+const GameHistory = {
+  record: async (userId, data) => {
+    await ensureDb();
+    await pool.query(`
+      INSERT INTO game_history (user_id, room_code, game_mode, theme, score, correct_answers, total_questions, rank, players_count, xp_earned, coins_earned)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    `, [userId, data.roomCode, data.gameMode, data.theme, data.score, data.correctAnswers, data.totalQuestions, data.rank, data.playersCount, data.xpEarned || 0, data.coinsEarned || 0]);
+  },
+  
+  getRecent: async (userId, limit = 10) => {
+    await ensureDb();
     const result = await pool.query(`
       SELECT * FROM game_history WHERE user_id = $1 ORDER BY played_at DESC LIMIT $2
     `, [userId, limit]);
