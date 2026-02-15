@@ -337,12 +337,12 @@ function filterQuestionsByDifficulty(questions, difficulty) {
   return questions.filter(q => q.difficulty === difficulty || !q.difficulty);
 }
 
-function getRandomQuestions(theme, count, difficulty = 'mixed') {
+async function getRandomQuestions(theme, count, difficulty = 'mixed') {
   let questions = theme === 'Random' 
     ? Object.values(QUESTIONS_BY_THEME).flat()
     : QUESTIONS_BY_THEME[theme] || Object.values(QUESTIONS_BY_THEME).flat();
   
-  const customQuestions = Questions.getApproved(theme === 'Random' ? null : theme);
+  const customQuestions = await Questions.getApproved(theme === 'Random' ? null : theme);
   questions = [...questions, ...customQuestions.map(q => ({
     question: q.question,
     options: [q.option_a, q.option_b, q.option_c, q.option_d],
@@ -686,7 +686,7 @@ io.on('connection', (socket) => {
     connectedUsers.set(userData.id, socket.id);
   });
 
-  socket.on('create-room', ({ name, theme, gameMode, avatar, color, settings, isPractice }) => {
+  socket.on('create-room', async ({ name, theme, gameMode, avatar, color, settings, isPractice }) => {
     const roomCode = generateCode();
     socket.data.name = name;
     socket.data.score = 0;
@@ -711,7 +711,7 @@ io.on('connection', (socket) => {
     const powerupsEnabled = settings?.powerupsEnabled !== false;
     const pointMultiplier = settings?.pointMultiplier || 1;
     
-    const questions = getRandomQuestions(theme, questionCount, difficulty);
+    const questions = await getRandomQuestions(theme, questionCount, difficulty);
     
     const bots = [];
     if (isPractice) {
@@ -1527,7 +1527,7 @@ io.on('connection', (socket) => {
     rooms.delete(roomCode);
   }
 
-  socket.on('rematch', () => {
+  socket.on('rematch', async () => {
     const roomCode = socket.data.currentRoom;
     const room = rooms.get(roomCode);
     
@@ -1535,7 +1535,7 @@ io.on('connection', (socket) => {
     
     const players = getRoomPlayers(roomCode);
     const newRoomCode = generateCode();
-    const newQuestions = getRandomQuestions(room.theme, room.settings.questionCount, room.settings.difficulty);
+    const newQuestions = await getRandomQuestions(room.theme, room.settings.questionCount, room.settings.difficulty);
     
     const newBots = room.bots ? room.bots.map(b => ({
       ...b,
