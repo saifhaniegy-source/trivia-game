@@ -338,6 +338,8 @@
         <button class="tab" onclick="showMainTab('customize')">Customize</button>
         <button class="tab" onclick="showMainTab('achievements')">Achievements</button>
         <button class="tab" onclick="showMainTab('leaderboard')">Ranks</button>
+        <button class="tab" onclick="showMainTab('challenges')">Challenges</button>
+        <button class="tab" onclick="showMainTab('friends')">Friends</button>
         <button class="tab" onclick="showMainTab('shop')">Shop</button>
         <button class="tab" onclick="showMainTab('profile')">Profile</button>
         <button class="tab" onclick="showMainTab('sandbox')">Sandbox</button>
@@ -383,6 +385,29 @@
       </div>
 
       
+
+
+<div id="challenges-tab" class="tab-content" style="display:none">
+  <div class="card">
+    <p class="section-title">🎯 Daily Challenges</p>
+    <p style="margin-bottom:15px;color:rgba(255,255,255,0.6)">Complete challenges for bonus rewards!</p>
+    <div id="challenges-list"></div>
+  </div>
+</div>
+<div id="friends-tab" class="tab-content" style="display:none">
+  <div class="card">
+    <p class="section-title">👥 Friends</p>
+    <input type="text" id="friend-search" placeholder="Search username..." style="margin-bottom:10px">
+    <button class="btn-primary" onclick="searchFriend()" style="margin-bottom:15px">Search</button>
+    <div id="friend-search-results" style="margin-bottom:20px"></div>
+    
+    <p class="section-title">Friend Requests</p>
+    <div id="friend-requests" style="margin-bottom:20px"></div>
+    
+    <p class="section-title">Your Friends</p>
+    <div id="friends-list"></div>
+  </div>
+</div>
 <div id="shop-tab" class="tab-content" style="display:none">
   <div class="card">
     <p class="section-title">🏪 Power-ups Shop</p>
@@ -681,7 +706,7 @@
     function confetti() { const c=['#00d4ff','#7c3aed','#f472b6','#22c55e','#fbbf24','#ef4444','#ff7f00','#8b5cf6']; for(let i=0;i<60;i++){ setTimeout(()=>{ const e=document.createElement('div'); e.className='confetti'; e.style.left=Math.random()*100+'%'; e.style.background=c[Math.floor(Math.random()*c.length)]; e.style.borderRadius=Math.random()>.5?'50%':'0'; e.style.width=(4+Math.random()*6)+'px'; e.style.height=e.style.width; e.style.animationDuration=(2+Math.random()*2)+'s'; document.body.appendChild(e); setTimeout(()=>e.remove(),4000); },i*30); } }
 
     function showAuthTab(t) { document.querySelectorAll('#auth-screen .tab').forEach(x=>x.classList.remove('active')); event.currentTarget.classList.add('active'); document.getElementById('login-form').style.display=t==='login'?'block':'none'; document.getElementById('register-form').style.display=t==='register'?'block':'none'; }
-    function showMainTab(t) { document.querySelectorAll('#main-screen .tab').forEach(x=>x.classList.remove('active')); event.currentTarget.classList.add('active'); document.querySelectorAll('.tab-content').forEach(x=>x.style.display='none'); document.getElementById(t+'-tab').style.display='block'; if(t==='leaderboard')loadLB('xp',document.querySelector('#leaderboard-tab .tab')); if(t==='achievements')loadAch(); if(t==='customize')loadInv(); if(t==='shop')loadShop(); if(t==='profile')loadProfile(); }
+    function showMainTab(t) { document.querySelectorAll('#main-screen .tab').forEach(x=>x.classList.remove('active')); event.currentTarget.classList.add('active'); document.querySelectorAll('.tab-content').forEach(x=>x.style.display='none'); document.getElementById(t+'-tab').style.display='block'; if(t==='leaderboard')loadLB('xp',document.querySelector('#leaderboard-tab .tab')); if(t==='achievements')loadAch(); if(t==='customize')loadInv(); if(t==='shop')loadShop(); if(t==='friends')loadFriends(); if(t==='challenges')loadChallenges(); if(t==='profile')loadProfile(); }
     function showCreateScreen() { initModes(); showScreen('create-screen'); }
     function showJoinScreen() { showScreen('join-screen'); }
     function showMainScreen() { showScreen('main-screen'); }
@@ -750,6 +775,67 @@
       localStorage.setItem('purchasedPowers',JSON.stringify(purchasedPowers));
       loadShop();updateUI();
       toast('Power-up purchased!','success');
+    }
+
+
+    async function loadFriends() {
+      if (!user) return;
+      const reqR = await fetch('/api/friend-requests/' + user.id);
+      const requests = await reqR.json();
+      document.getElementById('friend-requests').innerHTML = requests.length ? requests.map(r => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;margin-bottom:8px">
+          <span>${r.username}</span>
+          <div>
+            <button class="btn-success" onclick="acceptFriend('${r.id}')" style="width:auto;padding:5px 10px;margin-right:5px">✓</button>
+            <button class="btn-delete" onclick="declineFriend('${r.id}')" style="width:auto;padding:5px 10px">✗</button>
+          </div>
+        </div>
+      `).join('') : '<p style="text-align:center;color:rgba(255,255,255,0.5)">No pending requests</p>';
+      
+      const friendsR = await fetch('/api/friends/' + user.id);
+      const friends = await friendsR.json();
+      document.getElementById('friends-list').innerHTML = friends.length ? friends.map(f => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;margin-bottom:8px">
+          <div><span style="font-size:1.2rem;margin-right:8px">🦊</span>${f.username} <span style="color:rgba(255,255,255,0.5)">Lv.${f.level}</span></div>
+          <button class="btn-secondary" onclick="removeFriend('${f.id}')" style="width:auto;padding:5px 10px">Remove</button>
+        </div>
+      `).join('') : '<p style="text-align:center;color:rgba(255,255,255,0.5)">No friends yet</p>';
+    }
+    async function searchFriend() {
+      const q = document.getElementById('friend-search').value.trim();
+      if (!q) return;
+      const r = await fetch('/api/user/search/' + encodeURIComponent(q));
+      const results = await r.json();
+      document.getElementById('friend-search-results').innerHTML = results.length ? results.map(u => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;margin-bottom:8px">
+          <span>${u.username}</span>
+          <button class="btn-primary" onclick="addFriend('${u.id}')" style="width:auto;padding:5px 10px">Add</button>
+        </div>
+      `).join('') : '<p style="text-align:center;color:rgba(255,255,255,0.5)">No users found</p>';
+    }
+    async function addFriend(id) { await fetch('/api/friend-request', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:user.id,friendId:id})}); toast('Friend request sent!','success'); loadFriends(); }
+    async function acceptFriend(id) { await fetch('/api/friend-accept', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:user.id,friendId:id})}); toast('Friend accepted!','success'); loadFriends(); }
+    async function declineFriend(id) { await fetch('/api/friend-decline', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:user.id,friendId:id})}); loadFriends(); }
+    async function removeFriend(id) { await fetch('/api/friend-remove', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:user.id,friendId:id})}); toast('Friend removed'); loadFriends(); }
+
+
+    const DAILY_CHALLENGES = [
+      { id: 'play3', title: 'Play 3 games', reward: 100, type: 'games', target: 3 },
+      { id: 'win1', title: 'Win 1 game', reward: 150, type: 'wins', target: 1 },
+      { id: 'streak5', title: '5 correct streak', reward: 75, type: 'streak', target: 5 },
+      { id: 'speed', title: 'Answer in <3s', reward: 50, type: 'speed', target: 1 }
+    ];
+    function loadChallenges() {
+      const progress = JSON.parse(localStorage.getItem('challengeProgress') || '{}');
+      const today = new Date().toDateString();
+      if (progress.date !== today) { progress.date = today; progress.play3 = 0; progress.win1 = 0; progress.streak5 = 0; progress.speed = 0; localStorage.setItem('challengeProgress', JSON.stringify(progress)); }
+      document.getElementById('challenges-list').innerHTML = DAILY_CHALLENGES.map(c => {
+        const done = progress[c.id] >= c.target;
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:15px;background:rgba(${done?'34,197,94':'255,255,255'},0.1);border-radius:12px;margin-bottom:10px">
+          <div><div style="font-weight:600">${c.title}</div><div style="font-size:0.8rem;color:rgba(255,255,255,0.6)">Progress: ${Math.min(progress[c.id]||0, c.target)}/${c.target}</div></div>
+          <div style="text-align:right"><div style="font-weight:700;color:#fbbf24">+${c.reward} 🪙</div>${done ? '<span style="color:#22c55e">✓ Done</span>' : ''}</div>
+        </div>`;
+      }).join('');
     }
 
 async function loadProfile() { if (!user) return; document.getElementById('profile-avatar').textContent = user.equippedAvatar; document.getElementById('profile-avatar').style.background = user.equippedColor; document.getElementById('profile-username').textContent = user.username; document.getElementById('profile-level').textContent = user.level; document.getElementById('profile-xp').textContent = user.xp; document.getElementById('profile-games').textContent = user.total_games || 0; document.getElementById('profile-wins').textContent = user.total_wins || 0; document.getElementById('profile-streak').textContent = user.best_streak || 0; document.getElementById('profile-accuracy').textContent = (user.accuracy || 0) + '%'; try { const r = await fetch('/api/history/' + user.id); const h = await r.json(); document.getElementById('profile-history').innerHTML = h.length ? h.map(g => '<div style="display:flex;justify-content:space-between;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;margin-bottom:8px"><div><span style="font-weight:600">' + (g.game_mode || 'Classic') + '</span><span style="color:rgba(255,255,255,0.5);margin-left:8px">' + (g.theme || 'Random') + '</span></div><div style="text-align:right"><div style="font-weight:700;color:#00d4ff">#' + g.rank + ' • ' + g.score + 'pts</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.5)">' + g.correct_answers + '/' + g.total_questions + ' correct</div></div></div>').join('') : '<p style="text-align:center;color:rgba(255,255,255,0.5)">No games played yet</p>'; } catch(e) { document.getElementById('profile-history').innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.5)">Unable to load history</p>'; } }

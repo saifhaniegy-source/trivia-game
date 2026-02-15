@@ -523,6 +523,35 @@ app.post('/api/friend-accept', async (req, res) => {
   res.json({ success: true });
 });
 
+
+app.get('/api/friend-requests/:id', async (req, res) => {
+  const requests = Friends.getPending(req.params.id);
+  res.json(requests);
+});
+
+app.get('/api/user/search/:name', async (req, res) => {
+  const result = await pool.query('SELECT id, username, level FROM users WHERE username ILIKE $1 LIMIT 10', ['%' + req.params.name + '%']);
+  res.json(result.rows);
+});
+
+app.post('/api/friend-accept', async (req, res) => {
+  const { userId, friendId } = req.body;
+  await Friends.accept(userId, friendId);
+  res.json({ success: true });
+});
+
+app.post('/api/friend-decline', async (req, res) => {
+  const { userId, friendId } = req.body;
+  await Friends.remove(userId, friendId);
+  res.json({ success: true });
+});
+
+app.post('/api/friend-remove', async (req, res) => {
+  const { userId, friendId } = req.body;
+  await Friends.remove(userId, friendId);
+  res.json({ success: true });
+});
+
 app.post('/api/submit-question', async (req, res) => {
   const { userId, question, options, correctAnswer, theme, difficulty } = req.body;
   const id = await Questions.submit(userId, question, options, correctAnswer, theme, difficulty);
