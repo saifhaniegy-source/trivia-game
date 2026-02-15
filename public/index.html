@@ -212,6 +212,38 @@
     .confetti { position: fixed; width: 8px; height: 8px; top: -10px; animation: conf 3s linear forwards; }
     @keyframes conf { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
     
+    .btn-loading { position: relative; color: transparent !important; pointer-events: none; }
+    .btn-loading::after { content: ''; position: absolute; width: 20px; height: 20px; top: 50%; left: 50%; margin: -10px 0 0 -10px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    .floating { animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    
+    .glow { animation: glow 2s ease-in-out infinite alternate; }
+    @keyframes glow { from { box-shadow: 0 0 10px rgba(0,212,255,0.3); } to { box-shadow: 0 0 30px rgba(0,212,255,0.6), 0 0 60px rgba(124,58,237,0.3); } }
+    
+    .pulse { animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    
+    .slide-up { animation: slideUp 0.5s ease-out; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .shake { animation: shake 0.5s ease-in-out; }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+    
+    .bounce-in { animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+    @keyframes bounceIn { from { opacity: 0; transform: scale(0.3); } to { opacity: 1; transform: scale(1); } }
+    
+    .gradient-text { background: linear-gradient(135deg, #00d4ff, #7c3aed, #f472b6, #fbbf24); background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradientShift 4s ease infinite; }
+    @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    
+    .rainbow-border { background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8b00ff, #ff0000); background-size: 400% 100%; animation: rainbowMove 3s linear infinite; }
+    @keyframes rainbowMove { to { background-position: 400% 0; } }
+    
+    #particles { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
+    .particle { position: absolute; width: 4px; height: 4px; background: rgba(0,212,255,0.5); border-radius: 50%; animation: particleFloat 15s linear infinite; }
+    @keyframes particleFloat { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; } }
+    
     @media (max-width: 600px) {
       .logo h1 { font-size: 2.2rem; }
       .room-code { font-size: 2.5rem; }
@@ -223,11 +255,12 @@
 </head>
 <body>
   <div class="bg"></div>
+  <div id="particles"></div>
   <div class="container">
-    <div class="logo"><h1>Trivia Battle</h1><p>Ultimate Multiplayer Quiz</p></div>
+    <div class="logo"><h1 class="gradient-text">Trivia Battle</h1><p>Ultimate Multiplayer Quiz</p></div>
     
     <div id="auth-screen" class="screen active">
-      <div class="card">
+      <div class="card glow">
         <div class="tabs">
           <button class="tab active" onclick="showAuthTab('login')">Login</button>
           <button class="tab" onclick="showAuthTab('register')">Register</button>
@@ -235,12 +268,12 @@
         <div id="login-form">
           <input type="text" id="login-username" placeholder="Username" maxlength="15" autocomplete="off">
           <input type="password" id="login-password" placeholder="Password" autocomplete="off">
-          <button class="btn-primary" onclick="login()">Login</button>
+          <button class="btn-primary" id="login-btn" onclick="login()">Login</button>
         </div>
         <div id="register-form" style="display:none">
           <input type="text" id="reg-username" placeholder="Username (2-15 chars)" maxlength="15" autocomplete="off">
           <input type="password" id="reg-password" placeholder="Password (min 4 chars)" autocomplete="off">
-          <button class="btn-primary" onclick="register()">Create Account</button>
+          <button class="btn-primary" id="register-btn" onclick="register()">Create Account</button>
         </div>
       </div>
     </div>
@@ -262,7 +295,7 @@
         <button onclick="location.reload()" style="width:auto;padding:10px 16px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;font-size:0.85rem;margin:0">Logout</button>
       </div>
 
-      <div class="daily-reward" id="daily-reward" onclick="claimDaily()">
+      <div class="daily-reward floating" id="daily-reward" onclick="claimDaily()">
         <h3>🎁 Daily Reward</h3>
         <p>Click to claim XP & coins!</p>
       </div>
@@ -276,9 +309,9 @@
       </div>
 
       <div id="play-tab" class="tab-content">
-        <div class="card">
-          <button class="btn-primary" onclick="showCreateScreen()">Create Room</button>
-          <button class="btn-secondary" onclick="showJoinScreen()">Join Room</button>
+        <div class="card slide-up">
+          <button class="btn-primary glow" onclick="showCreateScreen()">🎮 Create Room</button>
+          <button class="btn-secondary" onclick="showJoinScreen()">🚪 Join Room</button>
         </div>
       </div>
 
@@ -518,9 +551,9 @@
     let user = null, isHost = false, room = '', timer, selected = null, confirmed = false, frozen = false, powers = [], pwrEnabled = true, mode = 'Classic';
     
     function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-    function toast(msg, type='error') { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast show '+(type||''); setTimeout(()=>t.classList.remove('show'),2500); }
-    function popup(icon,title,msg) { const p=document.getElementById('popup'); p.querySelector('.icon').textContent=icon; p.querySelector('h3').textContent=title; p.querySelector('p').textContent=msg; p.classList.add('show'); setTimeout(()=>p.classList.remove('show'),2000); }
-    function confetti() { const c=['#00d4ff','#7c3aed','#f472b6','#22c55e','#fbbf24','#ef4444']; for(let i=0;i<40;i++){ setTimeout(()=>{ const e=document.createElement('div'); e.className='confetti'; e.style.left=Math.random()*100+'%'; e.style.background=c[Math.floor(Math.random()*c.length)]; e.style.borderRadius=Math.random()>.5?'50%':'0'; document.body.appendChild(e); setTimeout(()=>e.remove(),3000); },i*40); } }
+    function toast(msg, type='error') { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast show '+(type||''); t.classList.add('bounce-in'); setTimeout(()=>t.classList.remove('bounce-in'),600); setTimeout(()=>t.classList.remove('show'),2500); }
+    function popup(icon,title,msg) { const p=document.getElementById('popup'); p.querySelector('.icon').textContent=icon; p.querySelector('h3').textContent=title; p.querySelector('p').textContent=msg; p.classList.add('show','bounce-in'); setTimeout(()=>p.classList.remove('show','bounce-in'),2000); }
+    function confetti() { const c=['#00d4ff','#7c3aed','#f472b6','#22c55e','#fbbf24','#ef4444','#ff7f00','#8b5cf6']; for(let i=0;i<60;i++){ setTimeout(()=>{ const e=document.createElement('div'); e.className='confetti'; e.style.left=Math.random()*100+'%'; e.style.background=c[Math.floor(Math.random()*c.length)]; e.style.borderRadius=Math.random()>.5?'50%':'0'; e.style.width=(4+Math.random()*6)+'px'; e.style.height=e.style.width; e.style.animationDuration=(2+Math.random()*2)+'s'; document.body.appendChild(e); setTimeout(()=>e.remove(),4000); },i*30); } }
 
     function showAuthTab(t) { document.querySelectorAll('#auth-screen .tab').forEach(x=>x.classList.remove('active')); event.currentTarget.classList.add('active'); document.getElementById('login-form').style.display=t==='login'?'block':'none'; document.getElementById('register-form').style.display=t==='register'?'block':'none'; }
     function showMainTab(t) { document.querySelectorAll('#main-screen .tab').forEach(x=>x.classList.remove('active')); event.currentTarget.classList.add('active'); document.querySelectorAll('.tab-content').forEach(x=>x.style.display='none'); document.getElementById(t+'-tab').style.display='block'; if(t==='leaderboard')loadLB('xp',document.querySelector('#leaderboard-tab .tab')); if(t==='achievements')loadAch(); if(t==='customize')loadInv(); }
@@ -529,26 +562,32 @@
     function showMainScreen() { showScreen('main-screen'); }
 
     async function login() {
+      const btn = document.getElementById('login-btn');
       const u=document.getElementById('login-username').value.trim(), p=document.getElementById('login-password').value;
       if(!u||!p) return toast('Enter username and password');
+      btn.classList.add('btn-loading');
+      btn.disabled = true;
       try {
         const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
         const d=await r.json();
-        if(d.error) return toast(d.error);
+        if(d.error) { btn.classList.remove('btn-loading'); btn.disabled = false; return toast(d.error); }
         user=d.user; socket.emit('set-user',user); updateUI(); showScreen('main-screen'); checkDaily();
-      } catch(e) { toast('Connection error'); }
+      } catch(e) { btn.classList.remove('btn-loading'); btn.disabled = false; toast('Connection error'); }
     }
 
     async function register() {
+      const btn = document.getElementById('register-btn');
       const u=document.getElementById('reg-username').value.trim(), p=document.getElementById('reg-password').value;
       if(!u||u.length<2) return toast('Username: 2-15 chars');
       if(!p||p.length<4) return toast('Password: min 4 chars');
+      btn.classList.add('btn-loading');
+      btn.disabled = true;
       try {
         const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
         const d=await r.json();
-        if(d.error) return toast(d.error);
+        if(d.error) { btn.classList.remove('btn-loading'); btn.disabled = false; return toast(d.error); }
         user=d.user; socket.emit('set-user',user); updateUI(); showScreen('main-screen'); checkDaily();
-      } catch(e) { toast('Connection error'); }
+      } catch(e) { btn.classList.remove('btn-loading'); btn.disabled = false; toast('Connection error'); }
     }
 
     function updateUI() {
@@ -728,6 +767,23 @@
 
     document.getElementById('q-count').addEventListener('input',e=>document.getElementById('q-count-val').textContent=e.target.value);
     document.getElementById('time-limit').addEventListener('input',e=>document.getElementById('time-val').textContent=e.target.value);
+
+    // Create floating particles
+    (function createParticles() {
+      const container = document.getElementById('particles');
+      const colors = ['rgba(0,212,255,0.5)', 'rgba(124,58,237,0.5)', 'rgba(244,114,182,0.5)', 'rgba(251,191,36,0.5)'];
+      for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDelay = Math.random() * 15 + 's';
+        p.style.animationDuration = (15 + Math.random() * 10) + 's';
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.width = (2 + Math.random() * 4) + 'px';
+        p.style.height = p.style.width;
+        container.appendChild(p);
+      }
+    })();
 
     function calcPoints() {
       const base = +document.getElementById('test-base').value;
