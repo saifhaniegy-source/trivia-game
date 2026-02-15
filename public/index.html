@@ -289,6 +289,7 @@
 <body>
   <div class="bg"></div>
   <div id="particles"></div>
+    <div id="keyboard-hint" style="position:fixed;bottom:10px;right:10px;background:rgba(255,255,255,0.1);padding:5px 10px;border-radius:8px;font-size:0.75rem;color:rgba(255,255,255,0.5);z-index:100">Press 1-4 to answer | Space to submit</div>
   <div class="container">
     <div class="logo"><h1 class="gradient-text">Trivia Battle</h1><p>Ultimate Multiplayer Quiz</p></div>
     
@@ -328,6 +329,7 @@
         <button id="sound-toggle" onclick="toggleSound()" style="width:auto;padding:10px 12px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;font-size:1rem;margin:0 5px">🔊</button><button onclick="location.reload()" style="width:auto;padding:10px 16px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;font-size:0.85rem;margin:0">Logout</button>
       </div>
 
+      <div id="streak-display" style="background:rgba(124,58,237,0.1);border:2px solid rgba(124,58,237,0.4);border-radius:18px;padding:15px;margin-bottom:15px;text-align:center"><h3 style="color:#7c3aed">🔥 Login Streak</h3><p style="font-size:2rem;font-weight:800;color:#7c3aed"><span id="streak-count">0</span> days</p><p style="font-size:0.85rem;color:rgba(255,255,255,0.6)">Come back daily for bonus coins!</p></div>
       <div class="daily-reward floating" id="daily-reward" onclick="claimDaily()">
         <h3>🎁 Daily Reward</h3>
         <p>Click to claim XP & coins!</p>
@@ -712,7 +714,13 @@
     function showMainScreen() { showScreen('main-screen'); }
     function closeTutorial() { document.getElementById("tutorial-overlay").style.display = "none"; }
     function showTutorial() { document.getElementById("tutorial-overlay").style.display = "block"; }
-    function startPractice() { isPractice = true; showCreateScreen(); toast('Practice Mode - No XP/Stats counted','info'); }
+    document.addEventListener('keydown', e => {
+  if (document.getElementById('game-screen').classList.contains('active')) {
+    if (e.key >= '1' && e.key <= '4') { sel(parseInt(e.key) - 1); }
+    if (e.key === ' ') { e.preventDefault(); submitAnswer(); }
+  }
+});
+function startPractice() { isPractice = true; showCreateScreen(); toast('Practice Mode - No XP/Stats counted','info'); }
 
     async function login() {
       const btn = document.getElementById('login-btn');
@@ -841,6 +849,9 @@
 async function loadProfile() { if (!user) return; document.getElementById('profile-avatar').textContent = user.equippedAvatar; document.getElementById('profile-avatar').style.background = user.equippedColor; document.getElementById('profile-username').textContent = user.username; document.getElementById('profile-level').textContent = user.level; document.getElementById('profile-xp').textContent = user.xp; document.getElementById('profile-games').textContent = user.total_games || 0; document.getElementById('profile-wins').textContent = user.total_wins || 0; document.getElementById('profile-streak').textContent = user.best_streak || 0; document.getElementById('profile-accuracy').textContent = (user.accuracy || 0) + '%'; try { const r = await fetch('/api/history/' + user.id); const h = await r.json(); document.getElementById('profile-history').innerHTML = h.length ? h.map(g => '<div style="display:flex;justify-content:space-between;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;margin-bottom:8px"><div><span style="font-weight:600">' + (g.game_mode || 'Classic') + '</span><span style="color:rgba(255,255,255,0.5);margin-left:8px">' + (g.theme || 'Random') + '</span></div><div style="text-align:right"><div style="font-weight:700;color:#00d4ff">#' + g.rank + ' • ' + g.score + 'pts</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.5)">' + g.correct_answers + '/' + g.total_questions + ' correct</div></div></div>').join('') : '<p style="text-align:center;color:rgba(255,255,255,0.5)">No games played yet</p>'; } catch(e) { document.getElementById('profile-history').innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.5)">Unable to load history</p>'; } }
 
 function updateUI() {
+  const streak = user.current_streak || 0;
+  document.getElementById('streak-count').textContent = streak;
+
       if(!user) return;
       document.getElementById('user-name').textContent=user.username;
       document.getElementById('user-avatar').textContent=user.equippedAvatar;
