@@ -566,15 +566,24 @@
     async function checkDaily() {
       const r=await fetch('/api/user/'+user.id); const d=await r.json();
       const el=document.getElementById('daily-reward');
-      const today=new Date().toISOString().split('T')[0];
-      if(d.daily_reward_claimed===today) { el.classList.add('claimed'); el.innerHTML='<h3>✅ Claimed</h3><p>Come back tomorrow!</p>'; }
+      if(d.daily_reward_claimed) { 
+        el.classList.add('claimed'); 
+        el.innerHTML='<h3>✅ Claimed</h3><p>Come back tomorrow!</p>'; 
+      }
     }
 
     async function claimDaily() {
       if(document.getElementById('daily-reward').classList.contains('claimed')) return;
       const r=await fetch('/api/daily-reward/'+user.id,{method:'POST'});
       const d=await r.json();
-      if(d.claimed) { popup('🎁','Daily Reward!',`+${d.xpReward} XP, +${d.coinReward} coins`); user.xp+=d.xpReward; user.coins+=d.coinReward; updateUI(); checkDaily(); }
+      if(d.claimed) { 
+        popup('🎁','Daily Reward!',`+${d.xpReward} XP, +${d.coinReward} coins`); 
+        user.xp+=d.xpReward; 
+        user.coins+=d.coinReward; 
+        updateUI(); 
+        document.getElementById('daily-reward').classList.add('claimed');
+        document.getElementById('daily-reward').innerHTML='<h3>✅ Claimed</h3><p>Come back tomorrow!</p>';
+      }
       else toast(d.message,'info');
     }
 

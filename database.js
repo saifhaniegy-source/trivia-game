@@ -427,7 +427,12 @@ const User = {
     const user = userResult.rows[0];
     const today = new Date().toISOString().split('T')[0];
     
-    if (user.daily_reward_claimed === today) {
+    if (user.daily_reward_claimed && user.daily_reward_claimed.toISOString) {
+      const claimedDate = user.daily_reward_claimed.toISOString().split('T')[0];
+      if (claimedDate === today) {
+        return { claimed: false, message: 'Already claimed today' };
+      }
+    } else if (user.daily_reward_claimed === today) {
       return { claimed: false, message: 'Already claimed today' };
     }
     
