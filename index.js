@@ -2,7 +2,8 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
-const { User, Friends, Questions, GameHistory, db } = require('./database');
+const crypto = require('crypto');
+const { User, Friends, Questions, GameHistory, pool } = require('./database');
 
 const app = express();
 const server = http.createServer(app);
@@ -278,7 +279,7 @@ function clearTimer(roomCode) {
   }
 }
 
-app.post('/api/register', (req, res) => {
+app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
   if (!username || username.length < 2 || username.length > 15) {
     return res.status(400).json({ error: 'Username must be 2-15 characters' });
@@ -288,10 +289,10 @@ app.post('/api/register', (req, res) => {
   }
   
   try {
-    const user = User.create(username, password);
+    const user = await User.create(username, password);
     res.json({ success: true, user });
   } catch (e) {
-    if (e.code === 'SQLITE_CONSTRAINT') {
+    if (e.code === '23505') {
       res.status(400).json({ error: 'Username already taken' });
     } else {
       res.status(500).json({ error: 'Failed to create user' });
@@ -299,93 +300,93 @@ app.post('/api/register', (req, res) => {
   }
 });
 
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
-  const user = User.validatePassword(username, password);
+  const user = await User.validatePassword(username, password);
   if (!user) {
     return res.status(401).json({ error: 'Invalid username or password' });
   }
   res.json({ success: true, user });
 });
 
-app.get('/api/user/:id', (req, res) => {
-  const user = User.getById(req.params.id);
+app.get('/api/user/:id', async (req, res) => {
+  const user = await User.getById(req.params.id);
   if (!user) {
     return res.status(404).json({ error: 'User not found' });
   }
   res.json(user);
 });
 
-app.get('/api/leaderboard/:type', (req, res) => {
-  const leaderboard = User.getLeaderboard(req.params.type, 100);
+app.get('/api/leaderboard/:type', async (req, res) => {
+  const leaderboard = await User.getLeaderboard(req.params.type, 100);
   res.json(leaderboard);
 });
 
-app.post('/api/daily-reward/:id', (req, res) => {
-  const result = User.claimDailyReward(req.params.id);
+app.post('/api/daily-reward/:id', async (req, res) => {
+  const result = await User.claimDailyReward(req.params.id);
   res.json(result);
 });
 
-app.get('/api/inventory/:id', (req, res) => {
-  const inventory = User.getInventory(req.params.id);
+app.get('/api/inventory/:id', async (req, res) => {
+  const inventory = await User.getInventory(req.params.id);
   res.json(inventory);
 });
 
-app.get('/api/achievements/:id', (req, res) => {
-  const achievements = User.getAchievements(req.params.id);
+app.get('/api/achievements/:id', async (req, res) => {
+  const achievements = await User.getAchievements(req.params.id);
   res.json(achievements);
 });
 
-app.post('/api/equip-avatar', (req, res) => {
+app.post('/api/equip-avatar', async (req, res) => {
   const { userId, avatarId } = req.body;
-  User.equipAvatar(userId, avatarId);
+  await User.equipAvatar(userId, avatarId);
   res.json({ success: true });
 });
 
-app.post('/api/equip-color', (req, res) => {
+app.post('/api/equip-color', async (req, res) => {
   const { userId, colorId } = req.body;
-  User.equipColor(userId, colorId);
+  await User.equipColor(userId, colorId);
   res.json({ success: true });
 });
 
-app.post('/api/buy-avatar', (req, res) => {
+app.post('/api/buy-avatar', async (req, res) => {
   const { userId, avatarId } = req.body;
-  const result = User.buyAvatar(userId, avatarId);
+  const result = await User.buyAvatar(userId, avatarId);
   res.json(result);
 });
 
-app.post('/api/buy-color', (req, res) => {
+app.post('/api/buy-color', async (req, res) => {
   const { userId, colorId } = req.body;
-  const result = User.buyColor(userId, colorId);
+  const result = await User.buyColor(userId, colorId);
   res.json(result);
 });
 
-app.get('/api/friends/:id', (req, res) => {
-  const friends = Friends.getFriends(req.params.id);
+app.get('/api/friends/:id', async (req, res) => {
+  const friends = await Friends.getFriends(req.params.id);
   res.json(friends);
 });
 
-app.post('/api/friend-request', (req, res) => {
+app.post('/api/friend-request', async (req, res) => {
   const { userId, friendId } = req.body;
-  const result = Friends.add(userId, friendId);
+  const result = await Friends.add(userId, friendId);
   res.json(result);
 });
 
-app.post('/api/friend-accept', (req, res) => {
+app.post('/api/friend-accept', async (req, res) => {
   const { userId, friendId } = req.body;
-  Friends.accept(userId, friendId);
+  await Friends.accept(userId, friendId);
   res.json({ success: true });
 });
 
-app.post('/api/submit-question', (req, res) => {
+app.post('/api/submit-question', async (req, res) => {
   const { userId, question, options, correctAnswer, theme, difficulty } = req.body;
-  const id = Questions.submit(userId, question, options, correctAnswer, theme, difficulty);
+  const id = await Questions.submit(userId, question, options, correctAnswer, theme, difficulty);
   res.json({ success: true, id });
 });
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'trivia2024';
-const ADMIN_TOKEN = 'admin-' + Date.now() + '-' + Math.random().toString(36).substring(2);
+const ADMIN_TOKEN = crypto.createHash('sha256').update(process.env.DATABASE_URL || 'admin-secret').digest('hex').substring(0, 32);
 
 function authAdmin(req, res, next) {
   const token = req.headers.authorization?.replace('Bearer ', '');
@@ -409,68 +410,77 @@ app.get('/api/admin/verify', authAdmin, (req, res) => {
   res.json({ valid: true });
 });
 
-app.get('/api/admin/stats', authAdmin, (req, res) => {
-  const stats = {
-    totalUsers: db.prepare('SELECT COUNT(*) as count FROM users').get()?.count || 0,
-    totalGames: db.prepare('SELECT SUM(total_games) as sum FROM users').get()?.sum || 0,
-    totalQuestions: db.prepare('SELECT COUNT(*) as count FROM custom_questions').get()?.count || 0,
-    pendingQuestions: db.prepare('SELECT COUNT(*) as count FROM custom_questions WHERE approved = 0').get()?.count || 0
-  };
-  res.json(stats);
+app.get('/api/admin/stats', authAdmin, async (req, res) => {
+  try {
+    const usersResult = await pool.query('SELECT COUNT(*) as count FROM users');
+    const gamesResult = await pool.query('SELECT SUM(total_games) as sum FROM users');
+    const questionsResult = await pool.query('SELECT COUNT(*) as count FROM custom_questions');
+    const pendingResult = await pool.query('SELECT COUNT(*) as count FROM custom_questions WHERE approved = false');
+    
+    const stats = {
+      totalUsers: parseInt(usersResult.rows[0]?.count) || 0,
+      totalGames: parseInt(gamesResult.rows[0]?.sum) || 0,
+      totalQuestions: parseInt(questionsResult.rows[0]?.count) || 0,
+      pendingQuestions: parseInt(pendingResult.rows[0]?.count) || 0
+    };
+    res.json(stats);
+  } catch (e) {
+    res.status(500).json({ error: 'Database error' });
+  }
 });
 
-app.get('/api/admin/users', authAdmin, (req, res) => {
-  const users = db.prepare('SELECT id, username, xp, level, coins, total_games, total_wins, total_correct, best_streak, created_at FROM users ORDER BY created_at DESC').all();
-  res.json(users);
+app.get('/api/admin/users', authAdmin, async (req, res) => {
+  const result = await pool.query('SELECT id, username, xp, level, coins, total_games, total_wins, total_correct, best_streak, created_at FROM users ORDER BY created_at DESC');
+  res.json(result.rows);
 });
 
-app.put('/api/admin/user/:id', authAdmin, (req, res) => {
+app.put('/api/admin/user/:id', authAdmin, async (req, res) => {
   const { username, xp, coins, level } = req.body;
   try {
-    db.prepare('UPDATE users SET username = ?, xp = ?, coins = ?, level = ? WHERE id = ?').run(username, xp, coins, level, req.params.id);
+    await pool.query('UPDATE users SET username = $1, xp = $2, coins = $3, level = $4 WHERE id = $5', [username, xp, coins, level, req.params.id]);
     res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: 'Failed to update user' });
   }
 });
 
-app.delete('/api/admin/user/:id', authAdmin, (req, res) => {
+app.delete('/api/admin/user/:id', authAdmin, async (req, res) => {
   try {
-    db.prepare('DELETE FROM user_avatars WHERE user_id = ?').run(req.params.id);
-    db.prepare('DELETE FROM user_colors WHERE user_id = ?').run(req.params.id);
-    db.prepare('DELETE FROM user_achievements WHERE user_id = ?').run(req.params.id);
-    db.prepare('DELETE FROM friends WHERE user_id = ? OR friend_id = ?').run(req.params.id, req.params.id);
-    db.prepare('DELETE FROM custom_questions WHERE user_id = ?').run(req.params.id);
-    db.prepare('DELETE FROM game_history WHERE user_id = ?').run(req.params.id);
-    db.prepare('DELETE FROM users WHERE id = ?').run(req.params.id);
+    await pool.query('DELETE FROM user_avatars WHERE user_id = $1', [req.params.id]);
+    await pool.query('DELETE FROM user_colors WHERE user_id = $1', [req.params.id]);
+    await pool.query('DELETE FROM user_achievements WHERE user_id = $1', [req.params.id]);
+    await pool.query('DELETE FROM friends WHERE user_id = $1 OR friend_id = $1', [req.params.id]);
+    await pool.query('DELETE FROM custom_questions WHERE user_id = $1', [req.params.id]);
+    await pool.query('DELETE FROM game_history WHERE user_id = $1', [req.params.id]);
+    await pool.query('DELETE FROM users WHERE id = $1', [req.params.id]);
     res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: 'Failed to delete user' });
   }
 });
 
-app.get('/api/admin/questions', authAdmin, (req, res) => {
-  const questions = db.prepare('SELECT * FROM custom_questions ORDER BY created_at DESC').all();
-  res.json(questions);
+app.get('/api/admin/questions', authAdmin, async (req, res) => {
+  const result = await pool.query('SELECT * FROM custom_questions ORDER BY created_at DESC');
+  res.json(result.rows);
 });
 
-app.post('/api/admin/question/:id/approve', authAdmin, (req, res) => {
-  db.prepare('UPDATE custom_questions SET approved = 1 WHERE id = ?').run(req.params.id);
+app.post('/api/admin/question/:id/approve', authAdmin, async (req, res) => {
+  await pool.query('UPDATE custom_questions SET approved = true WHERE id = $1', [req.params.id]);
   res.json({ success: true });
 });
 
-app.delete('/api/admin/question/:id', authAdmin, (req, res) => {
-  db.prepare('DELETE FROM custom_questions WHERE id = ?').run(req.params.id);
+app.delete('/api/admin/question/:id', authAdmin, async (req, res) => {
+  await pool.query('DELETE FROM custom_questions WHERE id = $1', [req.params.id]);
   res.json({ success: true });
 });
 
-app.get('/api/admin/history', authAdmin, (req, res) => {
-  const history = db.prepare(`
+app.get('/api/admin/history', authAdmin, async (req, res) => {
+  const result = await pool.query(`
     SELECT gh.*, u.username FROM game_history gh
     LEFT JOIN users u ON gh.user_id = u.id
     ORDER BY gh.played_at DESC LIMIT 100
-  `).all();
-  res.json(history);
+  `);
+  res.json(result.rows);
 });
 
 io.on('connection', (socket) => {
@@ -1123,7 +1133,7 @@ io.on('connection', (socket) => {
     });
   }
 
-  socket.on('next-question', () => {
+  socket.on('next-question', async () => {
     const roomCode = socket.data.currentRoom;
     const room = rooms.get(roomCode);
     
@@ -1135,7 +1145,7 @@ io.on('connection', (socket) => {
     if (room.gameMode === "Survival") {
       const alivePlayers = getRoomPlayers(roomCode).filter(p => p.lives > 0);
       if (alivePlayers.length <= 1) {
-        endGame(roomCode);
+        await endGame(roomCode);
         return;
       }
     }
@@ -1143,7 +1153,7 @@ io.on('connection', (socket) => {
     if (room.gameMode === "Blitz") {
       const alivePlayers = getRoomPlayers(roomCode).filter(p => p.lives > 0);
       if (alivePlayers.length <= 1) {
-        endGame(roomCode);
+        await endGame(roomCode);
         return;
       }
     }
@@ -1151,7 +1161,7 @@ io.on('connection', (socket) => {
     if (room.gameMode === "BattleRoyale") {
       const alivePlayers = getRoomPlayers(roomCode).filter(p => p.lives > 0);
       if (alivePlayers.length <= 1) {
-        endGame(roomCode);
+        await endGame(roomCode);
         return;
       }
     }
@@ -1163,11 +1173,11 @@ io.on('connection', (socket) => {
         sendQuestion(roomCode);
       }
     } else {
-      endGame(roomCode);
+      await endGame(roomCode);
     }
   });
 
-  function endGame(roomCode) {
+  async function endGame(roomCode) {
     clearTimer(roomCode);
     const room = rooms.get(roomCode);
     if (!room) return;
@@ -1181,14 +1191,15 @@ io.on('connection', (socket) => {
       playersCount: players.length
     };
     
-    players.forEach((p, rank) => {
+    for (let rank = 0; rank < players.length; rank++) {
+      const p = players[rank];
       if (p.userId) {
         const xpGained = Math.floor((p.score / 10) + (rank === 0 ? 100 : rank === 1 ? 50 : rank === 2 ? 25 : 10));
         const coinsGained = Math.floor(p.score / 20) + (rank === 0 ? 20 : 10);
         
-        User.addXp(p.userId, xpGained);
-        User.addCoins(p.userId, coinsGained);
-        User.updateStats(p.userId, {
+        await User.addXp(p.userId, xpGained);
+        await User.addCoins(p.userId, coinsGained);
+        await User.updateStats(p.userId, {
           gamesPlayed: 1,
           gamesWon: rank === 0 ? 1 : 0,
           correctAnswers: p.correctThisGame || 0,
@@ -1196,13 +1207,13 @@ io.on('connection', (socket) => {
           bestStreak: p.bestStreakThisGame || 0
         });
         
-        User.checkAchievements(p.userId, {
+        await User.checkAchievements(p.userId, {
           gamesPlayed: 1,
           gamesWon: rank === 0 ? 1 : 0,
           streak: p.bestStreakThisGame || 0
         });
         
-        GameHistory.record(p.userId, {
+        await GameHistory.record(p.userId, {
           roomCode,
           gameMode: room.gameMode,
           theme: room.theme,
@@ -1218,7 +1229,7 @@ io.on('connection', (socket) => {
         p.xpGained = xpGained;
         p.coinsGained = coinsGained;
       }
-    });
+    }
     
     let teamScores = null;
     if (room.gameMode === 'Team') {
