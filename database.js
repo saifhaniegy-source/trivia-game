@@ -38,7 +38,7 @@ async function initDatabase() {
 
       CREATE TABLE IF NOT EXISTS avatars (
         id SERIAL PRIMARY KEY,
-        emoji TEXT NOT NULL,
+        emoji TEXT UNIQUE NOT NULL,
         name TEXT,
         rarity TEXT DEFAULT 'common',
         unlock_level INTEGER DEFAULT 1,
@@ -56,7 +56,7 @@ async function initDatabase() {
 
       CREATE TABLE IF NOT EXISTS colors (
         id SERIAL PRIMARY KEY,
-        name TEXT,
+        name TEXT UNIQUE,
         gradient TEXT NOT NULL,
         rarity TEXT DEFAULT 'common',
         unlock_level INTEGER DEFAULT 1,
@@ -74,7 +74,7 @@ async function initDatabase() {
 
       CREATE TABLE IF NOT EXISTS achievements (
         id SERIAL PRIMARY KEY,
-        name TEXT NOT NULL,
+        name TEXT UNIQUE NOT NULL,
         description TEXT,
         icon TEXT,
         xp_reward INTEGER DEFAULT 0,
@@ -136,6 +136,16 @@ async function initDatabase() {
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
+
+    // Clean up duplicates
+    await client.query(`DELETE FROM avatars a USING avatars b WHERE a.id > b.id AND a.emoji = b.emoji`);
+    await client.query(`DELETE FROM colors a USING colors b WHERE a.id > b.id AND a.gradient = b.gradient`);
+    await client.query(`DELETE FROM achievements a USING achievements b WHERE a.id > b.id AND a.name = b.name`);
+    
+    // Add unique constraints if not exist
+    await client.query(`ALTER TABLE avatars ADD CONSTRAINT IF NOT EXISTS avatars_emoji_key UNIQUE (emoji)`);
+    await client.query(`ALTER TABLE colors ADD CONSTRAINT IF NOT EXISTS colors_name_key UNIQUE (name)`);
+    await client.query(`ALTER TABLE achievements ADD CONSTRAINT IF NOT EXISTS achievements_name_key UNIQUE (name)`);
 
     const defaultAvatars = [
       { emoji: '🦊', name: 'Fox', rarity: 'common', unlock_level: 1, unlock_cost: 0 },
