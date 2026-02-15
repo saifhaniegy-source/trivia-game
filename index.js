@@ -900,7 +900,9 @@ io.on('connection', (socket) => {
     connectedUsers.set(userData.id, socket.id);
   });
 
-  socket.on('create-room', async ({ name, theme, gameMode, avatar, color, settings, isPractice }) => {
+  socket.on('create-room', async ({ name, theme, gameMode, avatar, color, settings, isPractice, maxPlayers: requestedMaxPlayers }) => {
+    console.log('create-room called:', { name, theme, gameMode, isPractice, requestedMaxPlayers });
+    
     const roomCode = generateCode();
     socket.data.name = name;
     socket.data.score = 0;
@@ -908,7 +910,6 @@ io.on('connection', (socket) => {
     socket.data.superpowers = [];
     socket.data.shieldActive = false;
     socket.data.hasSecondChance = false;
-    socket.data.lives = 3;
     socket.data.bet = 0;
     socket.data.frozen = false;
     socket.data.frozenUntil = 0;
@@ -919,11 +920,33 @@ io.on('connection', (socket) => {
     socket.data.team = null;
     
     const mode = GAME_MODES[gameMode] || GAME_MODES["Classic"];
-    const questionCount = settings?.questionCount || mode.questions;
-    const timeLimit = settings?.timeLimit || mode.timeLimit;
-    const difficulty = settings?.difficulty || 'mixed';
-    const powerupsEnabled = settings?.powerupsEnabled !== false;
-    const pointMultiplier = settings?.pointMultiplier || 1;
+    console.log('Mode config:', mode);
+    
+    // For preset modes, use mode defaults. For Custom, use provided settings.
+    let questionCount, timeLimit, difficulty, powerupsEnabled, roomMaxPlayers, startingLives;
+    
+    if (mode.isPreset) {
+      // Preset mode - use mode settings
+      questionCount = mode.questions;
+      timeLimit = mode.timeLimit;
+      difficulty = mode.difficulty || 'mixed';
+      powerupsEnabled = mode.powerups !== false;
+      startingLives = mode.startingLives || 3;
+      roomMaxPlayers = Math.min(Math.max(requestedMaxPlayers || mode.maxPlayers, mode.minPlayers), mode.maxPlayers);
+    } else {
+      // Custom mode - use provided settings
+      questionCount = settings?.questionCount || 15;
+      timeLimit = settings?.timeLimit || 10;
+      difficulty = settings?.difficulty || 'mixed';
+      powerupsEnabled = settings?.powerupsEnabled !== false;
+      startingLives = 3;
+      roomMaxPlayers = Math.min(Math.max(requestedMaxPlayers || 8, MIN_PLAYERS), MAX_PLAYERS);
+    }
+    
+    // Set starting lives based on mode
+    socket.data.lives = mode.hasLives ? startingLives : 3;
+    
+    console.log('Room settings:', { questionCount, timeLimit, difficulty, powerupsEnabled, roomMaxPlayers, startingLives });
     
     const questions = await getRandomQuestions(theme, questionCount, difficulty);
     
@@ -936,12 +959,12 @@ io.on('connection', (socket) => {
           name: botNames[i],
           score: 0,
           mascot: MASCOTS[Math.floor(Math.random() * MASCOTS.length)],
-          color: COLORS[Math.floor(Math.random() * COLORS.length)],
+          color: COLORS[Math.floor(Math.random() * MASCOTS.length)],
           answered: false,
           superpowers: [],
           shieldActive: false,
           hasSecondChance: false,
-          lives: 3,
+          lives: socket.data.lives,
           bet: 0,
           frozen: false,
           frozenUntil: 0,
@@ -985,11 +1008,13 @@ io.on('connection', (socket) => {
     socket.join(roomCode);
     socket.data.currentRoom = roomCode;
     
+    console.log('Room created:', roomCode, 'with', questions.length, 'questions');
+    
     socket.emit('room-created', { 
       roomCode, 
       isHost: true, 
       minPlayers: MIN_PLAYERS, 
-      maxPlayers: MAX_PLAYERS, 
+      maxPlayers: roomMaxPlayers,
       themes: THEMES,
       gameModes: GAME_MODES,
       gameMode: gameMode,
@@ -999,7 +1024,7 @@ io.on('connection', (socket) => {
     io.to(roomCode).emit('players-update', { 
       players: getRoomPlayers(roomCode), 
       minPlayers: MIN_PLAYERS, 
-      maxPlayers: MAX_PLAYERS, 
+      maxPlayers: roomMaxPlayers, 
       gameMode: gameMode,
       teams: rooms.get(roomCode).teams
     });
