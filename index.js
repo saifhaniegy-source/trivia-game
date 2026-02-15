@@ -268,7 +268,7 @@ const GAME_MODES = {
     timeLimit: 10, 
     icon: "🎯",
     minPlayers: 2,
-    maxPlayers: 8,
+    maxPlayers: 20,
     difficulty: "mixed",
     powerups: true,
     hasLives: false,
@@ -282,7 +282,7 @@ const GAME_MODES = {
     timeLimit: 5, 
     icon: "⚡",
     minPlayers: 2,
-    maxPlayers: 6,
+    maxPlayers: 20,
     difficulty: "mixed",
     powerups: true,
     hasLives: false,
@@ -296,7 +296,7 @@ const GAME_MODES = {
     timeLimit: 10, 
     icon: "❤️",
     minPlayers: 2,
-    maxPlayers: 8,
+    maxPlayers: 20,
     difficulty: "mixed",
     powerups: true,
     hasLives: true,
@@ -311,7 +311,7 @@ const GAME_MODES = {
     timeLimit: 12, 
     icon: "🎰",
     minPlayers: 2,
-    maxPlayers: 6,
+    maxPlayers: 15,
     difficulty: "mixed",
     powerups: false,
     hasLives: false,
@@ -325,7 +325,7 @@ const GAME_MODES = {
     timeLimit: 3, 
     icon: "🌩️",
     minPlayers: 2,
-    maxPlayers: 10,
+    maxPlayers: 20,
     difficulty: "easy",
     powerups: false,
     hasLives: false,
@@ -339,7 +339,7 @@ const GAME_MODES = {
     timeLimit: 10, 
     icon: "👥",
     minPlayers: 4,
-    maxPlayers: 6,
+    maxPlayers: 20,
     difficulty: "mixed",
     powerups: true,
     hasLives: false,
@@ -354,7 +354,7 @@ const GAME_MODES = {
     timeLimit: 8, 
     icon: "🔫",
     minPlayers: 4,
-    maxPlayers: 10,
+    maxPlayers: 20,
     difficulty: "mixed",
     powerups: true,
     hasLives: true,
@@ -369,7 +369,7 @@ const GAME_MODES = {
     timeLimit: 7, 
     icon: "💥",
     minPlayers: 2,
-    maxPlayers: 4,
+    maxPlayers: 10,
     difficulty: "mixed",
     powerups: false,
     hasLives: true,
@@ -384,7 +384,7 @@ const GAME_MODES = {
     timeLimit: 15, 
     icon: "🔄",
     minPlayers: 2,
-    maxPlayers: 6,
+    maxPlayers: 15,
     difficulty: "medium",
     powerups: true,
     hasLives: false,
@@ -398,7 +398,7 @@ const GAME_MODES = {
     timeLimit: 10, 
     icon: "⚙️",
     minPlayers: 2,
-    maxPlayers: 10,
+    maxPlayers: 20,
     difficulty: "mixed",
     powerups: true,
     hasLives: false,
@@ -446,7 +446,7 @@ const COLORS = [
 ];
 
 const MIN_PLAYERS = 2;
-const MAX_PLAYERS = 10;
+const MAX_PLAYERS = 20;
 const MAX_POINTS = 100;
 const SPEED_BONUS_MULTIPLIER = 10;
 const STREAK_BONUS = 10;
@@ -966,12 +966,16 @@ io.on('connection', (socket) => {
       theme: theme,
       gameMode: gameMode,
       bets: new Map(),
+      maxPlayers: roomMaxPlayers,
       settings: {
         questionCount,
         timeLimit,
         difficulty,
         powerupsEnabled,
-        pointMultiplier
+        startingLives,
+        hasLives: mode.hasLives,
+        hasBetting: mode.hasBetting,
+        isTeamMode: mode.isTeamMode
       },
       teams: { red: [], blue: [] },
       isPractice: isPractice || false,
