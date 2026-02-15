@@ -292,10 +292,11 @@ app.post('/api/register', async (req, res) => {
     const user = await User.create(username, password);
     res.json({ success: true, user });
   } catch (e) {
+    console.error('Registration error:', e.message, e.code);
     if (e.code === '23505') {
       res.status(400).json({ error: 'Username already taken' });
     } else {
-      res.status(500).json({ error: 'Failed to create user' });
+      res.status(500).json({ error: 'Failed to create user: ' + e.message });
     }
   }
 });
