@@ -9,13 +9,37 @@ const pool = new Pool({
 
 let dbInitialized = false;
 let initPromise = null;
+let dbAvailable = false;
+
+// Handle pool errors gracefully
+pool.on('error', (err) => {
+  console.error('Database pool error:', err.message);
+  dbAvailable = false;
+});
 
 async function initDatabase() {
   if (initPromise) return initPromise;
   
   initPromise = (async () => {
     console.log('Initializing database...');
-    const client = await pool.connect();
+    
+    // Check if DATABASE_URL is set
+    if (!process.env.DATABASE_URL) {
+      console.warn('WARNING: DATABASE_URL not set. Database features disabled.');
+      console.warn('Set DATABASE_URL environment variable to enable persistence.');
+      return;
+    }
+    
+    let client;
+    try {
+      client = await pool.connect();
+      dbAvailable = true;
+    } catch (connErr) {
+      console.error('Failed to connect to database:', connErr.message);
+      console.warn('Running without database. User data will not persist.');
+      dbAvailable = false;
+      return;
+    }
     try {
       await client.query(`
       CREATE TABLE IF NOT EXISTS users (
@@ -235,6 +259,9 @@ async function ensureDb() {
   if (!dbInitialized) {
     await initDatabase();
   }
+  if (!dbAvailable) {
+    throw new Error('Database not available');
+  }
 }
 
 function calculateLevel(xp) {
@@ -386,6 +413,40 @@ const User = {
     return { avatars: newAvatarsResult.rows.length, colors: newColorsResult.rows.length };
   },
   
+  // Atomic update for game completion - all or nothing
+  recordGameCompletion: async (userId, gameData) => {
+    await ensureDb();
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      
+      const { xpGained, coinsGained, gamesPlayed, gamesWon, correctAnswers, questionsAnswered, bestStreak } = gameData;
+      
+      // Update user stats atomically
+      await client.query(`
+        UPDATE users SET 
+          xp = xp + $1,
+          coins = coins + $2,
+          total_games = total_games + $3,
+          total_wins = total_wins + $4,
+          total_correct = total_correct + $5,
+          total_questions = total_questions + $6,
+          best_streak = GREATEST(best_streak, $7),
+          last_login = CURRENT_TIMESTAMP
+        WHERE id = $8
+      `, [xpGained, coinsGained, gamesPlayed, gamesWon, correctAnswers, questionsAnswered, bestStreak, userId]);
+      
+      await client.query('COMMIT');
+      return { success: true };
+    } catch (err) {
+      await client.query('ROLLBACK');
+      console.error('Transaction error in recordGameCompletion:', err.message);
+      throw err;
+    } finally {
+      client.release();
+    }
+  },
+  
   updateStats: async (id, stats) => {
     await ensureDb();
     const setClauses = [];
@@ -469,90 +530,148 @@ const User = {
   
   equipAvatar: async (userId, avatarId) => {
     await ensureDb();
-    const ownedResult = await pool.query('SELECT * FROM user_avatars WHERE user_id = $1 AND avatar_id = $2', [userId, avatarId]);
-    if (!ownedResult.rows[0]) return false;
+    if (!userId || !avatarId) return { success: false, message: 'Missing parameters' };
+    if (!Number.isInteger(avatarId) || avatarId <= 0) return { success: false, message: 'Invalid avatar ID' };
     
-    await pool.query('UPDATE user_avatars SET equipped = false WHERE user_id = $1', [userId]);
-    await pool.query('UPDATE user_avatars SET equipped = true WHERE user_id = $1 AND avatar_id = $2', [userId, avatarId]);
-    return true;
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      
+      const ownedResult = await client.query('SELECT a.emoji FROM user_avatars ua JOIN avatars a ON ua.avatar_id = a.id WHERE ua.user_id = $1 AND ua.avatar_id = $2', [userId, avatarId]);
+      if (!ownedResult.rows[0]) { await client.query('ROLLBACK'); return { success: false, message: 'Avatar not owned' }; }
+      
+      await client.query('UPDATE user_avatars SET equipped = false WHERE user_id = $1', [userId]);
+      await client.query('UPDATE user_avatars SET equipped = true WHERE user_id = $1 AND avatar_id = $2', [userId, avatarId]);
+      
+      await client.query('COMMIT');
+      return { success: true, emoji: ownedResult.rows[0].emoji };
+    } catch (err) {
+      await client.query('ROLLBACK');
+      console.error('equipAvatar error:', err.message);
+      return { success: false, message: 'Failed to equip avatar' };
+    } finally { client.release(); }
   },
   
   equipColor: async (userId, colorId) => {
     await ensureDb();
-    const ownedResult = await pool.query('SELECT * FROM user_colors WHERE user_id = $1 AND color_id = $2', [userId, colorId]);
-    if (!ownedResult.rows[0]) return false;
+    if (!userId || !colorId) return { success: false, message: 'Missing parameters' };
+    if (!Number.isInteger(colorId) || colorId <= 0) return { success: false, message: 'Invalid color ID' };
     
-    await pool.query('UPDATE user_colors SET equipped = false WHERE user_id = $1', [userId]);
-    await pool.query('UPDATE user_colors SET equipped = true WHERE user_id = $1 AND color_id = $2', [userId, colorId]);
-    return true;
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      
+      const ownedResult = await client.query('SELECT c.gradient FROM user_colors uc JOIN colors c ON uc.color_id = c.id WHERE uc.user_id = $1 AND uc.color_id = $2', [userId, colorId]);
+      if (!ownedResult.rows[0]) { await client.query('ROLLBACK'); return { success: false, message: 'Color not owned' }; }
+      
+      await client.query('UPDATE user_colors SET equipped = false WHERE user_id = $1', [userId]);
+      await client.query('UPDATE user_colors SET equipped = true WHERE user_id = $1 AND color_id = $2', [userId, colorId]);
+      
+      await client.query('COMMIT');
+      return { success: true, gradient: ownedResult.rows[0].gradient };
+    } catch (err) {
+      await client.query('ROLLBACK');
+      console.error('equipColor error:', err.message);
+      return { success: false, message: 'Failed to equip color' };
+    } finally { client.release(); }
   },
   
   buyAvatar: async (userId, avatarId) => {
     await ensureDb();
-    const avatarResult = await pool.query('SELECT * FROM avatars WHERE id = $1', [avatarId]);
-    const userResult = await pool.query('SELECT coins FROM users WHERE id = $1', [userId]);
+    if (!userId || !avatarId) return { success: false, message: 'Missing userId or avatarId' };
+    if (!Number.isInteger(avatarId) || avatarId <= 0) return { success: false, message: 'Invalid avatar ID' };
     
-    if (!avatarResult.rows[0] || !userResult.rows[0]) return { success: false, message: 'Invalid avatar or user' };
-    
-    const avatar = avatarResult.rows[0];
-    const user = userResult.rows[0];
-    
-    if (user.coins < avatar.unlock_cost) return { success: false, message: 'Not enough coins' };
-    
-    const ownedResult = await pool.query('SELECT * FROM user_avatars WHERE user_id = $1 AND avatar_id = $2', [userId, avatarId]);
-    if (ownedResult.rows[0]) return { success: false, message: 'Already owned' };
-    
-    await pool.query('UPDATE users SET coins = coins - $1 WHERE id = $2', [avatar.unlock_cost, userId]);
-    await pool.query('INSERT INTO user_avatars (user_id, avatar_id) VALUES ($1, $2)', [userId, avatarId]);
-    
-    return { success: true };
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      
+      const avatarResult = await client.query('SELECT * FROM avatars WHERE id = $1', [avatarId]);
+      if (!avatarResult.rows[0]) { await client.query('ROLLBACK'); return { success: false, message: 'Avatar not found' }; }
+      
+      const userResult = await client.query('SELECT coins FROM users WHERE id = $1', [userId]);
+      if (!userResult.rows[0]) { await client.query('ROLLBACK'); return { success: false, message: 'User not found' }; }
+      
+      const avatar = avatarResult.rows[0];
+      const user = userResult.rows[0];
+      
+      const ownedResult = await client.query('SELECT 1 FROM user_avatars WHERE user_id = $1 AND avatar_id = $2', [userId, avatarId]);
+      if (ownedResult.rows[0]) { await client.query('ROLLBACK'); return { success: false, message: 'Already owned' }; }
+      
+      if (user.coins < avatar.unlock_cost) { await client.query('ROLLBACK'); return { success: false, message: 'Not enough coins' }; }
+      
+      await client.query('UPDATE users SET coins = coins - $1 WHERE id = $2', [avatar.unlock_cost, userId]);
+      await client.query('INSERT INTO user_avatars (user_id, avatar_id) VALUES ($1, $2) ON CONFLICT DO NOTHING', [userId, avatarId]);
+      
+      await client.query('COMMIT');
+      return { success: true };
+    } catch (err) {
+      await client.query('ROLLBACK');
+      console.error('buyAvatar error:', err.message);
+      return { success: false, message: 'Transaction failed' };
+    } finally { client.release(); }
   },
   
   buyColor: async (userId, colorId) => {
     await ensureDb();
-    const colorResult = await pool.query('SELECT * FROM colors WHERE id = $1', [colorId]);
-    const userResult = await pool.query('SELECT coins FROM users WHERE id = $1', [userId]);
+    if (!userId || !colorId) return { success: false, message: 'Missing userId or colorId' };
+    if (!Number.isInteger(colorId) || colorId <= 0) return { success: false, message: 'Invalid color ID' };
     
-    if (!colorResult.rows[0] || !userResult.rows[0]) return { success: false, message: 'Invalid color or user' };
-    
-    const color = colorResult.rows[0];
-    const user = userResult.rows[0];
-    
-    if (user.coins < color.unlock_cost) return { success: false, message: 'Not enough coins' };
-    
-    const ownedResult = await pool.query('SELECT * FROM user_colors WHERE user_id = $1 AND color_id = $2', [userId, colorId]);
-    if (ownedResult.rows[0]) return { success: false, message: 'Already owned' };
-    
-    await pool.query('UPDATE users SET coins = coins - $1 WHERE id = $2', [color.unlock_cost, userId]);
-    await pool.query('INSERT INTO user_colors (user_id, color_id) VALUES ($1, $2)', [userId, colorId]);
-    
-    return { success: true };
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      
+      const colorResult = await client.query('SELECT * FROM colors WHERE id = $1', [colorId]);
+      if (!colorResult.rows[0]) { await client.query('ROLLBACK'); return { success: false, message: 'Color not found' }; }
+      
+      const userResult = await client.query('SELECT coins FROM users WHERE id = $1', [userId]);
+      if (!userResult.rows[0]) { await client.query('ROLLBACK'); return { success: false, message: 'User not found' }; }
+      
+      const color = colorResult.rows[0];
+      const user = userResult.rows[0];
+      
+      const ownedResult = await client.query('SELECT 1 FROM user_colors WHERE user_id = $1 AND color_id = $2', [userId, colorId]);
+      if (ownedResult.rows[0]) { await client.query('ROLLBACK'); return { success: false, message: 'Already owned' }; }
+      
+      if (user.coins < color.unlock_cost) { await client.query('ROLLBACK'); return { success: false, message: 'Not enough coins' }; }
+      
+      await client.query('UPDATE users SET coins = coins - $1 WHERE id = $2', [color.unlock_cost, userId]);
+      await client.query('INSERT INTO user_colors (user_id, color_id) VALUES ($1, $2) ON CONFLICT DO NOTHING', [userId, colorId]);
+      
+      await client.query('COMMIT');
+      return { success: true };
+    } catch (err) {
+      await client.query('ROLLBACK');
+      console.error('buyColor error:', err.message);
+      return { success: false, message: 'Transaction failed' };
+    } finally { client.release(); }
   },
   
   getInventory: async (userId) => {
     await ensureDb();
+    if (!userId) return { avatars: [], colors: [] };
+    
     const avatarsResult = await pool.query(`
-      SELECT * FROM (
-        SELECT DISTINCT ON (a.emoji) a.*, ua.equipped, true as owned FROM avatars a
-        JOIN user_avatars ua ON a.id = ua.avatar_id
-        WHERE ua.user_id = $1
-        UNION
-        SELECT DISTINCT ON (emoji) a.*, false as equipped, false as owned FROM avatars a
-        WHERE a.id NOT IN (SELECT avatar_id FROM user_avatars WHERE user_id = $1)
-      ) sub
-      ORDER BY rarity, unlock_level
+      SELECT 
+        a.id, a.emoji, a.name, a.rarity, a.unlock_level, a.unlock_cost,
+        COALESCE(ua.equipped, false) as equipped,
+        CASE WHEN ua.user_id IS NOT NULL THEN true ELSE false END as owned
+      FROM avatars a
+      LEFT JOIN user_avatars ua ON a.id = ua.avatar_id AND ua.user_id = $1
+      ORDER BY 
+        CASE a.rarity WHEN 'common' THEN 1 WHEN 'rare' THEN 2 WHEN 'epic' THEN 3 WHEN 'legendary' THEN 4 WHEN 'mythic' THEN 5 END,
+        a.unlock_level, a.id
     `, [userId]);
     
     const colorsResult = await pool.query(`
-      SELECT * FROM (
-        SELECT DISTINCT ON (c.gradient) c.*, uc.equipped, true as owned FROM colors c
-        JOIN user_colors uc ON c.id = uc.color_id
-        WHERE uc.user_id = $1
-        UNION
-        SELECT DISTINCT ON (gradient) c.*, false as equipped, false as owned FROM colors c
-        WHERE c.id NOT IN (SELECT color_id FROM user_colors WHERE user_id = $1)
-      ) sub
-      ORDER BY rarity, unlock_level
+      SELECT 
+        c.id, c.name, c.gradient, c.rarity, c.unlock_level, c.unlock_cost,
+        COALESCE(uc.equipped, false) as equipped,
+        CASE WHEN uc.user_id IS NOT NULL THEN true ELSE false END as owned
+      FROM colors c
+      LEFT JOIN user_colors uc ON c.id = uc.color_id AND uc.user_id = $1
+      ORDER BY 
+        CASE c.rarity WHEN 'common' THEN 1 WHEN 'rare' THEN 2 WHEN 'epic' THEN 3 WHEN 'legendary' THEN 4 WHEN 'mythic' THEN 5 END,
+        c.unlock_level, c.id
     `, [userId]);
     
     return { avatars: avatarsResult.rows, colors: colorsResult.rows };
@@ -592,12 +711,14 @@ const User = {
     await ensureDb();
     const unlocked = [];
     
+    // Get current user stats to check achievements against totals
+    const userResult = await pool.query('SELECT total_games, total_wins, best_streak FROM users WHERE id = $1', [userId]);
+    if (!userResult.rows[0]) return unlocked;
+    
+    const currentStats = userResult.rows[0];
+    
     if (stats.gamesPlayed) {
-      const result = await pool.query(`
-        SELECT a.* FROM achievements a
-        LEFT JOIN user_achievements ua ON a.id = ua.achievement_id AND ua.user_id = $1
-        WHERE a.condition_type = 'games_played' AND a.condition_value <= $2 AND ua.user_id IS NULL
-      `, [userId, stats.gamesPlayed]);
+      const result = await pool.query(`SELECT a.* FROM achievements a LEFT JOIN user_achievements ua ON a.id = ua.achievement_id AND ua.user_id = $1 WHERE a.condition_type = 'games_played' AND a.condition_value <= $2 AND ua.user_id IS NULL`, [userId, currentStats.total_games]);
       
       for (const a of result.rows) {
         await User.unlockAchievement(userId, a.id);
@@ -606,11 +727,8 @@ const User = {
     }
     
     if (stats.gamesWon) {
-      const result = await pool.query(`
-        SELECT a.* FROM achievements a
-        LEFT JOIN user_achievements ua ON a.id = ua.achievement_id AND ua.user_id = $1
-        WHERE a.condition_type = 'games_won' AND a.condition_value <= $2 AND ua.user_id IS NULL
-      `, [userId, stats.gamesWon]);
+      // Use total_wins from database, not the single game value
+      const result = await pool.query(`SELECT a.* FROM achievements a LEFT JOIN user_achievements ua ON a.id = ua.achievement_id AND ua.user_id = $1 WHERE a.condition_type = 'games_won' AND a.condition_value <= $2 AND ua.user_id IS NULL`, [userId, currentStats.total_wins]);
       
       for (const a of result.rows) {
         await User.unlockAchievement(userId, a.id);
@@ -619,11 +737,8 @@ const User = {
     }
     
     if (stats.streak) {
-      const result = await pool.query(`
-        SELECT a.* FROM achievements a
-        LEFT JOIN user_achievements ua ON a.id = ua.achievement_id AND ua.user_id = $1
-        WHERE a.condition_type = 'streak' AND a.condition_value <= $2 AND ua.user_id IS NULL
-      `, [userId, stats.streak]);
+      // Use best_streak from database for comparison
+      const result = await pool.query(`SELECT a.* FROM achievements a LEFT JOIN user_achievements ua ON a.id = ua.achievement_id AND ua.user_id = $1 WHERE a.condition_type = 'streak' AND a.condition_value <= $2 AND ua.user_id IS NULL`, [userId, currentStats.best_streak]);
       
       for (const a of result.rows) {
         await User.unlockAchievement(userId, a.id);

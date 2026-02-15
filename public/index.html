@@ -269,11 +269,13 @@
           <input type="text" id="login-username" placeholder="Username" maxlength="15" autocomplete="off">
           <input type="password" id="login-password" placeholder="Password" autocomplete="off">
           <button class="btn-primary" id="login-btn" onclick="login()">Login</button>
+          <button class="btn-warning" onclick="guestLogin()">🎮 Play as Guest</button>
         </div>
         <div id="register-form" style="display:none">
           <input type="text" id="reg-username" placeholder="Username (2-15 chars)" maxlength="15" autocomplete="off">
           <input type="password" id="reg-password" placeholder="Password (min 4 chars)" autocomplete="off">
           <button class="btn-primary" id="register-btn" onclick="register()">Create Account</button>
+          <button class="btn-warning" onclick="guestLogin()">🎮 Play as Guest</button>
         </div>
       </div>
     </div>
@@ -487,7 +489,7 @@
           <span class="difficulty hard" id="lobby-settings">Settings</span>
         </div>
         <ul class="player-list" id="player-list"></ul>
-        <button class="btn-primary" id="start-btn" onclick="startGame()" disabled>Start</button>
+        <button class="btn-primary" id="start-btn" onclick="startGame()" disabled style="margin-top:20px">Start</button>
       </div>
     </div>
 
@@ -566,17 +568,37 @@
     function startPractice() { isPractice = true; showCreateScreen(); toast('Practice Mode - No XP/Stats counted','info'); }
 
     async function login() {
-      const btn = document.getElementById('login-btn');
-      const u=document.getElementById('login-username').value.trim(), p=document.getElementById('login-password').value;
-      if(!u||!p) return toast('Enter username and password');
-      btn.classList.add('btn-loading');
+      const btn = document.getElementById("login-btn");
+      const u=document.getElementById("login-username").value.trim(), p=document.getElementById("login-password").value;
+      if(!u||!p) return toast("Enter username and password");
+      btn.classList.add("btn-loading");
       btn.disabled = true;
       try {
-        const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+        const r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:u,password:p})});
         const d=await r.json();
-        if(d.error) { btn.classList.remove('btn-loading'); btn.disabled = false; return toast(d.error); }
-        user=d.user; socket.emit('set-user',user); updateUI(); showScreen('main-screen'); checkDaily();
-      } catch(e) { btn.classList.remove('btn-loading'); btn.disabled = false; toast('Connection error'); }
+        if(d.error) { 
+          btn.classList.remove("btn-loading"); 
+          btn.disabled = false; 
+          if(d.error.includes("Database") || d.error.includes("unavailable")) {
+            toast(d.error + " Use Guest mode!", "info");
+          } else {
+            toast(d.error); 
+          }
+          return;
+        }
+        user=d.user; socket.emit("set-user",user); updateUI(); showScreen("main-screen"); checkDaily();
+      } catch(e) { btn.classList.remove("btn-loading"); btn.disabled = false; toast("Connection error"); }
+    }
+    
+    async function guestLogin() {
+      const username = document.getElementById("login-username").value.trim() || "Player" + Math.floor(Math.random() * 9999);
+      try {
+        const r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:username,isGuest:true})});
+        const d=await r.json();
+        if(d.error) return toast(d.error);
+        user=d.user; user.isGuest=true; socket.emit("set-user",user); updateUI(); showScreen("main-screen"); 
+        toast("Playing as Guest - progress not saved","info");
+      } catch(e) { toast("Connection error"); }
     }
 
     async function register() {
@@ -607,12 +629,23 @@
     }
 
     async function checkDaily() {
-      const r=await fetch('/api/user/'+user.id); const d=await r.json();
-      const el=document.getElementById('daily-reward');
-      if(d.daily_reward_claimed) { 
-        el.classList.add('claimed'); 
-        el.innerHTML='<h3>✅ Claimed</h3><p>Come back tomorrow!</p>'; 
+      if(user && user.isGuest) {
+        const el=document.getElementById("daily-reward");
+        el.classList.add("claimed"); 
+        el.innerHTML="<h3>👤 Guest Mode</h3><p>Sign up to save progress!</p>";
+        return;
       }
+      try {
+        const r=await fetch("/api/user/"+user.id); const d=await r.json();
+        const el=document.getElementById("daily-reward");
+        if(d.daily_reward_claimed) { 
+          el.classList.add("claimed"); 
+          el.innerHTML="<h3>✅ Claimed</h3><p>Come back tomorrow!</p>"; 
+        }
+      } catch(e) {
+        console.log("Could not check daily reward");
+      }
+    }
     }
 
     async function claimDaily() {

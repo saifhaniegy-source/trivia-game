@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -418,7 +419,28 @@ function clearTimer(roomCode) {
 
 app.post('/api/register', async (req, res) => {
   // Give new users a welcome bonus
-  const { username, password } = req.body;
+  const { username, password, isGuest } = req.body;
+  
+  // Guest mode - create temporary user without database
+  if (isGuest) {
+    const guestId = 'guest-' + Date.now() + '-' + Math.random().toString(36).substring(2, 8);
+    const guestUser = {
+      id: guestId,
+      username: username || 'Guest_' + Math.random().toString(36).substring(2, 6),
+      xp: 0,
+      level: 1,
+      coins: 50,
+      total_games: 0,
+      total_wins: 0,
+      best_streak: 0,
+      equippedAvatar: '🦊',
+      equippedColor: 'linear-gradient(135deg, #00d4ff, #0099cc)',
+      xpPercentage: 0,
+      isGuest: true
+    };
+    return res.json({ success: true, user: guestUser });
+  }
+  
   if (!username || username.length < 2 || username.length > 15) {
     return res.status(400).json({ error: 'Username must be 2-15 characters' });
   }
@@ -440,12 +462,37 @@ app.post('/api/register', async (req, res) => {
 });
 
 app.post('/api/login', async (req, res) => {
-  const { username, password } = req.body;
-  const user = await User.validatePassword(username, password);
-  if (!user) {
-    return res.status(401).json({ error: 'Invalid username or password' });
+  const { username, password, isGuest } = req.body;
+  
+  // Guest mode login
+  if (isGuest) {
+    const guestId = 'guest-' + Date.now() + '-' + Math.random().toString(36).substring(2, 8);
+    const guestUser = {
+      id: guestId,
+      username: username || 'Guest_' + Math.random().toString(36).substring(2, 6),
+      xp: 0,
+      level: 1,
+      coins: 50,
+      total_games: 0,
+      total_wins: 0,
+      best_streak: 0,
+      equippedAvatar: '🦊',
+      equippedColor: 'linear-gradient(135deg, #00d4ff, #0099cc)',
+      xpPercentage: 0,
+      isGuest: true
+    };
+    return res.json({ success: true, user: guestUser });
   }
-  res.json({ success: true, user });
+  
+  try {
+    const user = await User.validatePassword(username, password);
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+    res.json({ success: true, user });
+  } catch (e) {
+    res.status(500).json({ error: 'Database unavailable. Try guest mode!' });
+  }
 });
 
 app.get('/api/user/:id', async (req, res) => {
@@ -467,8 +514,15 @@ app.post('/api/daily-reward/:id', async (req, res) => {
 });
 
 app.get('/api/inventory/:id', async (req, res) => {
-  const inventory = await User.getInventory(req.params.id);
-  res.json(inventory);
+  try {
+    const userId = req.params.id;
+    if (!userId || userId.length < 5) return res.status(400).json({ error: 'Invalid user ID' });
+    const inventory = await User.getInventory(userId);
+    res.json(inventory);
+  } catch (err) {
+    console.error('Inventory error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch inventory' });
+  }
 });
 
 app.get('/api/achievements/:id', async (req, res) => {
@@ -484,27 +538,51 @@ app.get('/api/history/:id', async (req, res) => {
 app.post('/api/add-coins', async (req, res) => { const { userId, amount } = req.body; await User.addCoins(userId, amount); const updated = await User.getById(userId); res.json({ success: true, user: updated }); });
 
 app.post('/api/equip-avatar', async (req, res) => {
-  const { userId, avatarId } = req.body;
-  await User.equipAvatar(userId, avatarId);
-  res.json({ success: true });
+  try {
+    const { userId, avatarId } = req.body;
+    if (!userId || !avatarId) return res.status(400).json({ success: false, message: 'Missing parameters' });
+    const result = await User.equipAvatar(userId, avatarId);
+    res.json(result);
+  } catch (err) {
+    console.error('Equip avatar error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to equip' });
+  }
 });
 
 app.post('/api/equip-color', async (req, res) => {
-  const { userId, colorId } = req.body;
-  await User.equipColor(userId, colorId);
-  res.json({ success: true });
+  try {
+    const { userId, colorId } = req.body;
+    if (!userId || !colorId) return res.status(400).json({ success: false, message: 'Missing parameters' });
+    const result = await User.equipColor(userId, colorId);
+    res.json(result);
+  } catch (err) {
+    console.error('Equip color error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to equip' });
+  }
 });
 
 app.post('/api/buy-avatar', async (req, res) => {
-  const { userId, avatarId } = req.body;
-  const result = await User.buyAvatar(userId, avatarId);
-  res.json(result);
+  try {
+    const { userId, avatarId } = req.body;
+    if (!userId || !avatarId) return res.status(400).json({ success: false, message: 'Missing parameters' });
+    const result = await User.buyAvatar(userId, avatarId);
+    res.json(result);
+  } catch (err) {
+    console.error('Buy avatar error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to buy' });
+  }
 });
 
 app.post('/api/buy-color', async (req, res) => {
-  const { userId, colorId } = req.body;
-  const result = await User.buyColor(userId, colorId);
-  res.json(result);
+  try {
+    const { userId, colorId } = req.body;
+    if (!userId || !colorId) return res.status(400).json({ success: false, message: 'Missing parameters' });
+    const result = await User.buyColor(userId, colorId);
+    res.json(result);
+  } catch (err) {
+    console.error('Buy color error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to buy' });
+  }
 });
 
 app.get('/api/friends/:id', async (req, res) => {
@@ -747,6 +825,7 @@ io.on('connection', (socket) => {
       questions: questions,
       currentQuestion: 0,
       gameStarted: false,
+      endingGame: false,
       answers: new Map(),
       questionStartTime: null,
       theme: theme,
@@ -823,6 +902,7 @@ io.on('connection', (socket) => {
     socket.data.team = null;
     
     room.players.push(socket.id);
+    room.endingGame = false;
     socket.join(roomCode);
     
     socket.emit('room-joined', { 
@@ -1456,17 +1536,24 @@ io.on('connection', (socket) => {
   async function endGame(roomCode) {
     clearTimer(roomCode);
     const room = rooms.get(roomCode);
-    if (!room) return;
+    
+    // Idempotency check - prevent double calls
+    if (!room) {
+      console.log('endGame: Room not found:', roomCode);
+      return;
+    }
+    if (room.endingGame) {
+      console.log('endGame: Already ending game for room:', roomCode);
+      return;
+    }
+    room.endingGame = true;
     
     let players = getRoomPlayers(roomCode);
     players.sort((a, b) => b.score - a.score);
     
-    const gameStats = {
-      gameMode: room.gameMode,
-      theme: room.theme,
-      playersCount: players.length
-    };
+    console.log('endGame: Processing', players.length, 'players for room', roomCode);
     
+    // Try to save to database, but don't fail the game if DB is unavailable
     if (!room.isPractice) {
       for (let rank = 0; rank < players.length; rank++) {
         const p = players[rank];
@@ -1474,39 +1561,58 @@ io.on('connection', (socket) => {
           const xpGained = Math.floor((p.score / 10) + (rank === 0 ? 100 : rank === 1 ? 50 : rank === 2 ? 25 : 10));
           const coinsGained = Math.floor(p.score / 20) + (rank === 0 ? 20 : 10);
           
-          await User.addXp(p.userId, xpGained);
-          await User.addCoins(p.userId, coinsGained);
-          await User.updateStats(p.userId, {
-            gamesPlayed: 1,
-            gamesWon: rank === 0 ? 1 : 0,
-            correctAnswers: p.correctThisGame || 0,
-            questionsAnswered: room.questions.length,
-            bestStreak: p.bestStreakThisGame || 0
-          });
-          
-          await User.checkAchievements(p.userId, {
-            gamesPlayed: 1,
-            gamesWon: rank === 0 ? 1 : 0,
-            streak: p.bestStreakThisGame || 0
-          });
-          
-          await GameHistory.record(p.userId, {
-            roomCode,
-            gameMode: room.gameMode,
-            theme: room.theme,
-            score: p.score,
-            correctAnswers: p.correctThisGame || 0,
-            totalQuestions: room.questions.length,
-            rank: rank + 1,
-            playersCount: players.filter(pl => !pl.isBot).length,
-            xpEarned: xpGained,
-            coinsEarned: coinsGained
-          });
-          
           p.xpGained = xpGained;
           p.coinsGained = coinsGained;
+          
+          const isWinner = rank === 0;
+          console.log('endGame: Player', p.name, 'rank:', rank + 1, 'winner:', isWinner, 'userId:', p.userId);
+          
+          try {
+            // Use atomic transaction for game completion
+            await User.recordGameCompletion(p.userId, {
+              xpGained,
+              coinsGained,
+              gamesPlayed: 1,
+              gamesWon: isWinner ? 1 : 0,
+              correctAnswers: p.correctThisGame || 0,
+              questionsAnswered: room.questions.length,
+              bestStreak: p.bestStreakThisGame || 0
+            });
+            
+            // Check achievements - pass the isWinner flag to trigger check
+            await User.checkAchievements(p.userId, {
+              gamesPlayed: 1,
+              gamesWon: isWinner ? 1 : 0,
+              streak: p.bestStreakThisGame || 0
+            });
+            
+            // Record game history separately (non-critical if fails)
+            try {
+              await GameHistory.record(p.userId, {
+                roomCode,
+                gameMode: room.gameMode,
+                theme: room.theme,
+                score: p.score,
+                correctAnswers: p.correctThisGame || 0,
+                totalQuestions: room.questions.length,
+                rank: rank + 1,
+                playersCount: players.filter(pl => !pl.isBot).length,
+                xpEarned: xpGained,
+                coinsEarned: coinsGained
+              });
+            } catch (historyErr) {
+              console.error('Failed to record game history:', historyErr.message);
+            }
+            
+            console.log('endGame: Saved stats for', p.name, '- winner:', isWinner);
+          } catch (dbError) {
+            console.error('Database error during game end for', p.name, ':', dbError.message);
+            // Continue without saving - game still completes
+          }
         }
       }
+    } else {
+      console.log('endGame: Practice mode - skipping database save');
     }
     
     let teamScores = null;
@@ -1526,6 +1632,7 @@ io.on('connection', (socket) => {
     });
     
     rooms.delete(roomCode);
+    console.log('endGame: Completed for room', roomCode);
   }
 
   socket.on('rematch', async () => {
@@ -1560,6 +1667,7 @@ io.on('connection', (socket) => {
       questions: newQuestions,
       currentQuestion: 0,
       gameStarted: false,
+      endingGame: false,
       answers: new Map(),
       questionStartTime: null,
       theme: room.theme,
