@@ -338,6 +338,7 @@
         <button class="tab" onclick="showMainTab('customize')">Customize</button>
         <button class="tab" onclick="showMainTab('achievements')">Achievements</button>
         <button class="tab" onclick="showMainTab('leaderboard')">Ranks</button>
+        <button class="tab" onclick="showMainTab('shop')">Shop</button>
         <button class="tab" onclick="showMainTab('profile')">Profile</button>
         <button class="tab" onclick="showMainTab('sandbox')">Sandbox</button>
       </div>
@@ -381,7 +382,15 @@
         </div>
       </div>
 
-      <div id="profile-tab" class="tab-content" style="display:none">
+      
+<div id="shop-tab" class="tab-content" style="display:none">
+  <div class="card">
+    <p class="section-title">🏪 Power-ups Shop</p>
+    <p style="margin-bottom:15px;color:rgba(255,255,255,0.6)">Buy power-ups to use in games! You currently have <span id="shop-coins" style="color:#fbbf24;font-weight:700">0</span> coins.</p>
+    <div id="shop-items" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px"></div>
+  </div>
+</div>
+<div id="profile-tab" class="tab-content" style="display:none">
         <div class="card">
           <div style="display:flex;align-items:center;gap:20px;margin-bottom:20px">
             <div class="user-avatar" id="profile-avatar" style="width:80px;height:80px;font-size:2.5rem">🦊</div>
@@ -612,7 +621,52 @@
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  
+<div id="tutorial-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;overflow-y:auto">
+  <div style="max-width:500px;margin:20px auto;padding:20px">
+    <h1 style="text-align:center;margin-bottom:30px;background:linear-gradient(135deg,#00d4ff,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Welcome to Trivia Battle!</h1>
+    
+    <div style="background:rgba(0,212,255,0.1);padding:20px;border-radius:12px;margin-bottom:15px">
+      <h3 style="color:#00d4ff;margin-bottom:10px">🎯 How to Play</h3>
+      <p style="line-height:1.6">Answer trivia questions faster than your opponents! The faster you answer correctly, the more points you earn.</p>
+    </div>
+    
+    <div style="background:rgba(124,58,237,0.1);padding:20px;border-radius:12px;margin-bottom:15px">
+      <h3 style="color:#7c3aed;margin-bottom:10px">🎮 Game Modes</h3>
+      <ul style="line-height:1.8;padding-left:20px">
+        <li><strong>Classic</strong> - Standard trivia, 15 questions</li>
+        <li><strong>Speed</strong> - Faster timer, higher stakes!</li>
+        <li><strong>Survival</strong> - 3 lives, one wrong = lose a life</li>
+        <li><strong>Betting</strong> - Bet points before answering</li>
+        <li><strong>Lightning</strong> - 3 second rapid-fire!</li>
+      </ul>
+    </div>
+    
+    <div style="background:rgba(251,191,36,0.1);padding:20px;border-radius:12px;margin-bottom:15px">
+      <h3 style="color:#fbbf24;margin-bottom:10px">⚡ Superpowers</h3>
+      <p style="line-height:1.6">Answer correctly and you might earn a superpower! Use them strategically:</p>
+      <ul style="line-height:1.8;padding-left:20px">
+        <li><strong>50/50</strong> - Removes 2 wrong answers</li>
+        <li><strong>Shield</strong> - Protected from wrong answer</li>
+        <li><strong>Double Points</strong> - 2x points this round</li>
+        <li><strong>Steal</strong> - Take 50 points from opponent</li>
+      </ul>
+    </div>
+    
+    <div style="background:rgba(34,197,94,0.1);padding:20px;border-radius:12px;margin-bottom:15px">
+      <h3 style="color:#22c55e;margin-bottom:10px">💰 Rewards</h3>
+      <p style="line-height:1.6">Earn <strong>XP</strong> to level up and unlock avatars/colors. Earn <strong>coins</strong> to buy items in the shop. Claim your <strong>daily reward</strong> every day!</p>
+    </div>
+    
+    <div style="background:rgba(239,68,68,0.1);padding:20px;border-radius:12px;margin-bottom:15px">
+      <h3 style="color:#ef4444;margin-bottom:10px">🤖 Practice Mode</h3>
+      <p style="line-height:1.6">New to the game? Try <strong>Practice Mode</strong> to play against AI bots without affecting your stats!</p>
+    </div>
+    
+    <button class="btn-primary" onclick="closeTutorial()" style="margin-top:20px">Got it, let's play!</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
   <div class="popup" id="popup"><div class="icon"></div><h3></h3><p></p></div>
 
   <script src="/socket.io/socket.io.js"></script>
@@ -627,10 +681,12 @@
     function confetti() { const c=['#00d4ff','#7c3aed','#f472b6','#22c55e','#fbbf24','#ef4444','#ff7f00','#8b5cf6']; for(let i=0;i<60;i++){ setTimeout(()=>{ const e=document.createElement('div'); e.className='confetti'; e.style.left=Math.random()*100+'%'; e.style.background=c[Math.floor(Math.random()*c.length)]; e.style.borderRadius=Math.random()>.5?'50%':'0'; e.style.width=(4+Math.random()*6)+'px'; e.style.height=e.style.width; e.style.animationDuration=(2+Math.random()*2)+'s'; document.body.appendChild(e); setTimeout(()=>e.remove(),4000); },i*30); } }
 
     function showAuthTab(t) { document.querySelectorAll('#auth-screen .tab').forEach(x=>x.classList.remove('active')); event.currentTarget.classList.add('active'); document.getElementById('login-form').style.display=t==='login'?'block':'none'; document.getElementById('register-form').style.display=t==='register'?'block':'none'; }
-    function showMainTab(t) { document.querySelectorAll('#main-screen .tab').forEach(x=>x.classList.remove('active')); event.currentTarget.classList.add('active'); document.querySelectorAll('.tab-content').forEach(x=>x.style.display='none'); document.getElementById(t+'-tab').style.display='block'; if(t==='leaderboard')loadLB('xp',document.querySelector('#leaderboard-tab .tab')); if(t==='achievements')loadAch(); if(t==='customize')loadInv(); if(t==='profile')loadProfile(); }
+    function showMainTab(t) { document.querySelectorAll('#main-screen .tab').forEach(x=>x.classList.remove('active')); event.currentTarget.classList.add('active'); document.querySelectorAll('.tab-content').forEach(x=>x.style.display='none'); document.getElementById(t+'-tab').style.display='block'; if(t==='leaderboard')loadLB('xp',document.querySelector('#leaderboard-tab .tab')); if(t==='achievements')loadAch(); if(t==='customize')loadInv(); if(t==='shop')loadShop(); if(t==='profile')loadProfile(); }
     function showCreateScreen() { initModes(); showScreen('create-screen'); }
     function showJoinScreen() { showScreen('join-screen'); }
     function showMainScreen() { showScreen('main-screen'); }
+    function closeTutorial() { document.getElementById("tutorial-overlay").style.display = "none"; }
+    function showTutorial() { document.getElementById("tutorial-overlay").style.display = "block"; }
     function startPractice() { isPractice = true; showCreateScreen(); toast('Practice Mode - No XP/Stats counted','info'); }
 
     async function login() {
@@ -643,7 +699,7 @@
         const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
         const d=await r.json();
         if(d.error) { btn.classList.remove('btn-loading'); btn.disabled = false; return toast(d.error); }
-        user=d.user; socket.emit('set-user',user); updateUI(); showScreen('main-screen'); checkDaily(); playSound('levelup');
+        localStorage.setItem('tutorialSeen', 'true'); user=d.user; socket.emit('set-user',user); updateUI(); showScreen('main-screen'); checkDaily(); playSound('levelup');
       } catch(e) { btn.classList.remove('btn-loading'); btn.disabled = false; toast('Connection error'); }
     }
 
@@ -670,7 +726,33 @@
     function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
     function playSound(name) { if (!soundEnabled) return; try { initAudio(); const s = SOUNDS[name]; if (!s) return; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = s.type; osc.frequency.value = s.freq; gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + s.duration); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + s.duration); } catch(e) {} }
     function toggleSound() { soundEnabled = !soundEnabled; localStorage.setItem('soundEnabled', soundEnabled); document.getElementById('sound-toggle').textContent = soundEnabled ? '🔊' : '🔇'; }
-    async function loadProfile() { if (!user) return; document.getElementById('profile-avatar').textContent = user.equippedAvatar; document.getElementById('profile-avatar').style.background = user.equippedColor; document.getElementById('profile-username').textContent = user.username; document.getElementById('profile-level').textContent = user.level; document.getElementById('profile-xp').textContent = user.xp; document.getElementById('profile-games').textContent = user.total_games || 0; document.getElementById('profile-wins').textContent = user.total_wins || 0; document.getElementById('profile-streak').textContent = user.best_streak || 0; document.getElementById('profile-accuracy').textContent = (user.accuracy || 0) + '%'; try { const r = await fetch('/api/history/' + user.id); const h = await r.json(); document.getElementById('profile-history').innerHTML = h.length ? h.map(g => '<div style="display:flex;justify-content:space-between;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;margin-bottom:8px"><div><span style="font-weight:600">' + (g.game_mode || 'Classic') + '</span><span style="color:rgba(255,255,255,0.5);margin-left:8px">' + (g.theme || 'Random') + '</span></div><div style="text-align:right"><div style="font-weight:700;color:#00d4ff">#' + g.rank + ' • ' + g.score + 'pts</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.5)">' + g.correct_answers + '/' + g.total_questions + ' correct</div></div></div>').join('') : '<p style="text-align:center;color:rgba(255,255,255,0.5)">No games played yet</p>'; } catch(e) { document.getElementById('profile-history').innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.5)">Unable to load history</p>'; } }
+    
+    const SHOP_ITEMS = [
+      { id: 'fifty_fifty', name: '50/50', icon: '✂️', cost: 50, desc: 'Remove 2 wrong' },
+      { id: 'time_freeze', name: 'Time Freeze', icon: '⏱️', cost: 40, desc: '+5 seconds' },
+      { id: 'double_points', name: 'Double', icon: '✨', cost: 60, desc: '2x points' },
+      { id: 'shield', name: 'Shield', icon: '🛡️', cost: 50, desc: 'Protection' },
+      { id: 'second_chance', name: '2nd Chance', icon: '🔄', cost: 70, desc: 'Retry if wrong' },
+      { id: 'peek', name: 'Peek', icon: '👁️', cost: 30, desc: 'See popular' },
+      { id: 'oracle', name: 'Oracle', icon: '🔮', cost: 80, desc: 'Get hint' }
+    ];
+    let purchasedPowers = JSON.parse(localStorage.getItem('purchasedPowers')||'[]');
+    function loadShop(){
+      document.getElementById('shop-coins').textContent=user.coins;
+      document.getElementById('shop-items').innerHTML=SHOP_ITEMS.map(i=>`<div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:12px;text-align:center"><div style="font-size:2rem;margin-bottom:5px">${i.icon}</div><div style="font-weight:600">${i.name}</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.6);margin:5px 0">${i.desc}</div><div style="color:#fbbf24;font-weight:700">${i.cost} 🪙</div><button class="btn-primary" onclick="buyPower('${i.id}',${i.cost})" style="margin-top:8px;padding:8px 12px;font-size:0.85rem">Buy</button></div>`).join('');
+    }
+    async function buyPower(id,cost){
+      if(user.coins<cost)return toast('Not enough coins');
+      playSound('click');
+      await fetch('/api/add-coins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:user.id,amount:-cost})});
+      user.coins-=cost;
+      purchasedPowers.push(id);
+      localStorage.setItem('purchasedPowers',JSON.stringify(purchasedPowers));
+      loadShop();updateUI();
+      toast('Power-up purchased!','success');
+    }
+
+async function loadProfile() { if (!user) return; document.getElementById('profile-avatar').textContent = user.equippedAvatar; document.getElementById('profile-avatar').style.background = user.equippedColor; document.getElementById('profile-username').textContent = user.username; document.getElementById('profile-level').textContent = user.level; document.getElementById('profile-xp').textContent = user.xp; document.getElementById('profile-games').textContent = user.total_games || 0; document.getElementById('profile-wins').textContent = user.total_wins || 0; document.getElementById('profile-streak').textContent = user.best_streak || 0; document.getElementById('profile-accuracy').textContent = (user.accuracy || 0) + '%'; try { const r = await fetch('/api/history/' + user.id); const h = await r.json(); document.getElementById('profile-history').innerHTML = h.length ? h.map(g => '<div style="display:flex;justify-content:space-between;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;margin-bottom:8px"><div><span style="font-weight:600">' + (g.game_mode || 'Classic') + '</span><span style="color:rgba(255,255,255,0.5);margin-left:8px">' + (g.theme || 'Random') + '</span></div><div style="text-align:right"><div style="font-weight:700;color:#00d4ff">#' + g.rank + ' • ' + g.score + 'pts</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.5)">' + g.correct_answers + '/' + g.total_questions + ' correct</div></div></div>').join('') : '<p style="text-align:center;color:rgba(255,255,255,0.5)">No games played yet</p>'; } catch(e) { document.getElementById('profile-history').innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.5)">Unable to load history</p>'; } }
 
 function updateUI() {
       if(!user) return;

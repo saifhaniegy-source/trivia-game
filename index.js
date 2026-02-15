@@ -480,6 +480,8 @@ app.get('/api/history/:id', async (req, res) => {
   res.json(history);
 });
 
+app.post('/api/add-coins', async (req, res) => { const { userId, amount } = req.body; await User.addCoins(userId, amount); const updated = await User.getById(userId); res.json({ success: true, user: updated }); });
+
 app.post('/api/equip-avatar', async (req, res) => {
   const { userId, avatarId } = req.body;
   await User.equipAvatar(userId, avatarId);
