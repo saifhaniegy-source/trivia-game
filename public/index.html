@@ -251,6 +251,88 @@
       .mode-grid { grid-template-columns: 1fr 1fr; }
       .avatar-grid { grid-template-columns: repeat(7, 1fr); }
     }
+
+    .mode-info-card {
+      background: rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 15px;
+      margin: 15px 0;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .mode-info-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+    .mode-icon-large {
+      font-size: 2.5rem;
+    }
+    .mode-info-header h3 {
+      font-size: 1.2rem;
+      margin-bottom: 2px;
+    }
+    .mode-info-header p {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.85rem;
+    }
+    .mode-info-stats {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+    }
+    .mode-info-stats span {
+      background: rgba(255,255,255,0.1);
+      padding: 5px 10px;
+      border-radius: 6px;
+    }
+    .player-count-selector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      background: rgba(255,255,255,0.05);
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+    }
+    .player-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00d4ff, #7c3aed);
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+    .player-btn:hover {
+      transform: scale(1.1);
+    }
+    .player-count-display {
+      text-align: center;
+      min-width: 80px;
+    }
+    .player-count-display span {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #00d4ff, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .player-count-display small {
+      display: block;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.75rem;
+    }
+    .settings-section {
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
@@ -428,43 +510,70 @@
       <div class="card">
         <p class="section-title">Select Theme</p>
         <select id="theme-select">
-          <option value="Random">Random</option>
-          <option value="Science">Science</option>
-          <option value="Geography">Geography</option>
-          <option value="History">History</option>
-          <option value="Space">Space</option>
-          <option value="Entertainment">Entertainment</option>
-          <option value="Sports">Sports</option>
-          <option value="Food">Food</option>
-          <option value="Technology">Technology</option>
+          <option value="Random">🎲 Random</option>
+          <option value="Science">🔬 Science</option>
+          <option value="Geography">🌍 Geography</option>
+          <option value="History">📜 History</option>
+          <option value="Space">🚀 Space</option>
+          <option value="Entertainment">🎬 Entertainment</option>
+          <option value="Sports">⚽ Sports</option>
+          <option value="Food">🍕 Food</option>
+          <option value="Technology">💻 Technology</option>
         </select>
 
         <p class="section-title">Game Mode</p>
         <div class="mode-grid" id="mode-grid"></div>
-
-        <p class="section-title">Settings</p>
-        <div class="settings-grid">
-          <div class="setting">
-            <label>Questions</label>
-            <input type="range" id="q-count" min="5" max="25" value="15">
-            <div class="setting-value" id="q-count-val">15</div>
+        
+        <div id="mode-info" class="mode-info-card" style="display:none">
+          <div class="mode-info-header">
+            <span id="mode-info-icon" class="mode-icon-large">🎯</span>
+            <div>
+              <h3 id="mode-info-name">Classic</h3>
+              <p id="mode-info-desc">Standard trivia</p>
+            </div>
           </div>
-          <div class="setting">
-            <label>Time (sec)</label>
-            <input type="range" id="time-limit" min="3" max="20" value="10">
-            <div class="setting-value" id="time-val">10</div>
-          </div>
-          <div class="setting">
-            <label>Difficulty</label>
-            <select id="diff-select"><option value="mixed">Mixed</option><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select>
-          </div>
-          <div class="setting">
-            <label>Power-ups</label>
-            <div class="toggle active" id="pwr-toggle" onclick="togglePwr()"></div>
+          <div class="mode-info-stats">
+            <span><strong>Questions:</strong> <span id="mode-info-questions">15</span></span>
+            <span><strong>Time:</strong> <span id="mode-info-time">10</span>s</span>
+            <span><strong>Players:</strong> <span id="mode-info-players">2-8</span></span>
           </div>
         </div>
 
-        <button class="btn-primary" onclick="createRoom()">Create Room</button>
+        <p class="section-title">Players</p>
+        <div class="player-count-selector">
+          <button class="player-btn" onclick="changePlayerCount(-1)">−</button>
+          <div class="player-count-display">
+            <span id="player-count">4</span>
+            <small>players max</small>
+          </div>
+          <button class="player-btn" onclick="changePlayerCount(1)">+</button>
+        </div>
+
+        <div id="custom-settings" class="settings-section" style="display:none">
+          <p class="section-title">Custom Settings</p>
+          <div class="settings-grid">
+            <div class="setting">
+              <label>Questions</label>
+              <input type="range" id="q-count" min="5" max="30" value="15">
+              <div class="setting-value" id="q-count-val">15</div>
+            </div>
+            <div class="setting">
+              <label>Time (sec)</label>
+              <input type="range" id="time-limit" min="3" max="20" value="10">
+              <div class="setting-value" id="time-val">10</div>
+            </div>
+            <div class="setting">
+              <label>Difficulty</label>
+              <select id="diff-select"><option value="mixed">Mixed</option><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select>
+            </div>
+            <div class="setting">
+              <label>Power-ups</label>
+              <div class="toggle active" id="pwr-toggle" onclick="togglePwr()"></div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="createRoom()" style="margin-top:20px">Create Room</button>
         <button class="btn-secondary" onclick="showMainScreen()">Back</button>
       </div>
     </div>
@@ -696,18 +805,90 @@
       const r=await fetch('/api/user/'+user.id); user=await r.json(); updateUI();
     }
 
+    const MODES = [
+      {id:'Classic',icon:'🎯',name:'Classic',desc:'Standard trivia',questions:15,time:10,minPlayers:2,maxPlayers:8},
+      {id:'Speed',icon:'⚡',name:'Speed',desc:'5 sec questions',questions:20,time:5,minPlayers:2,maxPlayers:6},
+      {id:'Survival',icon:'❤️',name:'Survival',desc:'3 lives',questions:20,time:10,minPlayers:2,maxPlayers:8},
+      {id:'Betting',icon:'🎰',name:'Betting',desc:'Bet points',questions:10,time:12,minPlayers:2,maxPlayers:6},
+      {id:'Lightning',icon:'🌩️',name:'Lightning',desc:'3 sec rapid',questions:25,time:3,minPlayers:2,maxPlayers:10},
+      {id:'Team',icon:'👥',name:'Team',desc:'Red vs Blue',questions:15,time:10,minPlayers:4,maxPlayers:6},
+      {id:'BattleRoyale',icon:'🔫',name:'Royale',desc:'Last standing',questions:30,time:8,minPlayers:4,maxPlayers:10},
+      {id:'Blitz',icon:'💥',name:'Blitz',desc:'1 life only',questions:999,time:7,minPlayers:2,maxPlayers:4},
+      {id:'Reverse',icon:'🔄',name:'Reverse',desc:'Guess the Q',questions:12,time:15,minPlayers:2,maxPlayers:6},
+      {id:'Custom',icon:'⚙️',name:'Custom',desc:'Your rules',questions:15,time:10,minPlayers:2,maxPlayers:10}
+    ];
+    
     function initModes() {
-      const modes=[{id:'Classic',icon:'🎯',name:'Classic',desc:'Standard'},{id:'Speed',icon:'⚡',name:'Speed',desc:'5 sec'},{id:'Survival',icon:'❤️',name:'Survival',desc:'3 lives'},{id:'Betting',icon:'🎰',name:'Betting',desc:'Bet pts'},{id:'Lightning',icon:'🌩️',name:'Lightning',desc:'3 sec'},{id:'Team',icon:'👥',name:'Team',desc:'2v2'},{id:'BattleRoyale',icon:'🔫',name:'Royale',desc:'Last one'},{id:'Blitz',icon:'💥',name:'Blitz',desc:'Infinite'},{id:'Reverse',icon:'🔄',name:'Reverse',desc:'Guess Q'}];
-      document.getElementById('mode-grid').innerHTML=modes.map((m,i)=>`<div class="mode-card ${i===0?'selected':''}" onclick="selMode('${m.id}',this)"><div class="icon">${m.icon}</div><h3>${m.name}</h3><p>${m.desc}</p></div>`).join('');
+      document.getElementById('mode-grid').innerHTML=MODES.map((m,i)=>`<div class="mode-card ${i===0?'selected':''}" onclick="selMode('${m.id}',this)"><div class="icon">${m.icon}</div><h3>${m.name}</h3><p>${m.desc}</p></div>`).join('');
       document.getElementById('q-count').oninput=e=>document.getElementById('q-count-val').textContent=e.target.value;
       document.getElementById('time-limit').oninput=e=>document.getElementById('time-val').textContent=e.target.value;
+      selMode('Classic', document.querySelector('.mode-card'));
     }
-    function selMode(id,el) { mode=id; document.querySelectorAll('.mode-card').forEach(x=>x.classList.remove('selected')); el.classList.add('selected'); }
+    
+    function selMode(id,el) { 
+      mode=id; 
+      document.querySelectorAll('.mode-card').forEach(x=>x.classList.remove('selected')); 
+      if(el) el.classList.add('selected');
+      
+      const selectedMode = MODES.find(m => m.id === id);
+      if (selectedMode) {
+        // Update mode info card
+        document.getElementById('mode-info').style.display = 'block';
+        document.getElementById('mode-info-icon').textContent = selectedMode.icon;
+        document.getElementById('mode-info-name').textContent = selectedMode.name;
+        document.getElementById('mode-info-desc').textContent = selectedMode.desc;
+        document.getElementById('mode-info-questions').textContent = selectedMode.questions === 999 ? '∞' : selectedMode.questions;
+        document.getElementById('mode-info-time').textContent = selectedMode.time;
+        document.getElementById('mode-info-players').textContent = selectedMode.minPlayers + '-' + selectedMode.maxPlayers;
+        
+        // Update player count to be within mode limits
+        const currentPlayers = parseInt(document.getElementById('player-count').textContent);
+        const newPlayers = Math.min(Math.max(currentPlayers, selectedMode.minPlayers), selectedMode.maxPlayers);
+        document.getElementById('player-count').textContent = newPlayers;
+        maxPlayers = newPlayers;
+        
+        // Show/hide custom settings
+        const customSettings = document.getElementById('custom-settings');
+        if (id === 'Custom') {
+          customSettings.style.display = 'block';
+        } else {
+          customSettings.style.display = 'none';
+        }
+      }
+    }
+    
+    let maxPlayers = 4;
+    
+    function changePlayerCount(delta) {
+      const selectedMode = MODES.find(m => m.id === mode);
+      const minP = selectedMode ? selectedMode.minPlayers : 2;
+      const maxP = selectedMode ? selectedMode.maxPlayers : 10;
+      
+      let current = parseInt(document.getElementById('player-count').textContent);
+      current = Math.min(Math.max(current + delta, minP), maxP);
+      document.getElementById('player-count').textContent = current;
+      maxPlayers = current;
+    }
+    
     function togglePwr() { pwrEnabled=!pwrEnabled; document.getElementById('pwr-toggle').classList.toggle('active',pwrEnabled); }
 
     function createRoom() {
-      const settings={questionCount:+document.getElementById('q-count').value,timeLimit:+document.getElementById('time-limit').value,difficulty:document.getElementById('diff-select').value,powerupsEnabled:pwrEnabled};
-      socket.emit('create-room',{name:user.username,theme:document.getElementById('theme-select').value,gameMode:mode,avatar:user.equippedAvatar,color:user.equippedColor,settings,isPractice});
+      const settings={
+        questionCount:+document.getElementById('q-count').value,
+        timeLimit:+document.getElementById('time-limit').value,
+        difficulty:document.getElementById('diff-select').value,
+        powerupsEnabled:pwrEnabled
+      };
+      socket.emit('create-room',{
+        name:user.username,
+        theme:document.getElementById('theme-select').value,
+        gameMode:mode,
+        avatar:user.equippedAvatar,
+        color:user.equippedColor,
+        settings,
+        isPractice,
+        maxPlayers
+      });
     }
 
     function joinRoom() {
