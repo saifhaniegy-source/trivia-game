@@ -137,9 +137,23 @@ async function initDatabase() {
       );
     `);
 
-    // Clean up duplicates
+    // Clean up duplicates - first redirect user references to oldest, then delete
+    await client.query(`
+      UPDATE user_avatars ua SET avatar_id = sub.min_id 
+      FROM (SELECT emoji, MIN(id) as min_id FROM avatars GROUP BY emoji HAVING COUNT(*) > 1) sub
+      JOIN avatars a ON a.emoji = sub.emoji AND a.id != sub.min_id
+      WHERE ua.avatar_id = a.id
+    `);
     await client.query(`DELETE FROM avatars a USING avatars b WHERE a.id > b.id AND a.emoji = b.emoji`);
+    
+    await client.query(`
+      UPDATE user_colors uc SET color_id = sub.min_id 
+      FROM (SELECT gradient, MIN(id) as min_id FROM colors GROUP BY gradient HAVING COUNT(*) > 1) sub
+      JOIN colors c ON c.gradient = sub.gradient AND c.id != sub.min_id
+      WHERE uc.color_id = c.id
+    `);
     await client.query(`DELETE FROM colors a USING colors b WHERE a.id > b.id AND a.gradient = b.gradient`);
+    
     await client.query(`DELETE FROM achievements a USING achievements b WHERE a.id > b.id AND a.name = b.name`);
     
     // Add unique constraints if not exist
