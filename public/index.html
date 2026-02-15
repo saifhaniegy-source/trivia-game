@@ -244,40 +244,7 @@
     .particle { position: absolute; width: 4px; height: 4px; background: rgba(0,212,255,0.5); border-radius: 50%; animation: particleFloat 15s linear infinite; }
     @keyframes particleFloat { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; } }
     
-    
     @media (max-width: 600px) {
-      .logo h1 { font-size: 2rem; }
-      .room-code { font-size: 2rem; letter-spacing: 5px; }
-      .options { grid-template-columns: 1fr; gap: 10px; }
-      .mode-grid { grid-template-columns: 1fr 1fr; }
-      .avatar-grid { grid-template-columns: repeat(6, 1fr); gap: 4px; }
-      .color-grid { flex-wrap: wrap; }
-      .user-bar { flex-direction: column; gap: 10px; text-align: center; }
-      .user-stats { width: 100%; justify-content: space-around; }
-      .card { padding: 15px; margin: 10px; }
-      .tabs { flex-wrap: wrap; }
-      .tab { font-size: 0.8rem; padding: 8px 12px; }
-      button { font-size: 0.95rem; }
-      .game-header { flex-direction: column; gap: 5px; }
-      .timer { font-size: 1.5rem; }
-      .question { font-size: 1.1rem; }
-      .powers-bar { flex-wrap: wrap; }
-      .power-btn { min-width: 50px; padding: 5px; }
-      .settings-grid { grid-template-columns: 1fr; }
-      .achievements { grid-template-columns: repeat(2, 1fr); }
-      .achievements .achieve { padding: 10px; }
-      .achievements .icon { font-size: 1.5rem; }
-      .rewards-grid { gap: 15px; }
-      .rankings { gap: 8px; }
-      .rank { padding: 10px; }
-      .confetti { width: 6px; height: 6px; }
-      .profile-tab { grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 400px) {
-      .tabs { gap: 2px; }
-      .tab { padding: 6px 8px; font-size: 0.75rem; }
-    }
-@media (max-width: 600px) {
       .logo h1 { font-size: 2.2rem; }
       .room-code { font-size: 2.5rem; }
       .options { grid-template-columns: 1fr; }
@@ -289,7 +256,6 @@
 <body>
   <div class="bg"></div>
   <div id="particles"></div>
-    <div id="keyboard-hint" style="position:fixed;bottom:10px;right:10px;background:rgba(255,255,255,0.1);padding:5px 10px;border-radius:8px;font-size:0.75rem;color:rgba(255,255,255,0.5);z-index:100">Press 1-4 to answer | Space to submit</div>
   <div class="container">
     <div class="logo"><h1 class="gradient-text">Trivia Battle</h1><p>Ultimate Multiplayer Quiz</p></div>
     
@@ -326,10 +292,9 @@
           <div class="stat"><div class="stat-value" id="user-wins">0</div><div class="stat-label">Wins</div></div>
           <div class="stat"><div class="stat-value" id="user-streak">0</div><div class="stat-label">Best</div></div>
         </div>
-        <button id="sound-toggle" onclick="toggleSound()" style="width:auto;padding:10px 12px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;font-size:1rem;margin:0 5px">🔊</button><button onclick="location.reload()" style="width:auto;padding:10px 16px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;font-size:0.85rem;margin:0">Logout</button>
+        <button onclick="location.reload()" style="width:auto;padding:10px 16px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;font-size:0.85rem;margin:0">Logout</button>
       </div>
 
-      <div id="streak-display" style="background:rgba(124,58,237,0.1);border:2px solid rgba(124,58,237,0.4);border-radius:18px;padding:15px;margin-bottom:15px;text-align:center"><h3 style="color:#7c3aed">🔥 Login Streak</h3><p style="font-size:2rem;font-weight:800;color:#7c3aed"><span id="streak-count">0</span> days</p><p style="font-size:0.85rem;color:rgba(255,255,255,0.6)">Come back daily for bonus coins!</p></div>
       <div class="daily-reward floating" id="daily-reward" onclick="claimDaily()">
         <h3>🎁 Daily Reward</h3>
         <p>Click to claim XP & coins!</p>
@@ -340,10 +305,6 @@
         <button class="tab" onclick="showMainTab('customize')">Customize</button>
         <button class="tab" onclick="showMainTab('achievements')">Achievements</button>
         <button class="tab" onclick="showMainTab('leaderboard')">Ranks</button>
-        <button class="tab" onclick="showMainTab('challenges')">Challenges</button>
-        <button class="tab" onclick="showMainTab('friends')">Friends</button>
-        <button class="tab" onclick="showMainTab('shop')">Shop</button>
-        <button class="tab" onclick="showMainTab('profile')">Profile</button>
         <button class="tab" onclick="showMainTab('sandbox')">Sandbox</button>
       </div>
 
@@ -351,7 +312,6 @@
         <div class="card slide-up">
           <button class="btn-primary glow" onclick="showCreateScreen()">🎮 Create Room</button>
           
-          <button class="btn-secondary" onclick="showJoinScreen()">🚪 Join Room</button>
           <button class="btn-warning" onclick="startPractice()">🤖 Practice (vs Bot)</button>
           
         </div>
@@ -383,71 +343,6 @@
             <button class="tab" onclick="loadLB('streak', this)">Streak</button>
           </div>
           <div class="leaderboard-list" id="lb-list"></div>
-        </div>
-      </div>
-
-      
-
-
-<div id="challenges-tab" class="tab-content" style="display:none">
-  <div class="card">
-    <p class="section-title">🎯 Daily Challenges</p>
-    <p style="margin-bottom:15px;color:rgba(255,255,255,0.6)">Complete challenges for bonus rewards!</p>
-    <div id="challenges-list"></div>
-  </div>
-</div>
-<div id="friends-tab" class="tab-content" style="display:none">
-  <div class="card">
-    <p class="section-title">👥 Friends</p>
-    <input type="text" id="friend-search" placeholder="Search username..." style="margin-bottom:10px">
-    <button class="btn-primary" onclick="searchFriend()" style="margin-bottom:15px">Search</button>
-    <div id="friend-search-results" style="margin-bottom:20px"></div>
-    
-    <p class="section-title">Friend Requests</p>
-    <div id="friend-requests" style="margin-bottom:20px"></div>
-    
-    <p class="section-title">Your Friends</p>
-    <div id="friends-list"></div>
-  </div>
-</div>
-<div id="shop-tab" class="tab-content" style="display:none">
-  <div class="card">
-    <p class="section-title">🏪 Power-ups Shop</p>
-    <p style="margin-bottom:15px;color:rgba(255,255,255,0.6)">Buy power-ups to use in games! You currently have <span id="shop-coins" style="color:#fbbf24;font-weight:700">0</span> coins.</p>
-    <div id="shop-items" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px"></div>
-  </div>
-</div>
-<div id="profile-tab" class="tab-content" style="display:none">
-        <div class="card">
-          <div style="display:flex;align-items:center;gap:20px;margin-bottom:20px">
-            <div class="user-avatar" id="profile-avatar" style="width:80px;height:80px;font-size:2.5rem">🦊</div>
-            <div>
-              <h2 id="profile-username" style="margin-bottom:5px">Player</h2>
-              <p style="color:rgba(255,255,255,0.6)">Level <span id="profile-level">1</span> • <span id="profile-xp">0</span> XP</p>
-            </div>
-          </div>
-          
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
-            <div style="background:rgba(0,212,255,0.1);padding:15px;border-radius:10px;text-align:center">
-              <div style="font-size:1.5rem;font-weight:700;color:#00d4ff" id="profile-games">0</div>
-              <div style="font-size:0.75rem;color:rgba(255,255,255,0.6)">Games</div>
-            </div>
-            <div style="background:rgba(34,197,94,0.1);padding:15px;border-radius:10px;text-align:center">
-              <div style="font-size:1.5rem;font-weight:700;color:#22c55e" id="profile-wins">0</div>
-              <div style="font-size:0.75rem;color:rgba(255,255,255,0.6)">Wins</div>
-            </div>
-            <div style="background:rgba(251,191,36,0.1);padding:15px;border-radius:10px;text-align:center">
-              <div style="font-size:1.5rem;font-weight:700;color:#fbbf24" id="profile-streak">0</div>
-              <div style="font-size:0.75rem;color:rgba(255,255,255,0.6)">Best Streak</div>
-            </div>
-            <div style="background:rgba(124,58,237,0.1);padding:15px;border-radius:10px;text-align:center">
-              <div style="font-size:1.5rem;font-weight:700;color:#7c3aed" id="profile-accuracy">0%</div>
-              <div style="font-size:0.75rem;color:rgba(255,255,255,0.6)">Accuracy</div>
-            </div>
-          </div>
-          
-          <p class="section-title">Recent Games</p>
-          <div id="profile-history" style="max-height:300px;overflow-y:auto"></div>
         </div>
       </div>
 
@@ -648,66 +543,13 @@
     </div>
   </div>
 
-  
-<div id="tutorial-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;overflow-y:auto">
-  <div style="max-width:500px;margin:20px auto;padding:20px">
-    <h1 style="text-align:center;margin-bottom:30px;background:linear-gradient(135deg,#00d4ff,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Welcome to Trivia Battle!</h1>
-    
-    <div style="background:rgba(0,212,255,0.1);padding:20px;border-radius:12px;margin-bottom:15px">
-      <h3 style="color:#00d4ff;margin-bottom:10px">🎯 How to Play</h3>
-      <p style="line-height:1.6">Answer trivia questions faster than your opponents! The faster you answer correctly, the more points you earn.</p>
-    </div>
-    
-    <div style="background:rgba(124,58,237,0.1);padding:20px;border-radius:12px;margin-bottom:15px">
-      <h3 style="color:#7c3aed;margin-bottom:10px">🎮 Game Modes</h3>
-      <ul style="line-height:1.8;padding-left:20px">
-        <li><strong>Classic</strong> - Standard trivia, 15 questions</li>
-        <li><strong>Speed</strong> - Faster timer, higher stakes!</li>
-        <li><strong>Survival</strong> - 3 lives, one wrong = lose a life</li>
-        <li><strong>Betting</strong> - Bet points before answering</li>
-        <li><strong>Lightning</strong> - 3 second rapid-fire!</li>
-      </ul>
-    </div>
-    
-    <div style="background:rgba(251,191,36,0.1);padding:20px;border-radius:12px;margin-bottom:15px">
-      <h3 style="color:#fbbf24;margin-bottom:10px">⚡ Superpowers</h3>
-      <p style="line-height:1.6">Answer correctly and you might earn a superpower! Use them strategically:</p>
-      <ul style="line-height:1.8;padding-left:20px">
-        <li><strong>50/50</strong> - Removes 2 wrong answers</li>
-        <li><strong>Shield</strong> - Protected from wrong answer</li>
-        <li><strong>Double Points</strong> - 2x points this round</li>
-        <li><strong>Steal</strong> - Take 50 points from opponent</li>
-      </ul>
-    </div>
-    
-    <div style="background:rgba(34,197,94,0.1);padding:20px;border-radius:12px;margin-bottom:15px">
-      <h3 style="color:#22c55e;margin-bottom:10px">💰 Rewards</h3>
-      <p style="line-height:1.6">Earn <strong>XP</strong> to level up and unlock avatars/colors. Earn <strong>coins</strong> to buy items in the shop. Claim your <strong>daily reward</strong> every day!</p>
-    </div>
-    
-    <div style="background:rgba(239,68,68,0.1);padding:20px;border-radius:12px;margin-bottom:15px">
-      <h3 style="color:#ef4444;margin-bottom:10px">🤖 Practice Mode</h3>
-      <p style="line-height:1.6">New to the game? Try <strong>Practice Mode</strong> to play against AI bots without affecting your stats!</p>
-    </div>
-    
-    <button class="btn-primary" onclick="closeTutorial()" style="margin-top:20px">Got it, let's play!</button>
-  </div>
-</div>
-<div class="toast" id="toast"></div>
+  <div class="toast" id="toast"></div>
   <div class="popup" id="popup"><div class="icon"></div><h3></h3><p></p></div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const COLORS = ['linear-gradient(135deg,#00d4ff,#0099cc)','linear-gradient(135deg,#7c3aed,#5b21b6)','linear-gradient(135deg,#f472b6,#db2777)','linear-gradient(135deg,#22c55e,#16a34a)','linear-gradient(135deg,#f59e0b,#d97706)','linear-gradient(135deg,#ef4444,#dc2626)','linear-gradient(135deg,#06b6d4,#0891b2)','linear-gradient(135deg,#8b5cf6,#7c3aed)','linear-gradient(135deg,#ec4899,#db2777)','linear-gradient(135deg,#14b8a6,#0d9488)'];
     const socket = io();
-    // Sound Effects System
-    let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
-    let audioCtx = null;
-    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-    function playSound(name) { if (!soundEnabled) return; try { initAudio(); const s = SOUNDS[name]; if (!s) return; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = s.type; osc.frequency.value = s.freq; gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + s.duration); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + s.duration); } catch(e) {} }
-    function toggleSound() { soundEnabled = !soundEnabled; localStorage.setItem('soundEnabled', soundEnabled); document.getElementById('sound-toggle').textContent = soundEnabled ? '🔊' : '🔇'; if (soundEnabled) playSound('click'); }
-
-
     let user = null, isHost = false, room = '', timer, selected = null, confirmed = false, frozen = false, powers = [], pwrEnabled = true, mode = 'Classic', isPractice = false;
     
     function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
@@ -716,19 +558,11 @@
     function confetti() { const c=['#00d4ff','#7c3aed','#f472b6','#22c55e','#fbbf24','#ef4444','#ff7f00','#8b5cf6']; for(let i=0;i<60;i++){ setTimeout(()=>{ const e=document.createElement('div'); e.className='confetti'; e.style.left=Math.random()*100+'%'; e.style.background=c[Math.floor(Math.random()*c.length)]; e.style.borderRadius=Math.random()>.5?'50%':'0'; e.style.width=(4+Math.random()*6)+'px'; e.style.height=e.style.width; e.style.animationDuration=(2+Math.random()*2)+'s'; document.body.appendChild(e); setTimeout(()=>e.remove(),4000); },i*30); } }
 
     function showAuthTab(t) { document.querySelectorAll('#auth-screen .tab').forEach(x=>x.classList.remove('active')); event.currentTarget.classList.add('active'); document.getElementById('login-form').style.display=t==='login'?'block':'none'; document.getElementById('register-form').style.display=t==='register'?'block':'none'; }
-    function showMainTab(t) { document.querySelectorAll('#main-screen .tab').forEach(x=>x.classList.remove('active')); event.currentTarget.classList.add('active'); document.querySelectorAll('.tab-content').forEach(x=>x.style.display='none'); document.getElementById(t+'-tab').style.display='block'; if(t==='leaderboard')loadLB('xp',document.querySelector('#leaderboard-tab .tab')); if(t==='achievements')loadAch(); if(t==='customize')loadInv(); if(t==='shop')loadShop(); if(t==='friends')loadFriends(); if(t==='challenges')loadChallenges(); if(t==='profile')loadProfile(); }
+    function showMainTab(t) { document.querySelectorAll('#main-screen .tab').forEach(x=>x.classList.remove('active')); event.currentTarget.classList.add('active'); document.querySelectorAll('.tab-content').forEach(x=>x.style.display='none'); document.getElementById(t+'-tab').style.display='block'; if(t==='leaderboard')loadLB('xp',document.querySelector('#leaderboard-tab .tab')); if(t==='achievements')loadAch(); if(t==='customize')loadInv(); }
     function showCreateScreen() { initModes(); showScreen('create-screen'); }
     function showJoinScreen() { showScreen('join-screen'); }
     function showMainScreen() { showScreen('main-screen'); }
-    function closeTutorial() { document.getElementById("tutorial-overlay").style.display = "none"; }
-    function showTutorial() { document.getElementById("tutorial-overlay").style.display = "block"; }
-    document.addEventListener('keydown', e => {
-  if (document.getElementById('game-screen').classList.contains('active')) {
-    if (e.key >= '1' && e.key <= '4') { sel(parseInt(e.key) - 1); }
-    if (e.key === ' ') { e.preventDefault(); submitAnswer(); }
-  }
-});
-function startPractice() { isPractice = true; showCreateScreen(); toast('Practice Mode - No XP/Stats counted','info'); }
+    function startPractice() { isPractice = true; showCreateScreen(); toast('Practice Mode - No XP/Stats counted','info'); }
 
     async function login() {
       const btn = document.getElementById('login-btn');
@@ -740,7 +574,7 @@ function startPractice() { isPractice = true; showCreateScreen(); toast('Practic
         const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
         const d=await r.json();
         if(d.error) { btn.classList.remove('btn-loading'); btn.disabled = false; return toast(d.error); }
-        localStorage.setItem('tutorialSeen', 'true'); user=d.user; socket.emit('set-user',user); updateUI(); showScreen('main-screen'); checkDaily(); playSound('levelup');
+        user=d.user; socket.emit('set-user',user); updateUI(); showScreen('main-screen'); checkDaily();
       } catch(e) { btn.classList.remove('btn-loading'); btn.disabled = false; toast('Connection error'); }
     }
 
@@ -759,29 +593,183 @@ function startPractice() { isPractice = true; showCreateScreen(); toast('Practic
       } catch(e) { btn.classList.remove('btn-loading'); btn.disabled = false; toast('Connection error'); }
     }
 
-    
-    // Sound Effects System
-    // Profile Functions
-    async function loadProfile() {
-      if (!user) return;
-      document.getElementById('profile-avatar').textContent = user.equippedAvatar;
-      document.getElementById('profile-avatar').style.background = user.equippedColor;
-      document.getElementById('profile-username').textContent = user.username;
-      document.getElementById('profile-level').textContent = user.level;
-      document.getElementById('profile-xp').textContent = user.xp;
-      document.getElementById('profile-games').textContent = user.total_games || 0;
-      document.getElementById('profile-wins').textContent = user.total_wins || 0;
-      document.getElementById('profile-streak').textContent = user.best_streak || 0;
-      document.getElementById('profile-accuracy').textContent = (user.accuracy || 0) + '%';
-      try {
-        const r = await fetch('/api/history/' + user.id);
-        const history = await r.json();
-        document.getElementById('profile-history').innerHTML = history.length ? history.map(g => `'<div style="display:flex;justify-content:space-between;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;margin-bottom:8px"><div><span style="font-weight:600">${g.game_mode || 'Classic'}'</span><span style="color:rgba(255,255,255,0.5);margin-left:8px">${g.theme || 'Random'}'</span></div><div style="text-align:right"><div style="font-weight:700;color:#00d4ff">#${g.rank} • ${g.score}pts</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.5)">${g.correct_answers}/${g.total_questions} correct</div></div></div>'`join('') : '<p style="text-align:center;color:rgba(255,255,255,0.5)">No games played yet</p>';
-      } catch(e) {
-        document.getElementById('profile-history').innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.5)">Unable to load history</p>';
+    function updateUI() {
+      if(!user) return;
+      document.getElementById('user-name').textContent=user.username;
+      document.getElementById('user-avatar').textContent=user.equippedAvatar;
+      document.getElementById('user-avatar').style.background=user.equippedColor;
+      document.getElementById('user-level').textContent=user.level;
+      document.getElementById('user-coins').textContent=user.coins;
+      document.getElementById('user-wins').textContent=user.total_wins;
+      document.getElementById('user-streak').textContent=user.best_streak;
+      document.getElementById('xp-fill').style.width=(user.xpPercentage||0)+'%';
+    }
+
+    async function checkDaily() {
+      const r=await fetch('/api/user/'+user.id); const d=await r.json();
+      const el=document.getElementById('daily-reward');
+      if(d.daily_reward_claimed) { 
+        el.classList.add('claimed'); 
+        el.innerHTML='<h3>✅ Claimed</h3><p>Come back tomorrow!</p>'; 
       }
     }
 
+    async function claimDaily() {
+      if(document.getElementById('daily-reward').classList.contains('claimed')) return;
+      const r=await fetch('/api/daily-reward/'+user.id,{method:'POST'});
+      const d=await r.json();
+      if(d.claimed) { 
+        popup('🎁','Daily Reward!',`+${d.xpReward} XP, +${d.coinReward} coins`); 
+        user.xp+=d.xpReward; 
+        user.coins+=d.coinReward; 
+        updateUI(); 
+        document.getElementById('daily-reward').classList.add('claimed');
+        document.getElementById('daily-reward').innerHTML='<h3>✅ Claimed</h3><p>Come back tomorrow!</p>';
+      }
+      else toast(d.message,'info');
+    }
+
+    async function loadLB(type,btn) {
+      document.querySelectorAll('#leaderboard-tab .tab').forEach(x=>x.classList.remove('active')); if(btn)btn.classList.add('active');
+      const r=await fetch('/api/leaderboard/'+type); const list=await r.json();
+      document.getElementById('lb-list').innerHTML=list.map((p,i)=>`
+        <div class="lb-item">
+          <div class="lb-rank ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">#${i+1}</div>
+          <div class="lb-avatar" style="background:${COLORS[i%COLORS.length]}">🦊</div>
+          <div class="lb-name">${p.username}</div>
+          <div class="lb-val">${type==='xp'?p.xp:type==='wins'?p.total_wins:p.best_streak}</div>
+        </div>
+      `).join('')||'<p style="text-align:center;color:rgba(255,255,255,0.5)">No players yet</p>';
+    }
+
+    async function loadAch() {
+      const r=await fetch('/api/achievements/'+user.id); const a=await r.json();
+      document.getElementById('achievements-grid').innerHTML=a.map(x=>`<div class="achieve ${x.unlocked?'unlocked':''}"><div class="icon">${x.icon}</div><h4>${x.name}</h4><p>${x.description}</p></div>`).join('');
+    }
+
+    async function loadInv() {
+      const r=await fetch('/api/inventory/'+user.id); const inv=await r.json();
+      document.getElementById('avatar-grid').innerHTML=inv.avatars.map(a=>`<div class="avatar-option ${a.equipped?'selected':''} ${!a.owned?'locked':''}" onclick="${a.owned?`selectAv(${a.id})`:''}">${a.emoji}</div>`).join('');
+      document.getElementById('color-grid').innerHTML=inv.colors.map(c=>`<div class="color-option ${c.equipped?'selected':''} ${!c.owned?'locked':''}" style="background:${c.gradient}" onclick="${c.owned?`selectCo(${c.id})`:''}"></div>`).join('');
+    }
+
+    let selAv=null, selCo=null;
+    function selectAv(id) { selAv=id; document.querySelectorAll('#avatar-grid .avatar-option').forEach(x=>x.classList.remove('selected')); event.currentTarget.classList.add('selected'); }
+    function selectCo(id) { selCo=id; document.querySelectorAll('#color-grid .color-option').forEach(x=>x.classList.remove('selected')); event.currentTarget.classList.add('selected'); }
+    async function saveCustomize() {
+      if(selAv) await fetch('/api/equip-avatar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:user.id,avatarId:selAv})});
+      if(selCo) await fetch('/api/equip-color',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:user.id,colorId:selCo})});
+      toast('Saved!','success');
+      const r=await fetch('/api/user/'+user.id); user=await r.json(); updateUI();
+    }
+
+    function initModes() {
+      const modes=[{id:'Classic',icon:'🎯',name:'Classic',desc:'Standard'},{id:'Speed',icon:'⚡',name:'Speed',desc:'5 sec'},{id:'Survival',icon:'❤️',name:'Survival',desc:'3 lives'},{id:'Betting',icon:'🎰',name:'Betting',desc:'Bet pts'},{id:'Lightning',icon:'🌩️',name:'Lightning',desc:'3 sec'},{id:'Team',icon:'👥',name:'Team',desc:'2v2'},{id:'BattleRoyale',icon:'🔫',name:'Royale',desc:'Last one'},{id:'Blitz',icon:'💥',name:'Blitz',desc:'Infinite'},{id:'Reverse',icon:'🔄',name:'Reverse',desc:'Guess Q'}];
+      document.getElementById('mode-grid').innerHTML=modes.map((m,i)=>`<div class="mode-card ${i===0?'selected':''}" onclick="selMode('${m.id}',this)"><div class="icon">${m.icon}</div><h3>${m.name}</h3><p>${m.desc}</p></div>`).join('');
+      document.getElementById('q-count').oninput=e=>document.getElementById('q-count-val').textContent=e.target.value;
+      document.getElementById('time-limit').oninput=e=>document.getElementById('time-val').textContent=e.target.value;
+    }
+    function selMode(id,el) { mode=id; document.querySelectorAll('.mode-card').forEach(x=>x.classList.remove('selected')); el.classList.add('selected'); }
+    function togglePwr() { pwrEnabled=!pwrEnabled; document.getElementById('pwr-toggle').classList.toggle('active',pwrEnabled); }
+
+    function createRoom() {
+      const settings={questionCount:+document.getElementById('q-count').value,timeLimit:+document.getElementById('time-limit').value,difficulty:document.getElementById('diff-select').value,powerupsEnabled:pwrEnabled};
+      socket.emit('create-room',{name:user.username,theme:document.getElementById('theme-select').value,gameMode:mode,avatar:user.equippedAvatar,color:user.equippedColor,settings,isPractice});
+    }
+
+    function joinRoom() {
+      const code=document.getElementById('join-code').value.trim().toUpperCase();
+      if(!code) return toast('Enter room code');
+      socket.emit('join-room',{roomCode:code,name:user.username,avatar:user.equippedAvatar,color:user.equippedColor});
+    }
+
+    function startGame() { socket.emit('start-game'); }
+    function nextQ() { socket.emit('next-question'); }
+    function rematch() { socket.emit('rematch'); }
+
+    socket.on('room-created',d=>{ isHost=true; room=d.roomCode; document.getElementById('room-code').textContent=d.roomCode; if(d.isPractice){ const indicator=document.createElement('div'); indicator.id='practice-indicator'; indicator.style.cssText='background:linear-gradient(135deg,#f59e0b,#d97706);padding:8px 16px;border-radius:20px;margin:10px 0;text-align:center;font-weight:bold;'; indicator.textContent='🎮 Practice Mode'; document.querySelector('#lobby-screen .card').insertBefore(indicator,document.querySelector('#lobby-screen .card').firstChild.nextSibling); } showScreen('lobby-screen'); });
+    socket.on('room-joined',d=>{ isHost=d.isHost; room=d.roomCode; if(isHost){document.getElementById('room-code').textContent=d.roomCode;showScreen('lobby-screen');}else{document.getElementById('wait-code').textContent=d.roomCode;showScreen('waiting-screen');} });
+    
+    socket.on('players-update',d=>{
+      const html=d.players.map((p,i)=>`<li class="${p.answered?'answered':''}"><div class="player-info"><div class="player-avatar" style="background:${p.color||COLORS[i%COLORS.length]}">${p.mascot}</div><span>${p.name}</span>${p.streak>1?`<span class="streak-badge">🔥${p.streak}</span>`:''}</div><span class="score">${p.score}</span></li>`).join('');
+      document.getElementById('player-list').innerHTML=html;
+      document.getElementById('wait-list').innerHTML=html;
+      const cnt=d.players.length;
+      if(isHost){ const b=document.getElementById('start-btn'); b.disabled=cnt<2; b.textContent=cnt<2?`Need ${2-cnt} more`:'Start Game'; }
+    });
+
+    socket.on('game-started',()=>showScreen('game-screen'));
+    
+    socket.on('question',d=>{
+      showScreen('game-screen'); selected=null; confirmed=false; frozen=false;
+      document.getElementById('progress').textContent=`Q ${d.questionNumber}/${d.totalQuestions}`;
+      document.getElementById('diff-badge').textContent=d.difficulty||''; document.getElementById('diff-badge').className=`difficulty ${d.difficulty||'easy'}`;
+      document.getElementById('question').textContent=d.question;
+      const labels=['A','B','C','D'];
+      document.getElementById('options').innerHTML=d.options.map((o,i)=>o?`<button class="option" id="opt-${i}" onclick="sel(${i})"><span class="option-label">${labels[i]}</span>${o}</button>`:'').join('');
+      renderPowers();
+      document.getElementById('submit-btn').disabled=true; document.getElementById('submit-btn').textContent='Submit';
+      startTimer(d.timeLimit);
+    });
+
+    function startTimer(s){
+      const fill=document.getElementById('timer-fill'); fill.style.width='100%'; fill.classList.remove('warning');
+      let t=s; const el=document.getElementById('timer'); el.textContent=t; el.classList.remove('warning');
+      clearInterval(timer); timer=setInterval(()=>{ t--; el.textContent=t; fill.style.width=(t/s*100)+'%'; if(t<=3){el.classList.add('warning');fill.classList.add('warning');} if(t<=0)clearInterval(timer); },1000);
+    }
+
+    function sel(i){ if(confirmed||frozen)return; selected=i; document.querySelectorAll('.option').forEach((b,j)=>b.classList.toggle('selected',j===i)); document.getElementById('submit-btn').disabled=false; }
+    function submitAnswer(){ if(selected===null||confirmed)return; confirmed=true; document.getElementById('submit-btn').disabled=true; document.getElementById('submit-btn').textContent='Submitted!'; socket.emit('submit-answer',selected); toast('Submitted!','success'); }
+
+    function renderPowers(){
+      const c=document.getElementById('powers-bar');
+      if(!pwrEnabled||!powers.length){ c.innerHTML='<span style="color:rgba(255,255,255,0.4);font-size:0.85rem">Answer correctly to earn power-ups!</span>'; return; }
+      c.innerHTML=powers.map(p=>`<button class="power-btn" onclick="usePower('${p.id}')"><span class="icon">${p.icon}</span><span class="name">${p.name}</span></button>`).join('');
+    }
+    function usePower(id){ if(confirmed||frozen)return; socket.emit('use-superpower',id); }
+
+    socket.on('superpower-earned',p=>{ powers.push(p); renderPowers(); popup(p.icon,'Power-Up!',`${p.name}: ${p.description}`); });
+    socket.on('frozen',d=>{ frozen=true; toast(`Frozen by ${d.freezer}!`,'info'); setTimeout(()=>{frozen=false;toast('Unfrozen!','success');},5000); });
+    socket.on('fifty-fifty',d=>{ d.remove.forEach(i=>{ const b=document.getElementById(`opt-${i}`); if(b){b.classList.add('eliminated');} }); powers=powers.filter(p=>p.id!=='fifty_fifty'); renderPowers(); popup('✂️','50/50','2 wrong removed!'); });
+    socket.on('time-freeze',d=>{ popup('⏱️','Time Freeze','+5 sec!'); powers=powers.filter(p=>p.id!=='time_freeze'); renderPowers(); });
+    socket.on('double-points-activated',()=>{ popup('✨','Double Points!','2x this round!'); powers=powers.filter(p=>p.id!=='double_points'); renderPowers(); });
+    socket.on('shield-activated',()=>{ popup('🛡️','Shield!','Protected!'); powers=powers.filter(p=>p.id!=='shield'); renderPowers(); });
+    socket.on('second-chance-activated',()=>{ popup('🔄','Second Chance!','Answer again if wrong!'); powers=powers.filter(p=>p.id!=='second_chance'); renderPowers(); });
+    socket.on('peek-result',d=>{ popup('👁️','Peek',d.count>0?`Most popular: ${String.fromCharCode(65+d.popularAnswer)} (${d.count} votes)`:'No answers yet'); powers=powers.filter(p=>p.id!=='peek'); renderPowers(); });
+    socket.on('steal-result',d=>{ popup('💰','Steal!',`Stole ${d.amount} pts from ${d.victim}!`); powers=powers.filter(p=>p.id!=='steal'); renderPowers(); });
+    socket.on('stolen',d=>toast(`${d.thief} stole ${d.amount} pts!`));
+    socket.on('freeze-result',d=>{ popup('❄️','Freeze!',`Froze ${d.target}!`); powers=powers.filter(p=>p.id!=='freeze_player'); renderPowers(); });
+    socket.on('imposter-result',d=>{ popup('🎭','Imposter!',`Swapped with ${d.target}! New score: ${d.newScore}`); powers=powers.filter(p=>p.id!=='imposter'); renderPowers(); });
+    socket.on('swapped',d=>toast(`${d.thief} swapped scores! New: ${d.newScore}`,'info'));
+    socket.on('oracle-result',d=>{ popup('🔮','Oracle',`Hint: Look at option ${String.fromCharCode(65+d.correctAnswer)}`); powers=powers.filter(p=>p.id!=='oracle'); renderPowers(); });
+    socket.on('bomb-result',()=>{ popup('💣','Bomb!','Everyone else lost 30 pts!'); powers=powers.filter(p=>p.id!=='bomb'); renderPowers(); });
+    socket.on('bombed',d=>toast(`${d.bomber} bombed you! -30 pts`));
+    socket.on('gamble-result',d=>{ popup('🎲','Gamble!',`${d.amount>=0?'+'+d.amount:d.amount} pts!`); powers=powers.filter(p=>p.id!=='gamble'); renderPowers(); });
+    socket.on('answer-banned',d=>{ toast(`${d.banner} banned option ${String.fromCharCode(65+d.bannedAnswer)}!`,'info'); const b=document.getElementById(`opt-${d.bannedAnswer}`); if(b){b.classList.add('eliminated');} powers=powers.filter(p=>p.id!=='ban'); renderPowers(); });
+
+    socket.on('answer-reveal',d=>{
+      clearInterval(timer);
+      document.querySelectorAll('.option').forEach((b,i)=>{ b.disabled=true; if(i===d.correctAnswer)b.classList.add('correct'); else if(i===selected&&i!==d.correctAnswer)b.classList.add('wrong'); });
+      document.getElementById('results-list').innerHTML=d.results.map(r=>`<div class="result ${r.correct?'correct':'wrong'}"><span><span class="mascot">${r.mascot}</span><span class="name">${r.name}</span></span><span class="pts">${r.points>=0?'+':''}${r.points}</span></div>`).join('');
+      document.getElementById('scores').innerHTML=d.scores.sort((a,b)=>b.score-a.score).map(s=>`<div class="score-row"><span><span class="mascot">${s.mascot}</span>${s.name}</span><span class="pts">${s.score}</span></div>`).join('');
+      const btnText = d.isLastQuestion ? 'Finish' : 'Next';
+      document.getElementById('skip-section').innerHTML = isHost 
+        ? `<button class="btn-primary" onclick="nextQ()" style="display:block;max-width:200px;margin:15px auto 0">${btnText}</button>` 
+        : '<p style="color:rgba(255,255,255,0.5)">Waiting for host...</p>';
+      setTimeout(()=>showScreen('results-screen'),1200);
+    });
+
+    socket.on('game-over',d=>{
+      showScreen('gameover-screen'); confetti();
+      const me=d.rankings.find(p=>p.id===socket.id);
+      if(me){ document.getElementById('xp-earned').textContent='+'+(me.xpGained||0); document.getElementById('coins-earned').textContent='+'+(me.coinsGained||0); }
+      document.getElementById('rankings').innerHTML=d.rankings.map((p,i)=>`<div class="rank ${i===0?'winner':''}"><span class="rank-num">${i===0?'👑':''}#${i+1}</span><span class="rank-mascot">${p.mascot}</span><span class="rank-name">${p.name}</span><span class="rank-score">${p.score}</span></div>`).join('');
+    });
+
+    socket.on('error',m=>toast(m));
+
+    document.getElementById('q-count').addEventListener('input',e=>document.getElementById('q-count-val').textContent=e.target.value);
+    document.getElementById('time-limit').addEventListener('input',e=>document.getElementById('time-val').textContent=e.target.value);
 
     // Create floating particles
     (function createParticles() {
