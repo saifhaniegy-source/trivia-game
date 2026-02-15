@@ -753,7 +753,8 @@
       document.querySelectorAll('.option').forEach((b,i)=>{ b.disabled=true; if(i===d.correctAnswer)b.classList.add('correct'); else if(i===selected&&i!==d.correctAnswer)b.classList.add('wrong'); });
       document.getElementById('results-list').innerHTML=d.results.map(r=>`<div class="result ${r.correct?'correct':'wrong'}"><span><span class="mascot">${r.mascot}</span><span class="name">${r.name}</span></span><span class="pts">${r.points>=0?'+':''}${r.points}</span></div>`).join('');
       document.getElementById('scores').innerHTML=d.scores.sort((a,b)=>b.score-a.score).map(s=>`<div class="score-row"><span><span class="mascot">${s.mascot}</span>${s.name}</span><span class="pts">${s.score}</span></div>`).join('');
-      const btnText = d.isLastQuestion ? 'Finish' : 'Next';
+      const btnText = d.isLastQuestion ? '🏁 Finish' : 'Next';
+      if(d.isLastQuestion) confetti();
       document.getElementById('skip-section').innerHTML = isHost 
         ? `<button class="btn-primary" onclick="nextQ()" style="display:block;max-width:200px;margin:15px auto 0">${btnText}</button>` 
         : '<p style="color:rgba(255,255,255,0.5)">Waiting for host...</p>';

@@ -417,6 +417,7 @@ function clearTimer(roomCode) {
 }
 
 app.post('/api/register', async (req, res) => {
+  // Give new users a welcome bonus
   const { username, password } = req.body;
   if (!username || username.length < 2 || username.length > 15) {
     return res.status(400).json({ error: 'Username must be 2-15 characters' });

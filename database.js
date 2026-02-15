@@ -263,7 +263,7 @@ const User = {
   create: async (username, password) => {
     await ensureDb();
     const id = randomUUID();
-    await pool.query('INSERT INTO users (id, username, password) VALUES ($1, $2, $3)', [id, username.toLowerCase(), password]);
+    await pool.query('INSERT INTO users (id, username, password, coins) VALUES ($1, $2, $3, $4)', [id, username.toLowerCase(), password, 50]);
     
     const commonAvatarsResult = await pool.query('SELECT id FROM avatars WHERE rarity = $1', ['common']);
     const commonColorsResult = await pool.query('SELECT id FROM colors WHERE rarity = $1', ['common']);
