@@ -475,6 +475,11 @@ app.get('/api/achievements/:id', async (req, res) => {
   res.json(achievements);
 });
 
+app.get('/api/history/:id', async (req, res) => {
+  const history = await GameHistory.getRecent(req.params.id, 20);
+  res.json(history);
+});
+
 app.post('/api/equip-avatar', async (req, res) => {
   const { userId, avatarId } = req.body;
   await User.equipAvatar(userId, avatarId);
