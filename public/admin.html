@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Trivia Battle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', sans-serif; min-height: 100vh; color: white; background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #0f0c29); background-size: 400% 400%; animation: bg 15s ease infinite; }
+    @keyframes bg { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px; backdrop-filter: blur(10px); }
+    .header h1 { font-size: 1.8rem; background: linear-gradient(135deg, #ef4444, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .header button { padding: 10px 20px; background: rgba(239,68,68,0.2); border: 1px solid #ef4444; color: #ef4444; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: 600; }
+    
+    .login-card { max-width: 400px; margin: 100px auto; background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border-radius: 20px; padding: 40px; border: 1px solid rgba(255,255,255,0.1); }
+    .login-card h2 { text-align: center; margin-bottom: 30px; color: #ef4444; }
+    input { width: 100%; padding: 15px 20px; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; font-size: 1rem; margin-bottom: 15px; background: rgba(255,255,255,0.05); color: white; font-family: inherit; }
+    input:focus { outline: none; border-color: #ef4444; }
+    button { width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+    
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 15px; padding: 25px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+    .stat-card .value { font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #00d4ff, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .stat-card .label { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin-top: 5px; }
+    
+    .card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 15px; padding: 25px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+    .card h3 { margin-bottom: 20px; font-size: 1.2rem; }
+    
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    th { font-weight: 600; color: rgba(255,255,255,0.6); font-size: 0.85rem; text-transform: uppercase; }
+    tr:hover { background: rgba(255,255,255,0.03); }
+    
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .badge-success { background: rgba(34,197,94,0.2); color: #22c55e; }
+    .badge-warning { background: rgba(251,191,36,0.2); color: #fbbf24; }
+    .badge-danger { background: rgba(239,68,68,0.2); color: #ef4444; }
+    
+    .actions { display: flex; gap: 8px; }
+    .actions button { width: auto; padding: 8px 12px; font-size: 0.8rem; border-radius: 8px; }
+    .btn-sm { padding: 8px 12px; font-size: 0.8rem; }
+    .btn-edit { background: rgba(0,212,255,0.2); color: #00d4ff; border: 1px solid #00d4ff; }
+    .btn-delete { background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid #ef4444; }
+    
+    .search-box { margin-bottom: 20px; }
+    .search-box input { margin-bottom: 0; }
+    
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab { padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+    .tab:hover { background: rgba(255,255,255,0.1); }
+    .tab.active { background: linear-gradient(135deg, #ef4444, #dc2626); border-color: transparent; }
+    
+    .hidden { display: none; }
+    
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .modal.hidden { display: none; }
+    .modal-content { background: #1a1a2e; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-close { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; width: auto; }
+    
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: rgba(34,197,94,0.95); padding: 12px 25px; border-radius: 10px; font-weight: 600; z-index: 2000; transition: transform 0.3s; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.error { background: rgba(239,68,68,0.95); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="login-screen">
+      <div class="login-card">
+        <h2>🔐 Admin Login</h2>
+        <input type="text" id="admin-user" placeholder="Admin Username">
+        <input type="password" id="admin-pass" placeholder="Admin Password">
+        <button class="btn-danger" onclick="adminLogin()">Login</button>
+      </div>
+    </div>
+    
+    <div id="admin-panel" class="hidden">
+      <div class="header">
+        <h1>🎮 Admin Dashboard</h1>
+        <button onclick="adminLogout()">Logout</button>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card"><div class="value" id="total-users">0</div><div class="label">Total Users</div></div>
+        <div class="stat-card"><div class="value" id="total-games">0</div><div class="label">Games Played</div></div>
+        <div class="stat-card"><div class="value" id="total-questions">0</div><div class="label">Questions</div></div>
+        <div class="stat-card"><div class="value" id="pending-questions">0</div><div class="label">Pending Questions</div></div>
+      </div>
+      
+      <div class="tabs">
+        <div class="tab active" onclick="showTab('users')">Users</div>
+        <div class="tab" onclick="showTab('questions')">Questions</div>
+        <div class="tab" onclick="showTab('history')">Game History</div>
+      </div>
+      
+      <div id="users-tab">
+        <div class="card">
+          <h3>👥 Manage Users</h3>
+          <div class="search-box"><input type="text" id="user-search" placeholder="Search users..." oninput="searchUsers()"></div>
+          <table>
+            <thead><tr><th>User</th><th>Level</th><th>XP</th><th>Coins</th><th>Games</th><th>Wins</th><th>Actions</th></tr></thead>
+            <tbody id="users-table"></tbody>
+          </table>
+        </div>
+      </div>
+      
+      <div id="questions-tab" class="hidden">
+        <div class="card">
+          <h3>❓ Custom Questions</h3>
+          <table>
+            <thead><tr><th>Question</th><th>Theme</th><th>Status</th><th>Votes</th><th>Actions</th></tr></thead>
+            <tbody id="questions-table"></tbody>
+          </table>
+        </div>
+      </div>
+      
+      <div id="history-tab" class="hidden">
+        <div class="card">
+          <h3>📊 Recent Games</h3>
+          <table>
+            <thead><tr><th>Player</th><th>Mode</th><th>Score</th><th>Rank</th><th>Date</th></tr></thead>
+            <tbody id="history-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="edit-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header"><h3>Edit User</h3><button class="modal-close" onclick="closeModal()">&times;</button></div>
+      <input type="hidden" id="edit-user-id">
+      <input type="text" id="edit-username" placeholder="Username">
+      <input type="number" id="edit-xp" placeholder="XP">
+      <input type="number" id="edit-coins" placeholder="Coins">
+      <input type="number" id="edit-level" placeholder="Level">
+      <button class="btn-danger" onclick="saveUser()">Save Changes</button>
+    </div>
+  </div>
+  
+  <div id="toast" class="toast"></div>
+
+  <script>
+    let adminToken = localStorage.getItem('adminToken');
+    let allUsers = [];
+    
+    if (adminToken) {
+      verifyToken();
+    }
+    
+    async function adminLogin() {
+      const username = document.getElementById('admin-user').value;
+      const password = document.getElementById('admin-pass').value;
+      
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        
+        if (data.error) {
+          toast(data.error, 'error');
+        } else {
+          adminToken = data.token;
+          localStorage.setItem('adminToken', adminToken);
+          showPanel();
+        }
+      } catch (e) {
+        toast('Connection error', 'error');
+      }
+    }
+    
+    async function verifyToken() {
+      try {
+        const res = await fetch('/api/admin/verify', {
+          headers: { 'Authorization': 'Bearer ' + adminToken }
+        });
+        if (res.ok) {
+          showPanel();
+        } else {
+          localStorage.removeItem('adminToken');
+          adminToken = null;
+        }
+      } catch (e) {
+        localStorage.removeItem('adminToken');
+      }
+    }
+    
+    function showPanel() {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('admin-panel').classList.remove('hidden');
+      loadStats();
+      loadUsers();
+      loadQuestions();
+      loadHistory();
+    }
+    
+    function adminLogout() {
+      localStorage.removeItem('adminToken');
+      adminToken = null;
+      document.getElementById('login-screen').classList.remove('hidden');
+      document.getElementById('admin-panel').classList.add('hidden');
+    }
+    
+    async function loadStats() {
+      const res = await fetch('/api/admin/stats', { headers: { 'Authorization': 'Bearer ' + adminToken } });
+      const data = await res.json();
+      document.getElementById('total-users').textContent = data.totalUsers || 0;
+      document.getElementById('total-games').textContent = data.totalGames || 0;
+      document.getElementById('total-questions').textContent = data.totalQuestions || 0;
+      document.getElementById('pending-questions').textContent = data.pendingQuestions || 0;
+    }
+    
+    async function loadUsers() {
+      const res = await fetch('/api/admin/users', { headers: { 'Authorization': 'Bearer ' + adminToken } });
+      allUsers = await res.json();
+      renderUsers(allUsers);
+    }
+    
+    function renderUsers(users) {
+      document.getElementById('users-table').innerHTML = users.map(u => `
+        <tr>
+          <td>${u.username}</td>
+          <td>Lv.${u.level}</td>
+          <td>${u.xp}</td>
+          <td>${u.coins}</td>
+          <td>${u.total_games || 0}</td>
+          <td>${u.total_wins || 0}</td>
+          <td class="actions">
+            <button class="btn-sm btn-edit" onclick="editUser('${u.id}','${u.username}',${u.xp},${u.coins},${u.level})">Edit</button>
+            <button class="btn-sm btn-delete" onclick="deleteUser('${u.id}')">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+    
+    function searchUsers() {
+      const q = document.getElementById('user-search').value.toLowerCase();
+      renderUsers(allUsers.filter(u => u.username.toLowerCase().includes(q)));
+    }
+    
+    async function loadQuestions() {
+      const res = await fetch('/api/admin/questions', { headers: { 'Authorization': 'Bearer ' + adminToken } });
+      const questions = await res.json();
+      document.getElementById('questions-table').innerHTML = questions.map(q => `
+        <tr>
+          <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis">${q.question}</td>
+          <td>${q.theme || 'General'}</td>
+          <td><span class="badge ${q.approved ? 'badge-success' : 'badge-warning'}">${q.approved ? 'Approved' : 'Pending'}</span></td>
+          <td>${q.votes_up}/${q.votes_down}</td>
+          <td class="actions">
+            ${!q.approved ? `<button class="btn-sm btn-edit" onclick="approveQuestion(${q.id})">Approve</button>` : ''}
+            <button class="btn-sm btn-delete" onclick="deleteQuestion(${q.id})">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+    
+    async function loadHistory() {
+      const res = await fetch('/api/admin/history', { headers: { 'Authorization': 'Bearer ' + adminToken } });
+      const history = await res.json();
+      document.getElementById('history-table').innerHTML = history.map(h => `
+        <tr>
+          <td>${h.username || 'Unknown'}</td>
+          <td>${h.game_mode}</td>
+          <td>${h.score}</td>
+          <td>#${h.rank}</td>
+          <td>${new Date(h.played_at).toLocaleDateString()}</td>
+        </tr>
+      `).join('');
+    }
+    
+    function editUser(id, username, xp, coins, level) {
+      document.getElementById('edit-user-id').value = id;
+      document.getElementById('edit-username').value = username;
+      document.getElementById('edit-xp').value = xp;
+      document.getElementById('edit-coins').value = coins;
+      document.getElementById('edit-level').value = level;
+      document.getElementById('edit-modal').classList.remove('hidden');
+    }
+    
+    function closeModal() {
+      document.getElementById('edit-modal').classList.add('hidden');
+    }
+    
+    async function saveUser() {
+      const id = document.getElementById('edit-user-id').value;
+      const data = {
+        username: document.getElementById('edit-username').value,
+        xp: parseInt(document.getElementById('edit-xp').value),
+        coins: parseInt(document.getElementById('edit-coins').value),
+        level: parseInt(document.getElementById('edit-level').value)
+      };
+      
+      const res = await fetch('/api/admin/user/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminToken },
+        body: JSON.stringify(data)
+      });
+      
+      if (res.ok) {
+        toast('User updated!');
+        closeModal();
+        loadUsers();
+        loadStats();
+      } else {
+        toast('Failed to update user', 'error');
+      }
+    }
+    
+    async function deleteUser(id) {
+      if (!confirm('Are you sure you want to delete this user?')) return;
+      
+      const res = await fetch('/api/admin/user/' + id, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + adminToken }
+      });
+      
+      if (res.ok) {
+        toast('User deleted!');
+        loadUsers();
+        loadStats();
+      } else {
+        toast('Failed to delete user', 'error');
+      }
+    }
+    
+    async function approveQuestion(id) {
+      const res = await fetch('/api/admin/question/' + id + '/approve', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + adminToken }
+      });
+      
+      if (res.ok) {
+        toast('Question approved!');
+        loadQuestions();
+        loadStats();
+      }
+    }
+    
+    async function deleteQuestion(id) {
+      if (!confirm('Delete this question?')) return;
+      
+      const res = await fetch('/api/admin/question/' + id, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + adminToken }
+      });
+      
+      if (res.ok) {
+        toast('Question deleted!');
+        loadQuestions();
+        loadStats();
+      }
+    }
+    
+    function showTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      document.getElementById('users-tab').classList.add('hidden');
+      document.getElementById('questions-tab').classList.add('hidden');
+      document.getElementById('history-tab').classList.add('hidden');
+      document.getElementById(tab + '-tab').classList.remove('hidden');
+    }
+    
+    function toast(msg, type = '') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + type;
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+  </script>
+</body>
+</html>

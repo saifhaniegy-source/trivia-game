@@ -383,6 +383,96 @@ app.post('/api/submit-question', (req, res) => {
   res.json({ success: true, id });
 });
 
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'trivia2024';
+const ADMIN_TOKEN = 'admin-' + Date.now() + '-' + Math.random().toString(36).substring(2);
+
+function authAdmin(req, res, next) {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  if (token === ADMIN_TOKEN) {
+    next();
+  } else {
+    res.status(401).json({ error: 'Unauthorized' });
+  }
+}
+
+app.post('/api/admin/login', (req, res) => {
+  const { username, password } = req.body;
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    res.json({ success: true, token: ADMIN_TOKEN });
+  } else {
+    res.status(401).json({ error: 'Invalid credentials' });
+  }
+});
+
+app.get('/api/admin/verify', authAdmin, (req, res) => {
+  res.json({ valid: true });
+});
+
+app.get('/api/admin/stats', authAdmin, (req, res) => {
+  const stats = {
+    totalUsers: db.prepare('SELECT COUNT(*) as count FROM users').get()?.count || 0,
+    totalGames: db.prepare('SELECT SUM(total_games) as sum FROM users').get()?.sum || 0,
+    totalQuestions: db.prepare('SELECT COUNT(*) as count FROM custom_questions').get()?.count || 0,
+    pendingQuestions: db.prepare('SELECT COUNT(*) as count FROM custom_questions WHERE approved = 0').get()?.count || 0
+  };
+  res.json(stats);
+});
+
+app.get('/api/admin/users', authAdmin, (req, res) => {
+  const users = db.prepare('SELECT id, username, xp, level, coins, total_games, total_wins, total_correct, best_streak, created_at FROM users ORDER BY created_at DESC').all();
+  res.json(users);
+});
+
+app.put('/api/admin/user/:id', authAdmin, (req, res) => {
+  const { username, xp, coins, level } = req.body;
+  try {
+    db.prepare('UPDATE users SET username = ?, xp = ?, coins = ?, level = ? WHERE id = ?').run(username, xp, coins, level, req.params.id);
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to update user' });
+  }
+});
+
+app.delete('/api/admin/user/:id', authAdmin, (req, res) => {
+  try {
+    db.prepare('DELETE FROM user_avatars WHERE user_id = ?').run(req.params.id);
+    db.prepare('DELETE FROM user_colors WHERE user_id = ?').run(req.params.id);
+    db.prepare('DELETE FROM user_achievements WHERE user_id = ?').run(req.params.id);
+    db.prepare('DELETE FROM friends WHERE user_id = ? OR friend_id = ?').run(req.params.id, req.params.id);
+    db.prepare('DELETE FROM custom_questions WHERE user_id = ?').run(req.params.id);
+    db.prepare('DELETE FROM game_history WHERE user_id = ?').run(req.params.id);
+    db.prepare('DELETE FROM users WHERE id = ?').run(req.params.id);
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
+});
+
+app.get('/api/admin/questions', authAdmin, (req, res) => {
+  const questions = db.prepare('SELECT * FROM custom_questions ORDER BY created_at DESC').all();
+  res.json(questions);
+});
+
+app.post('/api/admin/question/:id/approve', authAdmin, (req, res) => {
+  db.prepare('UPDATE custom_questions SET approved = 1 WHERE id = ?').run(req.params.id);
+  res.json({ success: true });
+});
+
+app.delete('/api/admin/question/:id', authAdmin, (req, res) => {
+  db.prepare('DELETE FROM custom_questions WHERE id = ?').run(req.params.id);
+  res.json({ success: true });
+});
+
+app.get('/api/admin/history', authAdmin, (req, res) => {
+  const history = db.prepare(`
+    SELECT gh.*, u.username FROM game_history gh
+    LEFT JOIN users u ON gh.user_id = u.id
+    ORDER BY gh.played_at DESC LIMIT 100
+  `).all();
+  res.json(history);
+});
+
 io.on('connection', (socket) => {
   socket.data.score = 0;
   socket.data.name = '';
