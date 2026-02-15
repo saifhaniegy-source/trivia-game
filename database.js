@@ -532,22 +532,26 @@ const User = {
   getInventory: async (userId) => {
     await ensureDb();
     const avatarsResult = await pool.query(`
-      SELECT DISTINCT ON (a.emoji) a.*, ua.equipped, true as owned FROM avatars a
-      JOIN user_avatars ua ON a.id = ua.avatar_id
-      WHERE ua.user_id = $1
-      UNION
-      SELECT DISTINCT ON (emoji) a.*, false as equipped, false as owned FROM avatars a
-      WHERE a.id NOT IN (SELECT avatar_id FROM user_avatars WHERE user_id = $1)
+      SELECT * FROM (
+        SELECT DISTINCT ON (a.emoji) a.*, ua.equipped, true as owned FROM avatars a
+        JOIN user_avatars ua ON a.id = ua.avatar_id
+        WHERE ua.user_id = $1
+        UNION
+        SELECT DISTINCT ON (emoji) a.*, false as equipped, false as owned FROM avatars a
+        WHERE a.id NOT IN (SELECT avatar_id FROM user_avatars WHERE user_id = $1)
+      ) sub
       ORDER BY rarity, unlock_level
     `, [userId]);
     
     const colorsResult = await pool.query(`
-      SELECT DISTINCT ON (c.gradient) c.*, uc.equipped, true as owned FROM colors c
-      JOIN user_colors uc ON c.id = uc.color_id
-      WHERE uc.user_id = $1
-      UNION
-      SELECT DISTINCT ON (gradient) c.*, false as equipped, false as owned FROM colors c
-      WHERE c.id NOT IN (SELECT color_id FROM user_colors WHERE user_id = $1)
+      SELECT * FROM (
+        SELECT DISTINCT ON (c.gradient) c.*, uc.equipped, true as owned FROM colors c
+        JOIN user_colors uc ON c.id = uc.color_id
+        WHERE uc.user_id = $1
+        UNION
+        SELECT DISTINCT ON (gradient) c.*, false as equipped, false as owned FROM colors c
+        WHERE c.id NOT IN (SELECT color_id FROM user_colors WHERE user_id = $1)
+      ) sub
       ORDER BY rarity, unlock_level
     `, [userId]);
     
@@ -557,10 +561,12 @@ const User = {
   getAchievements: async (userId) => {
     await ensureDb();
     const result = await pool.query(`
-      SELECT DISTINCT ON (a.name) a.*, ua.unlocked_at IS NOT NULL as unlocked, ua.unlocked_at
-      FROM achievements a
-      LEFT JOIN user_achievements ua ON a.id = ua.achievement_id AND ua.user_id = $1
-      ORDER BY a.id
+      SELECT * FROM (
+        SELECT DISTINCT ON (a.name) a.*, COALESCE(ua.unlocked_at IS NOT NULL, false) as unlocked, ua.unlocked_at
+        FROM achievements a
+        LEFT JOIN user_achievements ua ON a.id = ua.achievement_id AND ua.user_id = $1
+      ) sub
+      ORDER BY id
     `, [userId]);
     
     return result.rows;
