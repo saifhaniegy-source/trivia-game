@@ -34,7 +34,18 @@ const QUESTIONS_BY_THEME = {
     { question: "True or False: Water boils at 100°C at sea level.", options: ["True", "False", "", ""], answer: 0, type: "truefalse", difficulty: "easy" },
     { question: "True or False: Humans share about 50% of their DNA with bananas.", options: ["True", "False", "", ""], answer: 0, type: "truefalse", difficulty: "hard" },
     { question: "The chemical symbol 'Fe' stands for:", options: ["Fine", "Ferro", "Iron", "Fluorine"], answer: 2, type: "fillblank", difficulty: "medium" },
-    { question: "_____ is the study of fossils.", options: ["Paleontology", "Archaeology", "Geology", "Biology"], answer: 0, type: "fillblank", difficulty: "medium" }
+    { question: "_____ is the study of fossils.", options: ["Paleontology", "Archaeology", "Geology", "Biology"], answer: 0, type: "fillblank", difficulty: "medium" },
+    { question: "What is the atomic number of Carbon?", options: ["4", "6", "8", "12"], answer: 1, difficulty: "medium" },
+    { question: "Which organ filters blood in the human body?", options: ["Heart", "Liver", "Kidney", "Lungs"], answer: 2, difficulty: "easy" },
+    { question: "What is the speed of light in vacuum (km/s)?", options: ["300,000", "150,000", "500,000", "1,000,000"], answer: 0, difficulty: "hard" },
+    { question: "Which planet is known as the Morning Star?", options: ["Mars", "Venus", "Mercury", "Jupiter"], answer: 1, difficulty: "medium" },
+    { question: "What is the chemical formula for table salt?", options: ["NaCl", "KCl", "CaCl2", "MgCl2"], answer: 0, difficulty: "easy" },
+    { question: "How many hearts does an octopus have?", options: ["1", "2", "3", "4"], answer: 2, difficulty: "hard" },
+    { question: "What is the pH of pure water?", options: ["5", "7", "9", "11"], answer: 1, difficulty: "medium" },
+    { question: "Which scientist developed the theory of relativity?", options: ["Newton", "Einstein", "Bohr", "Hawking"], answer: 1, difficulty: "easy" },
+    { question: "What is the largest organ in the human body?", options: ["Liver", "Brain", "Skin", "Heart"], answer: 2, difficulty: "medium" },
+    { question: "True or False: Light travels faster than sound.", options: ["True", "False", "", ""], answer: 0, type: "truefalse", difficulty: "easy" },
+    { question: "What force keeps planets in orbit?", options: ["Electromagnetic", "Nuclear", "Gravity", "Friction"], answer: 2, difficulty: "easy" }
   ],
   "Geography": [
     { question: "What is the capital of France?", options: ["London", "Berlin", "Paris", "Madrid"], answer: 2, difficulty: "easy" },
@@ -51,7 +62,18 @@ const QUESTIONS_BY_THEME = {
     { question: "What is the tallest mountain in the world?", options: ["K2", "Kangchenjunga", "Mount Everest", "Lhotse"], answer: 2, difficulty: "easy" },
     { question: "True or False: Africa is the largest continent.", options: ["True", "False", "", ""], answer: 1, type: "truefalse", difficulty: "easy" },
     { question: "True or False: The Amazon River is the longest river.", options: ["True", "False", "", ""], answer: 1, type: "truefalse", difficulty: "medium" },
-    { question: "_____ is the capital of Egypt.", options: ["Alexandria", "Cairo", "Luxor", "Giza"], answer: 1, type: "fillblank", difficulty: "easy" }
+    { question: "_____ is the capital of Egypt.", options: ["Alexandria", "Cairo", "Luxor", "Giza"], answer: 1, type: "fillblank", difficulty: "easy" },
+    { question: "What is the capital of Germany?", options: ["Munich", "Frankfurt", "Berlin", "Hamburg"], answer: 2, difficulty: "easy" },
+    { question: "Which country is shaped like a boot?", options: ["Spain", "Italy", "Greece", "Portugal"], answer: 1, difficulty: "easy" },
+    { question: "What is the capital of India?", options: ["Mumbai", "Kolkata", "New Delhi", "Bangalore"], answer: 2, difficulty: "medium" },
+    { question: "Which ocean is the warmest?", options: ["Pacific", "Atlantic", "Indian", "Arctic"], answer: 2, difficulty: "hard" },
+    { question: "What is the largest island in the world?", options: ["Madagascar", "Borneo", "Greenland", "New Guinea"], answer: 2, difficulty: "medium" },
+    { question: "Which country has the most time zones?", options: ["USA", "Russia", "China", "France"], answer: 3, difficulty: "hard" },
+    { question: "What is the capital of South Korea?", options: ["Busan", "Seoul", "Incheon", "Daegu"], answer: 1, difficulty: "easy" },
+    { question: "Which is the only continent without an active volcano?", options: ["Africa", "Australia", "Europe", "Antarctica"], answer: 1, difficulty: "hard" },
+    { question: "What is the capital of Mexico?", options: ["Guadalajara", "Monterrey", "Mexico City", "Cancun"], answer: 2, difficulty: "medium" },
+    { question: "True or False: Russia is the largest country by area.", options: ["True", "False", "", ""], answer: 0, type: "truefalse", difficulty: "easy" },
+    { question: "What sea is located between Europe and Africa?", options: ["Caribbean", "Mediterranean", "Red Sea", "Black Sea"], answer: 1, difficulty: "medium" }
   ],
   "History": [
     { question: "What year did World War II end?", options: ["1943", "1944", "1945", "1946"], answer: 2, difficulty: "easy" },
@@ -66,7 +88,18 @@ const QUESTIONS_BY_THEME = {
     { question: "Who was the first man on the moon?", options: ["Buzz Aldrin", "Neil Armstrong", "Michael Collins", "Yuri Gagarin"], answer: 1, difficulty: "easy" },
     { question: "What empire was ruled by Julius Caesar?", options: ["Greek", "Persian", "Roman", "Ottoman"], answer: 2, difficulty: "easy" },
     { question: "True or False: The Cold War ended in 1989.", options: ["True", "False", "", ""], answer: 1, type: "truefalse", difficulty: "hard" },
-    { question: "_____ built the Taj Mahal.", options: ["Akbar", "Shah Jahan", "Humayun", "Aurangzeb"], answer: 1, type: "fillblank", difficulty: "medium" }
+    { question: "_____ built the Taj Mahal.", options: ["Akbar", "Shah Jahan", "Humayun", "Aurangzeb"], answer: 1, type: "fillblank", difficulty: "medium" },
+    { question: "What year did the French Revolution begin?", options: ["1776", "1789", "1799", "1804"], answer: 1, difficulty: "medium" },
+    { question: "Who was the first female Prime Minister of the UK?", options: ["Theresa May", "Margaret Thatcher", "Queen Victoria", "Elizabeth I"], answer: 1, difficulty: "easy" },
+    { question: "What ancient civilization built Machu Picchu?", options: ["Aztec", "Maya", "Inca", "Olmec"], answer: 2, difficulty: "medium" },
+    { question: "Who was known as the 'Iron Lady'?", options: ["Angela Merkel", "Margaret Thatcher", "Indira Gandhi", "Golda Meir"], answer: 1, difficulty: "medium" },
+    { question: "What year did the American Civil War end?", options: ["1863", "1864", "1865", "1866"], answer: 2, difficulty: "medium" },
+    { question: "Which pharaoh's tomb was discovered intact in 1922?", options: ["Ramesses II", "Tutankhamun", "Cleopatra", "Khufu"], answer: 1, difficulty: "medium" },
+    { question: "What was the name of the first satellite in space?", options: ["Apollo", "Sputnik", "Explorer", "Voyager"], answer: 1, difficulty: "medium" },
+    { question: "Who wrote the Declaration of Independence?", options: ["George Washington", "Benjamin Franklin", "Thomas Jefferson", "John Adams"], answer: 2, difficulty: "hard" },
+    { question: "What year did the Soviet Union collapse?", options: ["1989", "1990", "1991", "1992"], answer: 2, difficulty: "medium" },
+    { question: "True or False: The Great Wall of China is visible from space.", options: ["True", "False", "", ""], answer: 1, type: "truefalse", difficulty: "hard" },
+    { question: "Who was the longest reigning British monarch?", options: ["Victoria", "Elizabeth II", "George III", "Henry VIII"], answer: 1, difficulty: "medium" }
   ],
   "Space": [
     { question: "Which planet is known as the Red Planet?", options: ["Venus", "Mars", "Jupiter", "Saturn"], answer: 1, difficulty: "easy" },
@@ -80,7 +113,18 @@ const QUESTIONS_BY_THEME = {
     { question: "What is the largest moon in our solar system?", options: ["Titan", "Ganymede", "Callisto", "Europa"], answer: 1, difficulty: "hard" },
     { question: "What is the Great Red Spot on Jupiter?", options: ["Volcano", "Storm", "Crater", "Mountain"], answer: 1, difficulty: "medium" },
     { question: "True or False: Venus is the hottest planet.", options: ["True", "False", "", ""], answer: 0, type: "truefalse", difficulty: "medium" },
-    { question: "_____ is Earth's natural satellite.", options: ["The Moon", "Mars", "Venus", "The Sun"], answer: 0, type: "fillblank", difficulty: "easy" }
+    { question: "_____ is Earth's natural satellite.", options: ["The Moon", "Mars", "Venus", "The Sun"], answer: 0, type: "fillblank", difficulty: "easy" },
+    { question: "What is the smallest planet in our solar system?", options: ["Mercury", "Mars", "Venus", "Pluto"], answer: 0, difficulty: "medium" },
+    { question: "How long does Earth take to orbit the Sun?", options: ["365 days", "30 days", "24 hours", "7 days"], answer: 0, difficulty: "easy" },
+    { question: "What is the Sun made of?", options: ["Rock", "Liquid lava", "Gas and plasma", "Solid metal"], answer: 2, difficulty: "medium" },
+    { question: "Which planet spins on its side?", options: ["Neptune", "Uranus", "Saturn", "Jupiter"], answer: 1, difficulty: "hard" },
+    { question: "What is a shooting star?", options: ["A star dying", "A meteor", "A comet", "A planet"], answer: 1, difficulty: "medium" },
+    { question: "How old is the universe (approximately)?", options: ["10 billion years", "13.8 billion years", "20 billion years", "5 billion years"], answer: 1, difficulty: "hard" },
+    { question: "What is the name of the first black hole photographed?", options: ["Cygnus X-1", "Sagittarius A*", "M87*", "Andromeda"], answer: 2, difficulty: "hard" },
+    { question: "Which planet has a day longer than its year?", options: ["Mercury", "Venus", "Mars", "Jupiter"], answer: 1, difficulty: "hard" },
+    { question: "What causes the Northern Lights?", options: ["Moonlight", "Solar particles", "Volcanic activity", "Ocean currents"], answer: 1, difficulty: "medium" },
+    { question: "True or False: The Sun is a star.", options: ["True", "False", "", ""], answer: 0, type: "truefalse", difficulty: "easy" },
+    { question: "What is the second planet from the Sun?", options: ["Mercury", "Venus", "Earth", "Mars"], answer: 1, difficulty: "easy" }
   ],
   "Entertainment": [
     { question: "How many strings does a guitar have?", options: ["4", "5", "6", "7"], answer: 2, difficulty: "easy" },
@@ -94,7 +138,18 @@ const QUESTIONS_BY_THEME = {
     { question: "What is the best-selling video game of all time?", options: ["Tetris", "Minecraft", "GTA V", "Wii Sports"], answer: 1, difficulty: "medium" },
     { question: "What band was Freddie Mercury in?", options: ["The Beatles", "Led Zeppelin", "Queen", "Pink Floyd"], answer: 2, difficulty: "easy" },
     { question: "True or False: There are 8 Harry Potter movies.", options: ["True", "False", "", ""], answer: 0, type: "truefalse", difficulty: "easy" },
-    { question: "_____ produced Stranger Things.", options: ["Netflix", "Amazon", "Hulu", "Disney"], answer: 0, type: "fillblank", difficulty: "easy" }
+    { question: "_____ produced Stranger Things.", options: ["Netflix", "Amazon", "Hulu", "Disney"], answer: 0, type: "fillblank", difficulty: "easy" },
+    { question: "Who directed 'Jaws'?", options: ["Spielberg", "Scorsese", "Coppola", "Kubrick"], answer: 0, difficulty: "medium" },
+    { question: "What is the name of Harry Potter's owl?", options: ["Errol", "Hedwig", "Pigwidgeon", "Scabbers"], answer: 1, difficulty: "easy" },
+    { question: "Which TV show features dragons and the Iron Throne?", options: ["The Witcher", "Game of Thrones", "Vikings", "Lord of the Rings"], answer: 1, difficulty: "easy" },
+    { question: "Who plays Iron Man in the MCU?", options: ["Chris Evans", "Robert Downey Jr.", "Chris Hemsworth", "Mark Ruffalo"], answer: 1, difficulty: "easy" },
+    { question: "What animated movie features a clownfish named Nemo?", options: ["Shark Tale", "Finding Nemo", "The Little Mermaid", "Moana"], answer: 1, difficulty: "easy" },
+    { question: "How many seasons did 'Friends' have?", options: ["8", "9", "10", "11"], answer: 2, difficulty: "medium" },
+    { question: "Who wrote 'The Hobbit'?", options: ["J.K. Rowling", "J.R.R. Tolkien", "C.S. Lewis", "George R.R. Martin"], answer: 1, difficulty: "medium" },
+    { question: "What is the highest-grossing film of all time?", options: ["Avengers: Endgame", "Avatar", "Titanic", "Star Wars: The Force Awakens"], answer: 1, difficulty: "medium" },
+    { question: "Which video game features a plumber named Mario?", options: ["Zelda", "Super Mario Bros", "Sonic", "Donkey Kong"], answer: 1, difficulty: "easy" },
+    { question: "True or False: 'Frozen' features the song 'Let It Go'.", options: ["True", "False", "", ""], answer: 0, type: "truefalse", difficulty: "easy" },
+    { question: "What year was the first Star Wars movie released?", options: ["1975", "1977", "1979", "1981"], answer: 1, difficulty: "hard" }
   ],
   "Sports": [
     { question: "How many players are on a soccer team?", options: ["9", "10", "11", "12"], answer: 2, difficulty: "easy" },
@@ -106,7 +161,18 @@ const QUESTIONS_BY_THEME = {
     { question: "What sport uses a shuttlecock?", options: ["Tennis", "Squash", "Badminton", "Table Tennis"], answer: 2, difficulty: "easy" },
     { question: "What country is famous for sumo wrestling?", options: ["China", "Korea", "Japan", "Thailand"], answer: 2, difficulty: "easy" },
     { question: "True or False: Basketball has 5 players per team on court.", options: ["True", "False", "", ""], answer: 0, type: "truefalse", difficulty: "easy" },
-    { question: "_____ hosts Wimbledon.", options: ["London", "Paris", "New York", "Melbourne"], answer: 0, type: "fillblank", difficulty: "medium" }
+    { question: "_____ hosts Wimbledon.", options: ["London", "Paris", "New York", "Melbourne"], answer: 0, type: "fillblank", difficulty: "medium" },
+    { question: "What sport is played at the Masters tournament?", options: ["Tennis", "Golf", "Cricket", "Polo"], answer: 1, difficulty: "medium" },
+    { question: "How many players are on a basketball team on court?", options: ["4", "5", "6", "7"], answer: 1, difficulty: "easy" },
+    { question: "What country won the first FIFA World Cup?", options: ["Brazil", "Uruguay", "Argentina", "Italy"], answer: 1, difficulty: "hard" },
+    { question: "In which sport would you perform a slam dunk?", options: ["Volleyball", "Basketball", "Tennis", "Badminton"], answer: 1, difficulty: "easy" },
+    { question: "How often are the Summer Olympics held?", options: ["Every 2 years", "Every 3 years", "Every 4 years", "Every 5 years"], answer: 2, difficulty: "easy" },
+    { question: "What is the national sport of Canada?", options: ["Hockey", "Lacrosse", "Curling", "Football"], answer: 1, difficulty: "hard" },
+    { question: "Who has won the most NBA championships?", options: ["Lakers", "Celtics", "Bulls", "Warriors"], answer: 1, difficulty: "medium" },
+    { question: "What sport uses a puck?", options: ["Field Hockey", "Ice Hockey", "Lacrosse", "Curling"], answer: 1, difficulty: "easy" },
+    { question: "How many holes are played in a standard round of golf?", options: ["9", "12", "18", "21"], answer: 2, difficulty: "easy" },
+    { question: "True or False: A soccer game has two 45-minute halves.", options: ["True", "False", "", ""], answer: 0, type: "truefalse", difficulty: "medium" },
+    { question: "What country hosted the 2016 Summer Olympics?", options: ["China", "UK", "Brazil", "Japan"], answer: 2, difficulty: "medium" }
   ],
   "Food": [
     { question: "Which country invented pizza?", options: ["USA", "Italy", "France", "Greece"], answer: 1, difficulty: "easy" },
@@ -115,7 +181,18 @@ const QUESTIONS_BY_THEME = {
     { question: "What fruit is used to make wine?", options: ["Apple", "Grape", "Pear", "Peach"], answer: 1, difficulty: "easy" },
     { question: "What is the main ingredient in chocolate?", options: ["Coffee beans", "Cocoa beans", "Vanilla beans", "Carob beans"], answer: 1, difficulty: "easy" },
     { question: "True or False: French fries originated in France.", options: ["True", "False", "", ""], answer: 1, type: "truefalse", difficulty: "medium" },
-    { question: "_____ is the main ingredient in tofu.", options: ["Rice", "Soybeans", "Wheat", "Corn"], answer: 1, type: "fillblank", difficulty: "medium" }
+    { question: "_____ is the main ingredient in tofu.", options: ["Rice", "Soybeans", "Wheat", "Corn"], answer: 1, type: "fillblank", difficulty: "medium" },
+    { question: "What is the most popular spice in the world?", options: ["Salt", "Pepper", "Cumin", "Paprika"], answer: 1, difficulty: "medium" },
+    { question: "Which country is known for croissants?", options: ["Italy", "France", "Austria", "Germany"], answer: 1, difficulty: "easy" },
+    { question: "What vegetable is used to make pickles?", options: ["Carrot", "Cucumber", "Cabbage", "Onion"], answer: 1, difficulty: "easy" },
+    { question: "What is the main ingredient in hummus?", options: ["Lentils", "Chickpeas", "Black beans", "Kidney beans"], answer: 1, difficulty: "medium" },
+    { question: "Which country is famous for paella?", options: ["Mexico", "Italy", "Spain", "Portugal"], answer: 2, difficulty: "medium" },
+    { question: "What type of food is a bagel?", options: ["Pastry", "Bread", "Cookie", "Cracker"], answer: 1, difficulty: "easy" },
+    { question: "True or False: Tomatoes are technically fruits.", options: ["True", "False", "", ""], answer: 0, type: "truefalse", difficulty: "medium" },
+    { question: "What is the most expensive spice by weight?", options: ["Vanilla", "Saffron", "Cardamom", "Cinnamon"], answer: 1, difficulty: "hard" },
+    { question: "Which fruit is known for having its seeds on the outside?", options: ["Blueberry", "Raspberry", "Strawberry", "Blackberry"], answer: 2, difficulty: "easy" },
+    { question: "What is the main ingredient in pesto sauce?", options: ["Parsley", "Basil", "Cilantro", "Mint"], answer: 1, difficulty: "medium" },
+    { question: "Which country invented ice cream?", options: ["USA", "Italy", "China", "France"], answer: 2, difficulty: "hard" }
   ],
   "Technology": [
     { question: "Who founded Apple?", options: ["Bill Gates", "Steve Jobs", "Mark Zuckerberg", "Jeff Bezos"], answer: 1, difficulty: "easy" },
@@ -125,7 +202,58 @@ const QUESTIONS_BY_THEME = {
     { question: "What does AI stand for?", options: ["Automated Intelligence", "Artificial Intelligence", "Advanced Intelligence", "Automated Interface"], answer: 1, difficulty: "easy" },
     { question: "What company created the Xbox?", options: ["Sony", "Nintendo", "Microsoft", "Sega"], answer: 2, difficulty: "easy" },
     { question: "True or False: Python was named after a snake.", options: ["True", "False", "", ""], answer: 1, type: "truefalse", difficulty: "hard" },
-    { question: "_____ owns Instagram.", options: ["Google", "Twitter", "Meta", "Microsoft"], answer: 2, type: "fillblank", difficulty: "easy" }
+    { question: "_____ owns Instagram.", options: ["Google", "Twitter", "Meta", "Microsoft"], answer: 2, type: "fillblank", difficulty: "easy" },
+    { question: "What does RAM stand for?", options: ["Read Access Memory", "Random Access Memory", "Run Access Memory", "Rapid Access Memory"], answer: 1, difficulty: "medium" },
+    { question: "Who is the co-founder of Microsoft?", options: ["Steve Jobs", "Bill Gates", "Mark Zuckerberg", "Larry Page"], answer: 1, difficulty: "easy" },
+    { question: "What programming language is known for its coffee cup logo?", options: ["Python", "Java", "JavaScript", "C++"], answer: 1, difficulty: "medium" },
+    { question: "What year was the first iPhone released?", options: ["2005", "2006", "2007", "2008"], answer: 2, difficulty: "medium" },
+    { question: "What does HTML stand for?", options: ["Hyper Text Markup Language", "High Tech Modern Language", "Hyper Transfer Markup Language", "Home Tool Markup Language"], answer: 0, difficulty: "medium" },
+    { question: "Which company created the PlayStation?", options: ["Microsoft", "Nintendo", "Sony", "Sega"], answer: 2, difficulty: "easy" },
+    { question: "What is the most popular social media platform?", options: ["Twitter", "Instagram", "Facebook", "TikTok"], answer: 2, difficulty: "easy" },
+    { question: "What does URL stand for?", options: ["Universal Resource Locator", "Uniform Resource Locator", "Unified Resource Link", "Universal Reference Link"], answer: 1, difficulty: "medium" },
+    { question: "True or False: JavaScript is the same as Java.", options: ["True", "False", "", ""], answer: 1, type: "truefalse", difficulty: "medium" },
+    { question: "What company owns YouTube?", options: ["Meta", "Amazon", "Google", "Microsoft"], answer: 2, difficulty: "easy" },
+    { question: "What is the name of Tesla's AI assistant in cars?", options: ["Siri", "Alexa", "Autopilot", "Cortana"], answer: 2, difficulty: "medium" }
+  ],
+  "Music": [
+    { question: "Who is known as the 'King of Pop'?", options: ["Elvis Presley", "Michael Jackson", "Prince", "Freddie Mercury"], answer: 1, difficulty: "easy" },
+    { question: "How many members were in The Beatles?", options: ["3", "4", "5", "6"], answer: 1, difficulty: "easy" },
+    { question: "What instrument has 88 keys?", options: ["Guitar", "Violin", "Piano", "Accordion"], answer: 2, difficulty: "easy" },
+    { question: "Which band performed 'Bohemian Rhapsody'?", options: ["The Beatles", "Led Zeppelin", "Queen", "Pink Floyd"], answer: 2, difficulty: "easy" },
+    { question: "What genre did Elvis Presley popularize?", options: ["Jazz", "Rock and Roll", "Blues", "Country"], answer: 1, difficulty: "easy" },
+    { question: "How many strings does a violin have?", options: ["3", "4", "5", "6"], answer: 1, difficulty: "medium" },
+    { question: "Who sang 'Like a Rolling Stone'?", options: ["Bob Dylan", "John Lennon", "Bruce Springsteen", "David Bowie"], answer: 0, difficulty: "medium" },
+    { question: "What is the best-selling album of all time?", options: ["Thriller", "Back in Black", "The Dark Side of the Moon", "Rumours"], answer: 0, difficulty: "medium" },
+    { question: "True or False: Madonna is known as the 'Queen of Pop'.", options: ["True", "False", "", ""], answer: 0, type: "truefalse", difficulty: "easy" },
+    { question: "_____ wrote 'Imagine'.", options: ["Paul McCartney", "John Lennon", "George Harrison", "Ringo Starr"], answer: 1, type: "fillblank", difficulty: "easy" },
+    { question: "What country did the band ABBA come from?", options: ["Norway", "Denmark", "Sweden", "Finland"], answer: 2, difficulty: "medium" },
+    { question: "Who is known as the 'Guitar God'?", options: ["Eric Clapton", "Jimi Hendrix", "Jimmy Page", "Carlos Santana"], answer: 1, difficulty: "medium" },
+    { question: "What year was Spotify founded?", options: ["2004", "2006", "2008", "2010"], answer: 1, difficulty: "hard" },
+    { question: "Which artist has the most Grammy awards?", options: ["Michael Jackson", "Beyoncé", "Taylor Swift", "Stevie Wonder"], answer: 1, difficulty: "hard" },
+    { question: "What is the name of Taylor Swift's debut single?", options: ["Love Story", "Tim McGraw", "Teardrops on My Guitar", "Our Song"], answer: 1, difficulty: "hard" },
+    { question: "True or False: Beethoven was deaf when he composed some of his works.", options: ["True", "False", "", ""], answer: 0, type: "truefalse", difficulty: "medium" },
+    { question: "How many symphonies did Beethoven compose?", options: ["7", "8", "9", "10"], answer: 2, difficulty: "hard" }
+  ],
+  "Nature": [
+    { question: "What is the largest land animal?", options: ["Rhino", "Hippo", "African Elephant", "Giraffe"], answer: 2, difficulty: "easy" },
+    { question: "How many legs does a spider have?", options: ["6", "8", "10", "12"], answer: 1, difficulty: "easy" },
+    { question: "What is the fastest bird in the world?", options: ["Eagle", "Falcon", "Hawk", "Condor"], answer: 1, difficulty: "medium" },
+    { question: "Which animal is known as the 'King of the Jungle'?", options: ["Tiger", "Lion", "Leopard", "Cheetah"], answer: 1, difficulty: "easy" },
+    { question: "What is the largest species of shark?", options: ["Great White", "Tiger Shark", "Whale Shark", "Hammerhead"], answer: 2, difficulty: "medium" },
+    { question: "How long can a tortoise live?", options: ["50 years", "100 years", "150 years", "200+ years"], answer: 3, difficulty: "medium" },
+    { question: "What is the tallest tree species?", options: ["Oak", "Pine", "Redwood", "Maple"], answer: 2, difficulty: "medium" },
+    { question: "Which animal can change its color?", options: ["Gecko", "Chameleon", "Iguana", "Salamander"], answer: 1, difficulty: "easy" },
+    { question: "True or False: Dolphins are mammals.", options: ["True", "False", "", ""], answer: 0, type: "truefalse", difficulty: "easy" },
+    { question: "_____ is the process by which plants make food.", options: ["Respiration", "Photosynthesis", "Digestion", "Fermentation"], answer: 1, type: "fillblank", difficulty: "easy" },
+    { question: "What is the smallest bird in the world?", options: ["Sparrow", "Hummingbird", "Finch", "Wren"], answer: 1, difficulty: "medium" },
+    { question: "Which continent has the most biodiversity?", options: ["Africa", "Asia", "South America", "North America"], answer: 2, difficulty: "medium" },
+    { question: "What is the largest rainforest in the world?", options: ["Congo", "Daintree", "Amazon", "Southeast Asian"], answer: 2, difficulty: "easy" },
+    { question: "How many hearts does an earthworm have?", options: ["1", "3", "5", "9"], answer: 2, difficulty: "hard" },
+    { question: "Which animal sleeps the most (up to 22 hours/day)?", options: ["Sloth", "Koala", "Cat", "Bat"], answer: 1, difficulty: "medium" },
+    { question: "What is the deepest part of the ocean called?", options: ["Mariana Trench", "Pacific Depth", "Ocean Floor", "Abyssal Zone"], answer: 0, difficulty: "medium" },
+    { question: "True or False: A group of lions is called a pride.", options: ["True", "False", "", ""], answer: 0, type: "truefalse", difficulty: "easy" },
+    { question: "What type of animal is a Komodo dragon?", options: ["Mammal", "Amphibian", "Reptile", "Fish"], answer: 2, difficulty: "medium" },
+    { question: "Which bird cannot fly?", options: ["Eagle", "Penguin", "Parrot", "Owl"], answer: 1, difficulty: "easy" }
   ]
 };
 
@@ -247,7 +375,7 @@ function createReverseQuestion(question) {
 function getRoomPlayers(roomCode) {
   const room = rooms.get(roomCode);
   if (!room) return [];
-  return Array.from(io.sockets.adapter.rooms.get(roomCode) || [])
+  const players = Array.from(io.sockets.adapter.rooms.get(roomCode) || [])
     .map(socketId => {
       const socket = io.sockets.sockets.get(socketId);
       return socket ? { 
@@ -266,10 +394,19 @@ function getRoomPlayers(roomCode) {
         frozenUntil: socket.data.frozenUntil,
         streak: socket.data.streak,
         userId: socket.data.userId,
-        team: socket.data.team
+        team: socket.data.team,
+        correctThisGame: socket.data.correctThisGame,
+        bestStreakThisGame: socket.data.bestStreakThisGame,
+        isBot: false
       } : null;
     })
     .filter(Boolean);
+  
+  if (room.bots) {
+    players.push(...room.bots.map(b => ({ ...b, isBot: true })));
+  }
+  
+  return players;
 }
 
 function clearTimer(roomCode) {
@@ -513,7 +650,7 @@ io.on('connection', (socket) => {
     connectedUsers.set(userData.id, socket.id);
   });
 
-  socket.on('create-room', ({ name, theme, gameMode, avatar, color, settings }) => {
+  socket.on('create-room', ({ name, theme, gameMode, avatar, color, settings, isPractice }) => {
     const roomCode = generateCode();
     socket.data.name = name;
     socket.data.score = 0;
@@ -540,9 +677,36 @@ io.on('connection', (socket) => {
     
     const questions = getRandomQuestions(theme, questionCount, difficulty);
     
+    const bots = [];
+    if (isPractice) {
+      const botNames = ['Bot Alex', 'Bot Sam', 'Bot Jordan', 'Bot Taylor', 'Bot Morgan'];
+      for (let i = 0; i < 3; i++) {
+        bots.push({
+          id: `bot-${roomCode}-${i}`,
+          name: botNames[i],
+          score: 0,
+          mascot: MASCOTS[Math.floor(Math.random() * MASCOTS.length)],
+          color: COLORS[Math.floor(Math.random() * COLORS.length)],
+          answered: false,
+          superpowers: [],
+          shieldActive: false,
+          hasSecondChance: false,
+          lives: 3,
+          bet: 0,
+          frozen: false,
+          frozenUntil: 0,
+          streak: 0,
+          correctThisGame: 0,
+          userId: null,
+          team: null,
+          isBot: true
+        });
+      }
+    }
+    
     rooms.set(roomCode, {
       host: socket.id,
-      players: [socket.id],
+      players: [socket.id, ...bots.map(b => b.id)],
       questions: questions,
       currentQuestion: 0,
       gameStarted: false,
@@ -558,7 +722,9 @@ io.on('connection', (socket) => {
         powerupsEnabled,
         pointMultiplier
       },
-      teams: { red: [], blue: [] }
+      teams: { red: [], blue: [] },
+      isPractice: isPractice || false,
+      bots: bots
     });
     
     socket.join(roomCode);
@@ -572,7 +738,8 @@ io.on('connection', (socket) => {
       themes: THEMES,
       gameModes: GAME_MODES,
       gameMode: gameMode,
-      settings: rooms.get(roomCode).settings
+      settings: rooms.get(roomCode).settings,
+      isPractice: isPractice || false
     });
     io.to(roomCode).emit('players-update', { 
       players: getRoomPlayers(roomCode), 
@@ -645,8 +812,9 @@ io.on('connection', (socket) => {
     if (!room || room.host !== socket.id) return;
     
     const playerCount = getRoomPlayers(roomCode).length;
-    if (playerCount < MIN_PLAYERS) {
-      socket.emit('error', 'Need at least ' + MIN_PLAYERS + ' players to start');
+    const minNeeded = room.isPractice ? 1 : MIN_PLAYERS;
+    if (playerCount < minNeeded) {
+      socket.emit('error', 'Need at least ' + minNeeded + ' players to start');
       return;
     }
     
@@ -657,10 +825,15 @@ io.on('connection', (socket) => {
       const players = getRoomPlayers(roomCode);
       const shuffled = shuffleArray(players);
       shuffled.forEach((p, i) => {
-        const s = io.sockets.sockets.get(p.id);
-        if (s) {
-          s.data.team = i % 2 === 0 ? 'red' : 'blue';
-          room.teams[s.data.team].push(p.id);
+        if (!p.isBot) {
+          const s = io.sockets.sockets.get(p.id);
+          if (s) {
+            s.data.team = i % 2 === 0 ? 'red' : 'blue';
+            room.teams[s.data.team].push(p.id);
+          }
+        } else {
+          p.team = i % 2 === 0 ? 'red' : 'blue';
+          room.teams[p.team].push(p.id);
         }
       });
       io.to(roomCode).emit('teams-assigned', { teams: room.teams });
@@ -798,6 +971,67 @@ io.on('connection', (socket) => {
       gameMode: room.gameMode,
       teams: room.teams
     });
+    
+    if (room.bots && room.bots.length > 0) {
+      room.bots.forEach(bot => {
+        bot.answered = false;
+        const answerDelay = 2000 + Math.random() * 6000;
+        setTimeout(() => {
+          if (!room.gameStarted) return;
+          const currentQ = room.questions[room.currentQuestion];
+          if (!currentQ) return;
+          
+          const difficulty = currentQ.difficulty || 'medium';
+          let accuracy;
+          switch (difficulty) {
+            case 'easy': accuracy = 0.70; break;
+            case 'medium': accuracy = 0.50; break;
+            case 'hard': accuracy = 0.30; break;
+            default: accuracy = 0.50;
+          }
+          
+          let botAnswer;
+          if (Math.random() < accuracy) {
+            botAnswer = currentQ.answer;
+          } else {
+            const wrongAnswers = [0, 1, 2, 3].filter(i => i !== currentQ.answer);
+            botAnswer = wrongAnswers[Math.floor(Math.random() * wrongAnswers.length)];
+          }
+          
+          bot.answered = true;
+          const timeTaken = (Date.now() - room.questionStartTime) / 1000;
+          const speedBonus = Math.max(0, Math.floor((room.settings.timeLimit - timeTaken) * SPEED_BONUS_MULTIPLIER));
+          
+          room.answers.set(bot.id, {
+            answerIndex: botAnswer,
+            timeTaken,
+            speedBonus,
+            pointsMultiplier: 1,
+            shieldActive: false,
+            bet: 0
+          });
+          
+          io.to(roomCode).emit('players-update', {
+            players: getRoomPlayers(roomCode),
+            minPlayers: MIN_PLAYERS,
+            maxPlayers: MAX_PLAYERS,
+            gameMode: room.gameMode,
+            teams: room.teams
+          });
+          
+          const activePlayers = getRoomPlayers(roomCode).filter(p => {
+            if (room.gameMode === "Survival" && p.lives <= 0) return false;
+            if (p.frozen) return false;
+            return true;
+          });
+          
+          if (room.answers.size >= activePlayers.length) {
+            clearTimer(roomCode);
+            setTimeout(() => revealAnswer(roomCode), 500);
+          }
+        }, answerDelay);
+      });
+    }
     
     const timer = setTimeout(() => {
       revealAnswer(roomCode);
@@ -1011,61 +1245,65 @@ io.on('connection', (socket) => {
     
     room.answers.forEach((data, socketId) => {
       const playerSocket = io.sockets.sockets.get(socketId);
-      if (playerSocket) {
+      const isBot = socketId.startsWith('bot-');
+      const bot = isBot ? room.bots?.find(b => b.id === socketId) : null;
+      
+      if (playerSocket || bot) {
         let correct = data.answerIndex === question.answer;
         let points = 0;
+        const targetData = playerSocket ? playerSocket.data : bot;
         
         if (room.gameMode === "Betting") {
           if (correct) {
             points = data.bet + Math.floor((MAX_POINTS + data.speedBonus) * difficultyMult);
-            playerSocket.data.score += points;
+            targetData.score += points;
           } else {
-            playerSocket.data.score -= data.bet;
+            targetData.score -= data.bet;
             points = -data.bet;
           }
         } else if (room.gameMode === "Survival") {
           if (!correct && !data.shieldActive) {
-            playerSocket.data.lives--;
-            if (playerSocket.data.lives < 0) playerSocket.data.lives = 0;
+            targetData.lives--;
+            if (targetData.lives < 0) targetData.lives = 0;
           } else if (correct) {
             points = Math.floor((MAX_POINTS + data.speedBonus) * data.pointsMultiplier * difficultyMult);
             
-            const streakBonus = Math.min(playerSocket.data.streak * STREAK_BONUS, MAX_STREAK_BONUS);
+            const streakBonus = Math.min(targetData.streak * STREAK_BONUS, MAX_STREAK_BONUS);
             points += streakBonus;
             
-            playerSocket.data.score += points;
-            playerSocket.data.streak++;
-            playerSocket.data.correctThisGame++;
+            targetData.score += points;
+            targetData.streak++;
+            targetData.correctThisGame++;
             
-            if (playerSocket.data.streak > playerSocket.data.bestStreakThisGame) {
-              playerSocket.data.bestStreakThisGame = playerSocket.data.streak;
+            if (targetData.streak > (targetData.bestStreakThisGame || 0)) {
+              targetData.bestStreakThisGame = targetData.streak;
             }
             
-            if (room.settings.powerupsEnabled && Math.random() < 0.35) {
+            if (room.settings.powerupsEnabled && playerSocket && Math.random() < 0.35) {
               const newPower = getRandomSuperpower();
               playerSocket.data.superpowers.push(newPower);
               playerSocket.emit('superpower-earned', newPower);
             }
           } else if (!correct && data.shieldActive) {
-            playerSocket.data.shieldActive = false;
-            playerSocket.data.streak = 0;
+            targetData.shieldActive = false;
+            targetData.streak = 0;
           }
           if (!correct && !data.shieldActive) {
-            playerSocket.data.streak = 0;
+            targetData.streak = 0;
           }
         } else if (room.gameMode === "Blitz") {
           if (!correct && !data.shieldActive) {
-            playerSocket.data.lives = 0;
-            playerSocket.data.streak = 0;
+            targetData.lives = 0;
+            targetData.streak = 0;
           } else if (correct) {
             points = Math.floor((MAX_POINTS + data.speedBonus) * data.pointsMultiplier * difficultyMult);
-            const streakBonus = Math.min(playerSocket.data.streak * STREAK_BONUS, MAX_STREAK_BONUS);
+            const streakBonus = Math.min(targetData.streak * STREAK_BONUS, MAX_STREAK_BONUS);
             points += streakBonus;
-            playerSocket.data.score += points;
-            playerSocket.data.streak++;
-            playerSocket.data.correctThisGame++;
+            targetData.score += points;
+            targetData.streak++;
+            targetData.correctThisGame++;
             
-            if (room.settings.powerupsEnabled && Math.random() < 0.35) {
+            if (room.settings.powerupsEnabled && playerSocket && Math.random() < 0.35) {
               const newPower = getRandomSuperpower();
               playerSocket.data.superpowers.push(newPower);
               playerSocket.emit('superpower-earned', newPower);
@@ -1075,37 +1313,37 @@ io.on('connection', (socket) => {
           if (!correct && data.shieldActive) {
             correct = true;
             points = 50;
-            playerSocket.data.shieldActive = false;
+            targetData.shieldActive = false;
           }
           
           if (correct) {
             points = Math.floor((MAX_POINTS + data.speedBonus) * data.pointsMultiplier * difficultyMult);
-            const streakBonus = Math.min(playerSocket.data.streak * STREAK_BONUS, MAX_STREAK_BONUS);
+            const streakBonus = Math.min(targetData.streak * STREAK_BONUS, MAX_STREAK_BONUS);
             points += streakBonus;
-            playerSocket.data.score += points;
-            playerSocket.data.streak++;
-            playerSocket.data.correctThisGame++;
+            targetData.score += points;
+            targetData.streak++;
+            targetData.correctThisGame++;
             
-            if (room.settings.powerupsEnabled && Math.random() < 0.35) {
+            if (room.settings.powerupsEnabled && playerSocket && Math.random() < 0.35) {
               const newPower = getRandomSuperpower();
               playerSocket.data.superpowers.push(newPower);
               playerSocket.emit('superpower-earned', newPower);
             }
           } else {
-            playerSocket.data.streak = 0;
+            targetData.streak = 0;
           }
         }
         
         results.push({
-          name: playerSocket.data.name,
-          mascot: playerSocket.data.mascot,
+          name: targetData.name,
+          mascot: targetData.mascot,
           answer: data.answerIndex,
           correct,
           points: correct ? points : (room.gameMode === "Betting" ? -data.bet : 0),
           time: data.timeTaken.toFixed(1),
           speedBonus: data.speedBonus,
-          lives: playerSocket.data.lives,
-          streak: playerSocket.data.streak
+          lives: targetData.lives,
+          streak: targetData.streak
         });
       }
     });
@@ -1192,43 +1430,45 @@ io.on('connection', (socket) => {
       playersCount: players.length
     };
     
-    for (let rank = 0; rank < players.length; rank++) {
-      const p = players[rank];
-      if (p.userId) {
-        const xpGained = Math.floor((p.score / 10) + (rank === 0 ? 100 : rank === 1 ? 50 : rank === 2 ? 25 : 10));
-        const coinsGained = Math.floor(p.score / 20) + (rank === 0 ? 20 : 10);
-        
-        await User.addXp(p.userId, xpGained);
-        await User.addCoins(p.userId, coinsGained);
-        await User.updateStats(p.userId, {
-          gamesPlayed: 1,
-          gamesWon: rank === 0 ? 1 : 0,
-          correctAnswers: p.correctThisGame || 0,
-          questionsAnswered: room.questions.length,
-          bestStreak: p.bestStreakThisGame || 0
-        });
-        
-        await User.checkAchievements(p.userId, {
-          gamesPlayed: 1,
-          gamesWon: rank === 0 ? 1 : 0,
-          streak: p.bestStreakThisGame || 0
-        });
-        
-        await GameHistory.record(p.userId, {
-          roomCode,
-          gameMode: room.gameMode,
-          theme: room.theme,
-          score: p.score,
-          correctAnswers: p.correctThisGame || 0,
-          totalQuestions: room.questions.length,
-          rank: rank + 1,
-          playersCount: players.length,
-          xpEarned: xpGained,
-          coinsEarned: coinsGained
-        });
-        
-        p.xpGained = xpGained;
-        p.coinsGained = coinsGained;
+    if (!room.isPractice) {
+      for (let rank = 0; rank < players.length; rank++) {
+        const p = players[rank];
+        if (p.userId && !p.isBot) {
+          const xpGained = Math.floor((p.score / 10) + (rank === 0 ? 100 : rank === 1 ? 50 : rank === 2 ? 25 : 10));
+          const coinsGained = Math.floor(p.score / 20) + (rank === 0 ? 20 : 10);
+          
+          await User.addXp(p.userId, xpGained);
+          await User.addCoins(p.userId, coinsGained);
+          await User.updateStats(p.userId, {
+            gamesPlayed: 1,
+            gamesWon: rank === 0 ? 1 : 0,
+            correctAnswers: p.correctThisGame || 0,
+            questionsAnswered: room.questions.length,
+            bestStreak: p.bestStreakThisGame || 0
+          });
+          
+          await User.checkAchievements(p.userId, {
+            gamesPlayed: 1,
+            gamesWon: rank === 0 ? 1 : 0,
+            streak: p.bestStreakThisGame || 0
+          });
+          
+          await GameHistory.record(p.userId, {
+            roomCode,
+            gameMode: room.gameMode,
+            theme: room.theme,
+            score: p.score,
+            correctAnswers: p.correctThisGame || 0,
+            totalQuestions: room.questions.length,
+            rank: rank + 1,
+            playersCount: players.filter(pl => !pl.isBot).length,
+            xpEarned: xpGained,
+            coinsEarned: coinsGained
+          });
+          
+          p.xpGained = xpGained;
+          p.coinsGained = coinsGained;
+        }
       }
     }
     
@@ -1261,6 +1501,22 @@ io.on('connection', (socket) => {
     const newRoomCode = generateCode();
     const newQuestions = getRandomQuestions(room.theme, room.settings.questionCount, room.settings.difficulty);
     
+    const newBots = room.bots ? room.bots.map(b => ({
+      ...b,
+      score: 0,
+      answered: false,
+      superpowers: [],
+      shieldActive: false,
+      hasSecondChance: false,
+      lives: 3,
+      bet: 0,
+      frozen: false,
+      frozenUntil: 0,
+      streak: 0,
+      correctThisGame: 0,
+      team: null
+    })) : [];
+    
     rooms.set(newRoomCode, {
       host: socket.id,
       players: room.players,
@@ -1273,10 +1529,13 @@ io.on('connection', (socket) => {
       gameMode: room.gameMode,
       bets: new Map(),
       settings: room.settings,
-      teams: { red: [], blue: [] }
+      teams: { red: [], blue: [] },
+      isPractice: room.isPractice || false,
+      bots: newBots
     });
     
     players.forEach(p => {
+      if (p.isBot) return;
       const s = io.sockets.sockets.get(p.id);
       if (s) {
         s.leave(roomCode);
@@ -1303,7 +1562,8 @@ io.on('connection', (socket) => {
           themes: THEMES,
           gameModes: GAME_MODES,
           gameMode: room.gameMode,
-          settings: room.settings
+          settings: room.settings,
+          isPractice: room.isPractice || false
         });
       }
     });

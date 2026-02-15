@@ -311,7 +311,9 @@
       <div id="play-tab" class="tab-content">
         <div class="card slide-up">
           <button class="btn-primary glow" onclick="showCreateScreen()">🎮 Create Room</button>
-          <button class="btn-secondary" onclick="showJoinScreen()">🚪 Join Room</button>
+          
+          <button class="btn-warning" onclick="startPractice()">🤖 Practice (vs Bot)</button>
+          
         </div>
       </div>
 
@@ -548,7 +550,7 @@
   <script>
     const COLORS = ['linear-gradient(135deg,#00d4ff,#0099cc)','linear-gradient(135deg,#7c3aed,#5b21b6)','linear-gradient(135deg,#f472b6,#db2777)','linear-gradient(135deg,#22c55e,#16a34a)','linear-gradient(135deg,#f59e0b,#d97706)','linear-gradient(135deg,#ef4444,#dc2626)','linear-gradient(135deg,#06b6d4,#0891b2)','linear-gradient(135deg,#8b5cf6,#7c3aed)','linear-gradient(135deg,#ec4899,#db2777)','linear-gradient(135deg,#14b8a6,#0d9488)'];
     const socket = io();
-    let user = null, isHost = false, room = '', timer, selected = null, confirmed = false, frozen = false, powers = [], pwrEnabled = true, mode = 'Classic';
+    let user = null, isHost = false, room = '', timer, selected = null, confirmed = false, frozen = false, powers = [], pwrEnabled = true, mode = 'Classic', isPractice = false;
     
     function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
     function toast(msg, type='error') { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast show '+(type||''); t.classList.add('bounce-in'); setTimeout(()=>t.classList.remove('bounce-in'),600); setTimeout(()=>t.classList.remove('show'),2500); }
@@ -560,6 +562,7 @@
     function showCreateScreen() { initModes(); showScreen('create-screen'); }
     function showJoinScreen() { showScreen('join-screen'); }
     function showMainScreen() { showScreen('main-screen'); }
+    function startPractice() { isPractice = true; showCreateScreen(); toast('Practice Mode - No XP/Stats counted','info'); }
 
     async function login() {
       const btn = document.getElementById('login-btn');
@@ -671,7 +674,7 @@
 
     function createRoom() {
       const settings={questionCount:+document.getElementById('q-count').value,timeLimit:+document.getElementById('time-limit').value,difficulty:document.getElementById('diff-select').value,powerupsEnabled:pwrEnabled};
-      socket.emit('create-room',{name:user.username,theme:document.getElementById('theme-select').value,gameMode:mode,avatar:user.equippedAvatar,color:user.equippedColor,settings});
+      socket.emit('create-room',{name:user.username,theme:document.getElementById('theme-select').value,gameMode:mode,avatar:user.equippedAvatar,color:user.equippedColor,settings,isPractice});
     }
 
     function joinRoom() {
@@ -684,7 +687,7 @@
     function nextQ() { socket.emit('next-question'); }
     function rematch() { socket.emit('rematch'); }
 
-    socket.on('room-created',d=>{ isHost=true; room=d.roomCode; document.getElementById('room-code').textContent=d.roomCode; showScreen('lobby-screen'); });
+    socket.on('room-created',d=>{ isHost=true; room=d.roomCode; document.getElementById('room-code').textContent=d.roomCode; if(d.isPractice){ const indicator=document.createElement('div'); indicator.id='practice-indicator'; indicator.style.cssText='background:linear-gradient(135deg,#f59e0b,#d97706);padding:8px 16px;border-radius:20px;margin:10px 0;text-align:center;font-weight:bold;'; indicator.textContent='🎮 Practice Mode'; document.querySelector('#lobby-screen .card').insertBefore(indicator,document.querySelector('#lobby-screen .card').firstChild.nextSibling); } showScreen('lobby-screen'); });
     socket.on('room-joined',d=>{ isHost=d.isHost; room=d.roomCode; if(isHost){document.getElementById('room-code').textContent=d.roomCode;showScreen('lobby-screen');}else{document.getElementById('wait-code').textContent=d.roomCode;showScreen('waiting-screen');} });
     
     socket.on('players-update',d=>{
